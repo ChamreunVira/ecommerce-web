@@ -1,5 +1,5 @@
 import { Product } from '@/types/product'
-import { Star } from 'lucide-react'
+import { Heart, Star } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 
@@ -9,6 +9,9 @@ const ProductCard = ({product} : {product: Product}) => {
     } , [product])
   return (
     <div className='relative max-w-50'>
+        <div className='absolute right-2 top-2 z-1 p-1.5 bg-white shadow-sm rounded-full group'>
+            <Heart className='w-4 h-4 text-gray-600 group-hover:text-rose-500 cursor-pointer'/>
+        </div>
         <div className='bg-gray-500/10 rounded-md group'>
             <Image
                 className='cover group-hover:scale-110 transition-transform duration-300'

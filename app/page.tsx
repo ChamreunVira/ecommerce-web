@@ -1,6 +1,10 @@
 import HeaderSlider from "@/components/HeaderSlider"
 import Navbar from "@/components/Navbar"
-import AllProduct from "./all-product/page"
+import HomeProduct from "@/components/HomeProduct"
+import Footer from "@/components/Footer"
+import FeatureProduct from "@/components/FeatureProduct"
+import Banner from "@/components/Banner"
+import NewsLetter from "@/components/NewsLetter"
 
 const page = () => {
   return (
@@ -8,7 +12,11 @@ const page = () => {
       <Navbar/>
       <main className="app-container">
         <HeaderSlider/>
-        <AllProduct/>
+        <HomeProduct/>
+        <FeatureProduct/>
+        <Banner/>
+        <NewsLetter/>
+        <Footer/>
       </main>
     </>
   )

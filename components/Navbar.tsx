@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const navItems: Array<{path: string, label: string}> = [
     {  
-        path: "/home",
+        path: "/",
         label: "Home"
     },
     {
@@ -13,11 +13,11 @@ const navItems: Array<{path: string, label: string}> = [
         label: "Shop"
     },
     {
-        path: "/about",
+        path: "/",
         label: "About Us"
     },
     {
-        path: "/contact",
+        path: "/",
         label: "Contact"
     }
 ]
@@ -32,9 +32,9 @@ const Navbar = () => {
         </div>
 
         {/* nav items */}
-        <nav className='flex items-center gap-4'>
+        <nav className='max-w-lg flex items-center gap-4'>
             {navItems.map((item , i) => (
-                <Link key={i} href={item.path} className='text-base px-2.5 py-0.5 hover:text-gray-900 transition-colors'>{item.label}</Link>
+                <Link key={i} href={item.path} className='text-[0.85rem] font-medium px-2.5 py-0.5 hover:text-gray-900 transition-colors'>{item.label}</Link>
             ))}
         </nav>
 
