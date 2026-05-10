@@ -4,7 +4,7 @@ import React from 'react'
 
 const Banner = () => {
   return (
-    <div className='mt-14'>
+    <div className='py-14'>
         <div className='relative flex justify-between items-center bg-[#E6E9F2] rounded-lg'>
             <div>
                 <Image

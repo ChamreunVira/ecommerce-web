@@ -46,8 +46,10 @@ import product_details_page_apple_earphone_image2 from "./product_details_page_a
 import product_details_page_apple_earphone_image3 from "./product_details_page_apple_earphone_image3.png";
 import product_details_page_apple_earphone_image4 from "./product_details_page_apple_earphone_image4.png";
 import product_details_page_apple_earphone_image5 from "./product_details_page_apple_earphone_image5.png";
+import brand from "./brand.png"
 
 export const assets = {
+  brand,
   logo,
   search_icon,
   user_icon,
@@ -277,7 +279,7 @@ export const userDummyData = {
   "__v": 0
 }
 
-export const orderDummyData = [
+export const orderDummycategoryData = [
   {
     "id": "67a20934b3db72db5cc77b2b",
     "userId": "user_2sZFHS1UIIysJyDVzCpQhUhTIhw",

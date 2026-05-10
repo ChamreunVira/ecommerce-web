@@ -1,12 +1,18 @@
 "use client";
 import { Product } from "@/types/product";
 import { useRouter } from "next/navigation"
-import { addressDummyData, productsDummyData } from "@/assets/assets";
+import { productsDummyData } from "@/assets/assets";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-export const AppContext = createContext<any>(null);
+type AppContextType = {
+    router: AppRouterInstance,
+    products: Product[]
+}
 
-export const useAppContext = () => {
+export const AppContext = createContext<AppContextType | any>(null);
+
+export const useAppContext = (): AppContextType => {
     return useContext(AppContext);
 }
 
@@ -24,7 +30,8 @@ export const AppContextProvider = ({children}: {children: React.ReactNode}) => {
     } , []);
     
     const contextValue = {
-        router, products
+        router,
+        products
     }
 
   return (

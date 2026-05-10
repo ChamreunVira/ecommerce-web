@@ -1,6 +1,8 @@
 "use client";
+import { assets } from '@/assets/assets';
 import { useAppContext } from '@/context/AppContext'
 import { Search, User } from 'lucide-react'
+import Image from 'next/image';
 import Link from 'next/link';
 
 const navItems: Array<{path: string, label: string}> = [
@@ -25,10 +27,16 @@ const navItems: Array<{path: string, label: string}> = [
 const Navbar = () => {
     const {router} = useAppContext();
   return (
-    <header className="app-container bg-white py-3 sticky top-0 left-0 z-50 flex justify-between items-center border-b border-slate-300">
+    <header className="app-container bg-white sticky top-0 left-0 z-50 flex justify-between items-center border-b border-slate-300">
         {/* logo */}
-        <div>
-            <label htmlFor="" onClick={() => {router.push("/")}}>Vira</label>
+        <div
+            onClick={() => {router.push("/")}}
+        >
+            <Image
+                className='object-cover w-25'
+                src={assets.brand}
+                alt='brand'
+            />
         </div>
 
         {/* nav items */}

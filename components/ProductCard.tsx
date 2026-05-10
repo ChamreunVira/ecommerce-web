@@ -1,14 +1,17 @@
+"use client";
+import { useAppContext } from '@/context/AppContext';
 import { Product } from '@/types/product'
 import { Heart, Star } from 'lucide-react'
 import Image from 'next/image'
-import React, { useEffect } from 'react'
 
 const ProductCard = ({product} : {product: Product}) => {
-    useEffect(() => {
-        console.log(product);
-    } , [product])
+
+    const {router} = useAppContext();
+
   return (
-    <div className='relative max-w-50'>
+    <div className='relative max-w-50'
+    onClick={() => router.push(`/product/${product.id}`)}
+    >
         <div className='absolute right-2 top-2 z-1 p-1.5 bg-white shadow-sm rounded-full group'>
             <Heart className='w-4 h-4 text-gray-600 group-hover:text-rose-500 cursor-pointer'/>
         </div>
@@ -25,7 +28,7 @@ const ProductCard = ({product} : {product: Product}) => {
             <h5 className='text-[0.9rem] font-medium text-gray-900 leading-loose'>{product.name}</h5>
             <div>
                 <p className='truncate text-gray-500 text-xs'>{product.description}</p>
-                <div className=''>
+                <div>
                     <span className='text-[0.85rem] text-gray-500'>
                         5
                     </span>

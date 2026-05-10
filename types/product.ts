@@ -6,5 +6,6 @@ export interface Product {
     price: number;
     offerPrice: number;
     image: string[],
+    category: string,
     date: number;
 }
