@@ -8,6 +8,9 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 type AppContextType = {
   router: AppRouterInstance;
   products: Product[];
+  handleAddProductToCart: (id: string) => void;
+  getTotalCart: () => number;
+  cartItems: string[];
 };
 
 export const AppContext = createContext<AppContextType | any>(null);
@@ -24,13 +27,20 @@ export const AppContextProvider = ({
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<string[]>([]);
 
   const handleFetchProduct = () => {
     setProducts(productsDummyData);
   };
 
-  const handleAddProductToCart = (productId: number) => {};
+  const getTotalCart = () => {
+    return new Set(cartItems).size;
+  };
+
+  const handleAddProductToCart = (productId: string) => {
+    setCartItems([...cartItems, productId]);
+    console.log(cartItems);
+  };
 
   useEffect(() => {
     handleFetchProduct();
@@ -39,6 +49,9 @@ export const AppContextProvider = ({
   const contextValue = {
     router,
     products,
+    handleAddProductToCart,
+    getTotalCart,
+    cartItems,
   };
 
   return (

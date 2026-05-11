@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 const ProductDetail = () => {
   const { id } = useParams();
 
-  const { products } = useAppContext();
+  const { products, router, handleAddProductToCart } = useAppContext();
   const [primaryImg, setPrimaryImg] = useState<any>(null);
   const [productData, setProductData] = useState<Product>();
 
@@ -109,10 +109,19 @@ const ProductDetail = () => {
                 </table>
 
                 <div className="flex items-center space-x-2 *:rounded-md *:px-6 *:py-3 *:font-medium *:cursor-pointer">
-                  <button className="bg-gray-500/10 text-gray-800/90">
+                  <button
+                  onClick={() => handleAddProductToCart(productData.id)}
+                  className="bg-gray-500/10 text-gray-800/90">
                     Add to Cart
                   </button>
-                  <button className="bg-orange-500 text-white">Buy now</button>
+                  <button
+                    onClick={() => {
+                      router.push("/cart");
+                    }}
+                    className="bg-orange-500 text-white"
+                  >
+                    Buy now
+                  </button>
                 </div>
               </div>
             </div>
