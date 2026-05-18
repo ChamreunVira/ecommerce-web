@@ -5,9 +5,11 @@ import { Product } from "@/types/product";
 class ProductService {
     private endPoint = "/products";
 
-    getAll(): Promise<ApiResponse<Product>> {
-        return http.get(this.endPoint);
+    async getAll(): Promise<ApiResponse<Product[]>> {
+        const response = await http.get<ApiResponse<Product[]>>(this.endPoint);
+        return response.data;
     }
+
 }
 
 export const productService = new ProductService();

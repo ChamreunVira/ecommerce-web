@@ -5,7 +5,6 @@ import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { useAppContext } from "@/context/AppContext";
 import { Product } from "@/types/product";
-import React from "react";
 
 const AllProduct = () => {
   const { products } = useAppContext();

@@ -11,6 +11,8 @@ type AppContextType = {
   handleAddProductToCart: (id: string) => void;
   getTotalCart: () => number;
   cartItems: string[];
+  accessToken: string | null;
+  setAccessToken: (accessToken: string) => void;
 };
 
 export const AppContext = createContext<AppContextType | any>(null);
@@ -28,6 +30,7 @@ export const AppContextProvider = ({
 
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<string[]>([]);
+  const [accessToken , setAccessToken] = useState<string | null>(null);
 
   const handleFetchProduct = () => {
     setProducts(productsDummyData);

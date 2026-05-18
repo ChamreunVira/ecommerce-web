@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppContextProvider } from "@/context/AppContext";
+import { ToastProvider } from "./ToastProvider";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -14,9 +15,9 @@ import { AppContextProvider } from "@/context/AppContext";
 // });
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap'
-})
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Ecommerce App",
@@ -31,8 +32,13 @@ export default function RootLayout({
   return (
     <AppContextProvider>
       <html lang="en">
-      <body className={`min-h-full antialiased text-gray-700 ${inter.className}`}>{children}</body>
-    </html>
+        <body
+          className={`min-h-full antialiased text-gray-700 ${inter.className}`}
+        >
+          {children}
+          <ToastProvider />
+        </body>
+      </html>
     </AppContextProvider>
   );
 }

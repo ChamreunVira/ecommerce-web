@@ -3,7 +3,11 @@ import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import React from "react";
 
-const DashboardPage = () => {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex min-h-screen">
       <aside className="min-w-52 border-r border-gray-300">
@@ -24,9 +28,8 @@ const DashboardPage = () => {
       </aside>
       <main className="flex-1">
         <Navbar />
+        <div className="relative h-full overflow-x-hidden">{children}</div>
       </main>
     </div>
   );
-};
-
-export default DashboardPage;
+}
