@@ -74,7 +74,7 @@ http.interceptors.response.use(
             }
 
             originalRequest._retry = true;
-            isRefreshing = true;admin/product
+            isRefreshing = true;
 
             try {
                 const response = await axios.get(

@@ -15,6 +15,10 @@ const ProductAdminPage = () => {
     try {
       const response = await productService.getAll();
       if (response.success) {
+        const existsCategoy = response.data.map(
+          (product) => product.categoryName,
+        );
+        setCategoies([...new Set(existsCategoy)]);
         setProducts(response.data);
       }
     } catch (e: any) {
@@ -22,14 +26,8 @@ const ProductAdminPage = () => {
     }
   };
 
-  const handleGetCategoryByProduct = () => {
-    const existsCategory = products.map((product) => product.categoryName);
-    setCategoies([...new Set(existsCategory)]);
-  };
-
   useEffect(() => {
     handleFetchProduct();
-    handleGetCategoryByProduct();
     return () => new AbortController().abort();
   }, []);
 
@@ -78,7 +76,10 @@ const ProductAdminPage = () => {
       <ProductTable products={products} />
 
       {isModalOpen && (
-        <CreateProductModal handleCloseModal={handleCloseModal} />
+        <CreateProductModal
+          categories={categories}
+          handleCloseModal={handleCloseModal}
+        />
       )}
     </section>
   );

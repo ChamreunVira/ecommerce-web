@@ -1,6 +1,6 @@
-import { assets } from "@/assets/assets";
-import Navbar from "@/components/Navbar";
-import Image from "next/image";
+import AdminNavbar from "@/components/AdminNavbar";
+import Sidbar, { SidebarItem } from "@/components/Sidbar";
+import { Compass, LayoutDashboard, List, ShoppingBag } from "lucide-react";
 import React from "react";
 
 export default function AdminLayout({
@@ -10,24 +10,14 @@ export default function AdminLayout({
 }) {
   return (
     <div className="flex min-h-screen">
-      <aside className="min-w-52 border-r border-gray-300">
-        {/* top logo */}
-        <div className="flex space-x-2 border-b border-gray-300 p-2">
-          <Image
-            src={assets.brand}
-            alt="main-logo"
-            className="w-20 h-20 object-cover"
-          />
-          <div className="flex flex-col justify-center">
-            <h2 className="font-medium text-gray-800 text-xl">ViraDev</h2>
-            <p className="text-xs text-gray-500/90">Hello</p>
-          </div>
-        </div>
-        {/* sidbar content */}
-        <div className="p-2"></div>
-      </aside>
+      <Sidbar>
+        <SidebarItem icon={<LayoutDashboard />} label="Dashboard" active path="/admin/dashboard"/>
+        <SidebarItem icon={<ShoppingBag />} label="Products" active={false} path="/admin/product"/>
+        <SidebarItem icon={<List />} label="Category" active={false} path="/admin/category"/>
+        <SidebarItem icon={<Compass />} label="Orders" active={false} path="/admin/order"/>
+      </Sidbar>
       <main className="flex-1">
-        <Navbar />
+        <AdminNavbar />
         <div className="relative h-full overflow-x-hidden">{children}</div>
       </main>
     </div>

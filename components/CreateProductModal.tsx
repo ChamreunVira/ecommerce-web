@@ -4,8 +4,9 @@ import { X } from "lucide-react";
 import React, { useState } from "react";
 
 type CreateProductModalType = {
-  handleCloseModal: () => void
-}
+  categories: string[];
+  handleCloseModal: () => void;
+};
 
 type ProductData = {
   categoryId: number;
@@ -14,28 +15,34 @@ type ProductData = {
   price: number;
   discount: number;
   qty: number;
-}
+};
 
-const CreateProductModal: React.FC<CreateProductModalType> = ({handleCloseModal}) => {
-  
-  const [productData , setProductData] = useState<ProductData>({
+const CreateProductModal: React.FC<CreateProductModalType> = ({
+  categories,
+  handleCloseModal,
+}) => {
+  const [productData, setProductData] = useState<ProductData>({
     categoryId: 0,
     name: "",
     description: "",
     price: 0,
     discount: 0,
-    qty: 0
-  })
+    qty: 0,
+  });
 
-  const [images , setImages] = useState<any | null>(null);
+  const [images, setImages] = useState<any | null>(null);
 
-  const handleCreateProduct = () => {
-    
-  }
+  const handleCreateProduct = () => {};
 
   const handleProductFielsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProductData((prev) => ({...prev, [e.target.name]: e.target.value}));
-  }
+    setProductData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleImagesChange = (e: any) => {
+    const files = e.target.files;
+    console.log(files);
+    setImages(files);
+  };
 
   return (
     <div className="w-full min-h-screen absolute top-0 left-0 bg-black/10 flex items-center justify-center">
@@ -50,11 +57,10 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({handleCloseModal}
         <form action="">
           <div className="mb-4">
             <label className="text-sm text-gray-800">Category</label>
-            <select
-            // onChange={handleProductFielsChange}
-              className="w-full border border-gray-300 px-3 py-1.5"
-            >
-              <option>category</option>
+            <select className="w-full border border-gray-300 px-3 py-1.5">
+              {categories.map((category, i) => (
+                <option key={i} >{category}</option>
+              ))}
             </select>
           </div>
 
@@ -96,7 +102,8 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({handleCloseModal}
             <input
               type="text"
               placeholder="Enter discount..."
-              name="email"
+              name="discount"
+              onChange={handleProductFielsChange}
               value={0}
               className="w-full rounded-md px-3 py-1.5 text-gray-500/90 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500"
             />
@@ -107,7 +114,8 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({handleCloseModal}
             <input
               type="text"
               placeholder="Enter quantity..."
-              name="email"
+              name="qty"
+              onChange={handleCreateProduct}
               className="w-full rounded-md px-3 py-1.5 text-gray-500/90 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500"
             />
           </div>
@@ -117,7 +125,7 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({handleCloseModal}
             <input
               type="file"
               placeholder="Enter name..."
-              name="email"
+              onChange={handleImagesChange}
               accept="png,jpg,jpeg"
               multiple
               className="w-full rounded-md px-3 py-1.5 text-gray-500/90 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500"
