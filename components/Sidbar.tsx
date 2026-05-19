@@ -19,9 +19,9 @@ const Sidbar: React.FC<Sidebar> = ({ children }) => {
     <aside className="w-70 border-r border-slate-300 overflow-x-hidden">
       <div className="flex flex-col items-center justify-center">
         {/* top logo */}
-        <div className="flex space-x-2 p-4 border-b border-slate-300 mb-4">
+        <div className="w-full flex items-center justify-center space-x-4 p-4 border-b border-slate-300 mb-4">
           <div>
-            <Image className="w-20" src={assets.brand} alt="brand" />
+            <Image className="w-18" src={assets.brand} alt="brand" />
           </div>
           <div className="flex flex-col justify-center space-x-2 text-slate-800">
             <h1 className="text-xl font-semibold text-orange-500">vSt4re</h1>
@@ -41,7 +41,7 @@ export const SidebarItem: React.FC<SidbarItem> = ({ label, icon, active , path})
   return (
     <Link href={path}>
       <div
-        className={`flex items-center rounded-md space-x-4 px-4 py-2 font-medium text-[1.2rem] p-2 ${active ? "bg-gray-100" : ""} hover:bg-gray-100 cursor-pointer group`}
+        className={`flex items-center rounded-md space-x-4 px-4 py-2 font-medium text-[1.15rem] p-2 ${active ? "bg-slate-100" : " hover:bg-slate-100"} cursor-pointer group`}
       >
         <button
           className={`${active ? "text-orange-500" : "text-slate-600 group-hover:text-slate-800"}`}

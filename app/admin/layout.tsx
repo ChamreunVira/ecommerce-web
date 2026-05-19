@@ -16,7 +16,7 @@ export default function AdminLayout({
         <SidebarItem icon={<List />} label="Category" active={false} path="/admin/category"/>
         <SidebarItem icon={<Compass />} label="Orders" active={false} path="/admin/order"/>
       </Sidbar>
-      <main className="flex-1">
+      <main className="flex-1 bg-linear-to-br">
         <AdminNavbar />
         <div className="relative h-full overflow-x-hidden">{children}</div>
       </main>

@@ -9,7 +9,7 @@ interface TableProps {
 export const Table: React.FC<TableProps> = ({ children, className = "" }) => {
   return (
     <div
-      className={`overflow-x-auto rounded-sm border border-gray-200 mt-4 ${className}`}
+      className={`overflow-x-auto rounded-sm mt-4 ${className}`}
     >
       <table className="min-w-full text-sm">{children}</table>
     </div>
@@ -28,6 +28,7 @@ export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => {
     </thead>
   );
 };
+
 
 interface THeadingProps {
   children: ReactNode;

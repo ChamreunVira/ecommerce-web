@@ -3,7 +3,7 @@ import CreateProductModal from "@/components/CreateProductModal";
 import ProductTable from "@/components/ProductTable";
 import { productService } from "@/services/product-service";
 import { Product } from "@/types/product";
-import { LayoutListIcon } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const ProductAdminPage = () => {
@@ -40,7 +40,7 @@ const ProductAdminPage = () => {
       <div className="text-left mb-12">
         <h1 className="flex items-center text-2xl text-gray-800 font-medium leading-12">
           <button className="mr-2">
-            <LayoutListIcon />
+            <ShoppingBag />
           </button>
           Product
         </h1>

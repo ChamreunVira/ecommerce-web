@@ -9,6 +9,21 @@ class CategoryService {
         const response = await http.get(this.endPoint);
         return response.data;
     }
+
+    async create(category: Omit<Category, "id" | "createdAt" | "updatedAt">): Promise<ApiResponse<Category>> {
+        const response = await http.post(this.endPoint, category);
+        return response.data;
+    }
+
+    async update(id: number, category: Omit<Category, "id" | "createdAt" | "updatedAt">): Promise<ApiResponse<Category>> {
+        const response = await http.put(`${this.endPoint}/${id}`, category);
+        return response.data;
+    }
+
+    async delete(id: number): Promise<ApiResponse<null>> {
+        const response = await http.delete(`${this.endPoint}/${id}`);
+        return response.data;
+}
 }
 
 export const categoryService = new CategoryService();
