@@ -1,12 +1,13 @@
 "use client";
 import { Product } from "@/types/product";
 import { useRouter } from "next/navigation";
-import { productsDummyData } from "@/assets/assets";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { productService } from "@/services/product-service";
 import { User } from "@/types/user";
 import { authService } from "@/services/auth-service";
+import { cartService } from "@/services/cart-service";
+import { toast } from "react-toastify";
 
 type AppContextType = {
   router: AppRouterInstance;
@@ -35,7 +36,6 @@ export const AppContextProvider = ({
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<string[]>([]);
   const [user , setUser] = useState<Partial<User>>({});
-  const [accessToken , setAccessToken] = useState<string | null>(null);
 
   const handleFetchProduct = async () => {
     try {
@@ -52,9 +52,15 @@ export const AppContextProvider = ({
     return new Set(cartItems).size;
   };
 
-  const handleAddProductToCart = (productId: string) => {
-    setCartItems([...cartItems, productId]);
-    console.log(cartItems);
+  const handleAddProductToCart = async (productId: number) => {
+    try {
+      const response = await cartService.addToCart(productId , 1);
+      if(response.success) {
+        toast.success("Product added into cart.");
+      }
+    }catch(e: any) {
+      console.log(e.message);
+    }
   };
 
   const isAuthenticated = async () => {
@@ -67,10 +73,12 @@ export const AppContextProvider = ({
   }
 
   const handleCurrentUser = async () => {
-    const response = await authService.me();
+    if(await isAuthenticated()) {
+      const response = await authService.me();
     if(response.success) {
       console.log(response.data);
       setUser(response.data);
+    }
     }
   }
 

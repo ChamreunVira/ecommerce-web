@@ -1,17 +1,14 @@
 "use client";
 import { useAppContext } from "@/context/AppContext";
 import { Product } from "@/types/product";
-import { Heart, Star } from "lucide-react";
+import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const { router } = useAppContext();
+  const { handleAddProductToCart } = useAppContext();
 
   return (
-    <div
-      className="relative max-w-50"
-      onClick={() => router.push(`/product/${product.id}`)}
-    >
+    <div className="relative max-w-50">
       <div className="absolute right-2 top-2 z-1 p-1.5 bg-white shadow-sm rounded-full group">
         <Heart className="w-4 h-4 text-gray-600 group-hover:text-rose-500 cursor-pointer" />
       </div>
@@ -46,8 +43,10 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
         <div className="flex items-center justify-between mt-4">
           <h5 className="font-medium text-[0.9rem]">${product.price}</h5>
-          <button className="text-xs rounded-lg px-3 text-gray-900 py-1 border border-gray-300 hover:bg-gray-100 cursor-pointer">
-            Buy now
+          <button
+          onClick={() => handleAddProductToCart(product.id)}
+          className="text-[0.8rem] flex gap-2 rounded-lg px-3 text-gray-900 py-1 border border-gray-300 hover:bg-gray-100 cursor-pointer">
+            <ShoppingCart className="w-4 h-4" /> Add to cart
           </button>
         </div>
       </div>

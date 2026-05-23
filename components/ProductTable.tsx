@@ -47,11 +47,11 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
       },
     },
     {
-      header: "category",
+      header: "Category",
       key: "categoryName",
     },
     {
-      header: "name",
+      header: "Name",
       key: "name",
       className: "font-medium",
     },
