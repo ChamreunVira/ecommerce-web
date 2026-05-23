@@ -1,6 +1,10 @@
+import { cartService } from '@/services/cart-service';
+import { Cart, CartItem } from '@/types/cart';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
 import { X } from 'lucide-react';
-import React, { useState } from 'react'
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react'
 
 type CartSidbarType  = {
   open: boolean;
@@ -8,6 +12,24 @@ type CartSidbarType  = {
 }
 
 const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
+  const [carts , setCarts] = useState<Partial<Cart>>({});
+  const [cartItems , setCartItems] = useState<CartItem[]>([]);
+  
+  const handleFetchAllCart = async () => {
+    try {
+      const response = await cartService.getAll();
+      if(response.success) {
+        setCarts(response.data);
+        setCartItems(response.data.cartItems);
+      }
+    }catch(e: any) {
+      console.log(e.message);
+    }
+  }
+
+  useEffect(() => {
+    handleFetchAllCart();
+  } , []);
 
   return (
    <Dialog open={open} onClose={setOpen} className="relative z-50">
@@ -43,6 +65,41 @@ const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
                     <div className="mt-8">
                       <div className="flow-root">
                         <ul role="list" className="-my-6 divide-y divide-gray-200">
+                          {cartItems.length > 0 && cartItems.map((item) => (
+                            <li key={item.id} className="flex py-6">
+                              <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                <Image
+                                  className='size-full object-cover'
+                                  src={`http://localhost:8080/api/v1/uploads/${item.productImage}`}
+                                  alt={item.productName}
+                                  width={100}
+                                  height={100}
+                                  unoptimized
+                                />
+                              </div>
+
+                              <div className="ml-4 flex flex-1 flex-col">
+                                <div>
+                                  <div className="flex justify-between text-base font-medium text-gray-900">
+                                    <h3>
+                                      <Link href={`/prodcut/${item.productId}`}>{item.productName}</Link>
+                                    </h3>
+                                    <p className="ml-4">{item.finalPrice}</p>
+                                  </div>
+                                  {/* <p className="mt-1 text-sm text-gray-500">{product.color}</p> */}
+                                </div>
+                                <div className="flex flex-1 items-end justify-between text-sm">
+                                  <p className="text-gray-500">Qty {item.quantity}</p>
+
+                                  <div className="flex">
+                                    <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          ))}
                           {/* {products.map((product) => (
                             <li key={product.id} className="flex py-6">
                               <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">

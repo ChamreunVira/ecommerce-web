@@ -3,7 +3,7 @@ import CreateProductModal from "@/components/CreateProductModal";
 import ProductTable from "@/components/ProductTable";
 import { productService } from "@/services/product-service";
 import { Product } from "@/types/product";
-import { ShoppingBag } from "lucide-react";
+import { Plus, ShoppingBag } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -61,8 +61,9 @@ const ProductAdminPage = () => {
 
   return (
     <section className="relative h-full overflow-x-hidden p-12">
-      <div className="border border-slate-300 p-6 rounded-md bg-white">
-        <div className="text-left mb-12">
+
+      <div className="flex justify-between items-center mb-8">
+        <div className="text-left">
           <h1 className="flex items-center text-2xl text-gray-800 font-medium leading-12">
             <button className="mr-2">
               <ShoppingBag />
@@ -71,7 +72,18 @@ const ProductAdminPage = () => {
           </h1>
           <p className="text-base text-gray-500/90">Product management</p>
         </div>
+        <button
+          onClick={() => setIsModalOpen(!isModalOpen)}
+          className="flex items-center px-6 py-2 bg-orange-500 rounded-md text-white"
+        >
+          <span className="mr-2">
+            <Plus/>
+          </span>
+          Create
+        </button>
+      </div>
 
+      <div className="border border-slate-300 p-6 rounded-md bg-white">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-4">
             <input
@@ -92,26 +104,17 @@ const ProductAdminPage = () => {
               ))}
             </select>
           </div>
-
-          <div>
-            <button
-              onClick={() => setIsModalOpen(!isModalOpen)}
-              className="px-3 py-1.5 bg-orange-500 rounded-md text-white"
-            >
-              Create
-            </button>
-          </div>
         </div>
-
         <ProductTable products={filteredProducts.length > 0 ? filteredProducts : products} handleDelete={handleDelete} />
-
-        {isModalOpen && (
-          <CreateProductModal
-            calllbackFromCreateProductModal={callbackFromCreateProductModal}
-            closeModal={() => setIsModalOpen(!isModalOpen)}
-          />
-        )}
       </div>
+
+      {isModalOpen && (
+        <CreateProductModal
+          calllbackFromCreateProductModal={callbackFromCreateProductModal}
+          closeModal={() => setIsModalOpen(!isModalOpen)}
+        />
+      )}
+
     </section>
   );
 };

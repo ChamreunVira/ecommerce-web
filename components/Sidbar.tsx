@@ -1,7 +1,9 @@
 import { assets } from "@/assets/assets";
+import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import Profile from "./Profile";
 
 type Sidebar = {
   children: React.ReactNode;
@@ -16,9 +18,11 @@ type SidbarItem = {
 
 const Sidbar: React.FC<Sidebar> = ({ children }) => {
 
+  const {user} = useAppContext();
+
   return (
-    <aside className="w-70 border-r border-slate-300 overflow-x-hidden">
-      <div className="flex flex-col items-center justify-center">
+    <aside className="sticky top-0 min-h-screen w-70 border-r border-slate-300 overflow-y-auto overflow-x-hidden">
+      <div className="flex h-full flex-col items-center justify-between">
         {/* top logo */}
         <div className="w-full flex items-center justify-center space-x-4 p-4 border-b border-slate-300 mb-4">
           <div>
@@ -29,8 +33,14 @@ const Sidbar: React.FC<Sidebar> = ({ children }) => {
             <p className="text-slate-600 text-sm">System</p>
           </div>
         </div>
+       
         {/* sidebar items */}
-        <div className="w-full flex flex-col space-y-4 p-8">{children}</div>
+        <div className="w-full flex-1 flex flex-col space-y-4 p-8">{children}</div>
+       
+        {/* sidebar footer */}
+        <div className="">
+          <Profile fullName={user.fullName || "Anynouymuse"}/>
+        </div>
       </div>
     </aside>
   );

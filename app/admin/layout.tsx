@@ -1,7 +1,7 @@
 "use client";
 import AdminNavbar from "@/components/AdminNavbar";
 import Sidbar, { SidebarItem } from "@/components/Sidbar";
-import { Compass, LayoutDashboard, List, ShoppingBag } from "lucide-react";
+import { Compass, LayoutDashboard, List, Settings, ShoppingBag, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -25,6 +25,12 @@ export default function AdminLayout({
           path="/admin/dashboard"
         />
         <SidebarItem
+          icon={<User />}
+          label="Users"
+          active={isActive("/admin/user")}
+          path="/admin/user"
+        />
+        <SidebarItem
           icon={<ShoppingBag />}
           label="Products"
           active={isActive("/admin/product")}
@@ -42,10 +48,16 @@ export default function AdminLayout({
           active={isActive("/admin/order")}
           path="/admin/order"
         />
+        <SidebarItem
+          icon={<Settings />}
+          label="Settings"
+          active={isActive("/admin/setting")}
+          path="/admin/setting"
+        />
       </Sidbar>
-      <main className="flex-1 bg-linear-to-br from-slate-50 via-indigo-50 to-slate-50">
+      <main className="flex-1 flex flex-col bg-linear-to-br from-slate-50 via-indigo-50 to-slate-50">
         <AdminNavbar />
-        <div className="relative h-full overflow-x-hidden">{children}</div>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
       </main>
     </div>
   );

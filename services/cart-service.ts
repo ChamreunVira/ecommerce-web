@@ -5,7 +5,7 @@ import { Cart } from "@/types/cart";
 class CartService {
     ednpoint: string = "/cart";
 
-    async getAll(): Promise<ApiResponse<Cart[]>> {
+    async getAll(): Promise<ApiResponse<Cart>> {
         const response = await http.get(`${this.ednpoint}/items`);
         return response.data;
     }   

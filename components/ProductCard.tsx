@@ -5,7 +5,7 @@ import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const { handleAddProductToCart } = useAppContext();
+  const { router , handleAddProductToCart } = useAppContext();
 
   return (
     <div className="relative max-w-50">
@@ -14,6 +14,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       </div>
       <div className="bg-gray-500/10 rounded-md group">
         <Image
+          onClick={() => {router.push(`/product/${product.id}`)}}
           className="cover group-hover:scale-110 transition-transform duration-300"
           src={`http://localhost:8080/api/v1/uploads/${product.images[0]}`}
           alt={product.name}

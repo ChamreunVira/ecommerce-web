@@ -11,7 +11,7 @@ import { useState } from "react";
 
 const page = () => {
 
-  const [open , setOpen] = useState<boolean>(true);
+  const [open , setOpen] = useState<boolean>(false);
 
   const handleToggleCartSidebar = () => {
     setOpen(!open);
@@ -20,7 +20,7 @@ const page = () => {
   return (
     <>
       <Navbar handleToggleCartSidebar={handleToggleCartSidebar}/>
-      <CartSidbar open={open} setOpen={handleToggleCartSidebar}/>
+      <CartSidbar open={open} setOpen={setOpen}/>
       <main className="app-container">
         <HeaderSlider />
         <HomeProduct />
