@@ -1,14 +1,15 @@
 export interface Product {
     id: string,
     userId: string;
-    categoryId: string;
+    categoryId: number;
     categoryName: string;
     username: string;
     name: string;
     description: string;
     price: number;
     discount: number;
-    image: string[],
+    qty: number;
+    images: string[],
     updatedAt: string;
     createdAt: string;
 }

@@ -1,6 +1,8 @@
+"use client";
 import AdminNavbar from "@/components/AdminNavbar";
 import Sidbar, { SidebarItem } from "@/components/Sidbar";
 import { Compass, LayoutDashboard, List, ShoppingBag } from "lucide-react";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 export default function AdminLayout({
@@ -8,15 +10,40 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathName = usePathname();
+  const isActive = (path: string) => {
+    return pathName === path;
+  };
+
   return (
     <div className="flex min-h-screen">
       <Sidbar>
-        <SidebarItem icon={<LayoutDashboard />} label="Dashboard" active path="/admin/dashboard"/>
-        <SidebarItem icon={<ShoppingBag />} label="Products" active={false} path="/admin/product"/>
-        <SidebarItem icon={<List />} label="Category" active={false} path="/admin/category"/>
-        <SidebarItem icon={<Compass />} label="Orders" active={false} path="/admin/order"/>
+        <SidebarItem
+          icon={<LayoutDashboard />}
+          label="Dashboard"
+          active={isActive("/admin/dashboard")}
+          path="/admin/dashboard"
+        />
+        <SidebarItem
+          icon={<ShoppingBag />}
+          label="Products"
+          active={isActive("/admin/product")}
+          path="/admin/product"
+        />
+        <SidebarItem
+          icon={<List />}
+          label="Category"
+          active={isActive("/admin/category")}
+          path="/admin/category"
+        />
+        <SidebarItem
+          icon={<Compass />}
+          label="Orders"
+          active={isActive("/admin/order")}
+          path="/admin/order"
+        />
       </Sidbar>
-      <main className="flex-1 bg-linear-to-br">
+      <main className="flex-1 bg-linear-to-br from-slate-50 via-indigo-50 to-slate-50">
         <AdminNavbar />
         <div className="relative h-full overflow-x-hidden">{children}</div>
       </main>

@@ -11,10 +11,12 @@ type CreateCategoryModalProps = {
 const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
   handleClose,
 }) => {
-  const [categoryData, setCategoryData] = React.useState<Omit<Category, "id" | "createdAt" | "updatedAt" , "products">>(() => ({
+  const [categoryData, setCategoryData] = React.useState<Omit<Category, "id" | "createdAt" | "updatedAt">>({
     name: "",
     description: "",
-  }));
+    products: [],
+  });
+  
   const handleCategoryFieldsChange = (
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {

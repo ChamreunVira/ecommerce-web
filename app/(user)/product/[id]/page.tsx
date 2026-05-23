@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import HomeProduct from "@/components/HomeProduct";
 import Navbar from "@/components/Navbar";
 import { useAppContext } from "@/context/AppContext";
+import { productService } from "@/services/product-service";
 import { Product } from "@/types/product";
 import { Star } from "lucide-react";
 import Image from "next/image";
@@ -17,11 +18,15 @@ const ProductDetail = () => {
   const [productData, setProductData] = useState<Product>();
 
   const handleFetchProductById = async () => {
-    const product = products?.find((p) => {
-      return p.id === id;
-    });
-    setProductData(product);
-    setPrimaryImg(product?.image[0]);
+    try {
+      const response = await productService.getById(Number(id));
+      if(response.success) {
+        setProductData(response.data);
+        setPrimaryImg(response.data.images[0]);
+      }
+    }catch(e: any) {
+      console.log(e.message);
+    }
   };
 
   useEffect(() => {
@@ -29,7 +34,7 @@ const ProductDetail = () => {
   }, [id, products]);
 
   const handleSwitchImage = (index: number) => {
-    setPrimaryImg(productData?.image[index]);
+    setPrimaryImg(productData?.images[index]);
   };
 
   return (
@@ -45,22 +50,24 @@ const ProductDetail = () => {
                 <div className="rounded-lg overflow-hidden bg-gray-500/10 mb-4">
                   <Image
                     className="w-full transition h-auto object-cover mix-blend-multiply"
-                    src={primaryImg}
+                    src={`http://localhost:8080/api/v1/uploads/${primaryImg}`}
                     alt="primary-image"
                     width={1280}
                     height={720}
+                    unoptimized
                   />
                 </div>
                 <div className="grid grid-cols-4 gap-4 overflow-hidden rounded-md">
-                  {productData.image.map((img, i) => (
+                  {productData.images.map((img, i) => (
                     <Image
                       onClick={() => handleSwitchImage(i)}
                       className="bg-gray-500/10 w-full h-auto object-cover cursor-pointer mix-blend-multiply"
                       key={i}
-                      src={img}
+                      src={`http://localhost:8080/api/v1/uploads/${img}`}
                       alt={`img ${1}`}
                       width={1280}
                       height={720}
+                      unoptimized
                     />
                   ))}
                 </div>
@@ -81,7 +88,7 @@ const ProductDetail = () => {
                 </div>
                 <p className="">{productData.description}</p>
                 <h1 className="font-medium md:text-3xl text-2xl text-gray-800/90">
-                  ${productData.offerPrice}
+                  ${productData.price - (productData.price * (productData.discount / 100))}
                   <span className="line-through ml-2 text-sm text-gray-800/90">
                     ${productData.price}
                   </span>
@@ -102,7 +109,7 @@ const ProductDetail = () => {
                     <tr>
                       <td className="text-gray-600 font-medium">Category</td>
                       <td className="text-gray-800/90">
-                        {productData.category}
+                        {productData.categoryName}
                       </td>
                     </tr>
                   </tbody>

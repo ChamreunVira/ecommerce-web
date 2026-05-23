@@ -29,6 +29,17 @@ class AuthService {
         return response.data;
     }
 
+
+    async me(): Promise<ApiResponse<User>> {
+        const response = await http.get<ApiResponse<User>>(`${this.endPoint}/me`);
+        return response.data;
+    }
+
+    async isAuthenticated(): Promise<boolean> {
+        const response = await http.get("/users/is-authenticated");
+        return response.data;
+    }
+
     logout(): void {
         clearAccessToken();
     }

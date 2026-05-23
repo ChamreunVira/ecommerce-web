@@ -48,7 +48,6 @@ export const THeading: React.FC<THeadingProps> = ({
   );
 };
 
-// TBody Component
 interface TBodyProps {
   children: ReactNode;
   className?: string;

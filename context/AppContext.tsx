@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { productsDummyData } from "@/assets/assets";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { productService } from "@/services/product-service";
+import { User } from "@/types/user";
+import { authService } from "@/services/auth-service";
 
 type AppContextType = {
   router: AppRouterInstance;
@@ -13,6 +16,7 @@ type AppContextType = {
   cartItems: string[];
   accessToken: string | null;
   setAccessToken: (accessToken: string) => void;
+  user: Partial<User>;
 };
 
 export const AppContext = createContext<AppContextType | any>(null);
@@ -30,10 +34,18 @@ export const AppContextProvider = ({
 
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<string[]>([]);
+  const [user , setUser] = useState<Partial<User>>({});
   const [accessToken , setAccessToken] = useState<string | null>(null);
 
-  const handleFetchProduct = () => {
-    setProducts(productsDummyData);
+  const handleFetchProduct = async () => {
+    try {
+      const response = await productService.getAll();
+      if(response.success) {
+        setProducts(response.data);
+      }
+    }catch (e: any) {
+      console.log(e.message);
+    }
   };
 
   const getTotalCart = () => {
@@ -45,7 +57,25 @@ export const AppContextProvider = ({
     console.log(cartItems);
   };
 
+  const isAuthenticated = async () => {
+    try {
+      const response = await authService.isAuthenticated();
+      return response;
+    }catch(e: any) {
+      console.log(e.message);
+    }
+  }
+
+  const handleCurrentUser = async () => {
+    const response = await authService.me();
+    if(response.success) {
+      console.log(response.data);
+      setUser(response.data);
+    }
+  }
+
   useEffect(() => {
+    handleCurrentUser();
     handleFetchProduct();
   }, []);
 
@@ -55,6 +85,7 @@ export const AppContextProvider = ({
     handleAddProductToCart,
     getTotalCart,
     cartItems,
+    user
   };
 
   return (

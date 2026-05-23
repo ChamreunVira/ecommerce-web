@@ -15,6 +15,7 @@ type SidbarItem = {
 };
 
 const Sidbar: React.FC<Sidebar> = ({ children }) => {
+
   return (
     <aside className="w-70 border-r border-slate-300 overflow-x-hidden">
       <div className="flex flex-col items-center justify-center">

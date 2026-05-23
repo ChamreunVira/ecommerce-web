@@ -1,6 +1,6 @@
 "use client";
 import { useAppContext } from "@/context/AppContext";
-import { setAccessToken } from "@/lib/axios";
+import { clearAccessToken, setAccessToken } from "@/lib/axios";
 import { authService } from "@/services/auth-service";
 import { User } from "@/types/user";
 import React, { useState } from "react";
@@ -20,6 +20,7 @@ const SignInPage = () => {
 
   const handleSignIn = async (e: React.SubmitEvent) => {
     e.preventDefault();
+    clearAccessToken();
     try {
       const response = await authService.signIn(authData);
       if (response.success) {

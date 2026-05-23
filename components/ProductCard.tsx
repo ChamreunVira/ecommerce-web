@@ -18,10 +18,11 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="bg-gray-500/10 rounded-md group">
         <Image
           className="cover group-hover:scale-110 transition-transform duration-300"
-          src={product.image[0]}
+          src={`http://localhost:8080/api/v1/uploads/${product.images[0]}`}
           alt={product.name}
           width={800}
           height={800}
+          unoptimized
         />
       </div>
       <div>
