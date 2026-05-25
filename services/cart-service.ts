@@ -17,6 +17,11 @@ class CartService {
         });
         return response.data;
     }
+
+    async removeItem(cartItemId: number): Promise<ApiResponse<Cart>> {
+        const response = await http.delete(`${this.ednpoint}/items/${cartItemId}`);
+        return response.data;
+    }
 }
 
 export const cartService = new CartService();

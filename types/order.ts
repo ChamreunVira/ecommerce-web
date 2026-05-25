@@ -7,7 +7,7 @@ import { PaymentSummary } from "./payment-sumary";
 export interface Order {
     orderId: number;
     orderCode: string;
-    orderStatus: OrderStatus;
+    status: OrderStatus;
     paymentMethod: PaymentMethod;
     subtotal: number;
     shippingFee: number;

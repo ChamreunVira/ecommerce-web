@@ -8,16 +8,18 @@ import { User } from "@/types/user";
 import { authService } from "@/services/auth-service";
 import { cartService } from "@/services/cart-service";
 import { toast } from "react-toastify";
+import { Cart, CartItem } from "@/types/cart";
 
 type AppContextType = {
   router: AppRouterInstance;
   products: Product[];
   handleAddProductToCart: (id: string) => void;
   getTotalCart: () => number;
-  cartItems: string[];
+  cartItems: CartItem[];
   accessToken: string | null;
   setAccessToken: (accessToken: string) => void;
   user: Partial<User>;
+  cart: Partial<Cart>;
 };
 
 export const AppContext = createContext<AppContextType | any>(null);
@@ -34,8 +36,9 @@ export const AppContextProvider = ({
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [cartItems, setCartItems] = useState<string[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [user , setUser] = useState<Partial<User>>({});
+  const [cart , setCart] = useState<Partial<Cart>>({});
 
   const handleFetchProduct = async () => {
     try {
@@ -63,6 +66,17 @@ export const AppContextProvider = ({
     }
   };
 
+  const handleFetchCart = async () => {
+    try {
+      const response = await cartService.getAll();
+      if(response.success) {
+        setCartItems(response.data.cartItems);
+      }
+    }catch(e: any) {
+      console.log(e.message);
+    }
+  }
+
   const isAuthenticated = async () => {
     try {
       const response = await authService.isAuthenticated();
@@ -85,9 +99,12 @@ export const AppContextProvider = ({
   useEffect(() => {
     handleCurrentUser();
     handleFetchProduct();
+    handleFetchCart();
   }, []);
 
   const contextValue = {
+    cart,
+    setCart,
     router,
     products,
     handleAddProductToCart,

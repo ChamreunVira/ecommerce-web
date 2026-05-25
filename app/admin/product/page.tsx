@@ -4,7 +4,7 @@ import ProductTable from "@/components/ProductTable";
 import { productService } from "@/services/product-service";
 import { Product } from "@/types/product";
 import { Plus, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const ProductAdminPage = () => {
@@ -77,7 +77,7 @@ const ProductAdminPage = () => {
           className="flex items-center px-6 py-2 bg-orange-500 rounded-md text-white"
         >
           <span className="mr-2">
-            <Plus/>
+            <Plus />
           </span>
           Create
         </button>
@@ -92,7 +92,6 @@ const ProductAdminPage = () => {
               className="px-3 py-1.5 rounded-md outline-1 -outline-offset-2 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-orange-500"
               onChange={(e) => handleSearchByName(e.target.value)}
             />
-
             <select
               onChange={(e) => handleFilterByCategory(e.target.value)}
               className="px-3 py-1.5 rounded-md border border-gray-300">

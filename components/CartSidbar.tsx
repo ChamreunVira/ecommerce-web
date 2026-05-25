@@ -1,3 +1,4 @@
+import { useAppContext } from '@/context/AppContext';
 import { cartService } from '@/services/cart-service';
 import { Cart, CartItem } from '@/types/cart';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react'
@@ -5,6 +6,7 @@ import { X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
+import { toast } from 'react-toastify';
 
 type CartSidbarType  = {
   open: boolean;
@@ -21,6 +23,17 @@ const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
       if(response.success) {
         setCarts(response.data);
         setCartItems(response.data.cartItems);
+      }
+    }catch(e: any) {
+      console.log(e.message);
+    }
+  }
+
+  const handleDeleteCartItem = async (cartItemId: number) => {
+    try {
+      const response = await cartService.removeItem(cartItemId);
+      if(response.success) {
+        toast.success("Deleted cart item from cart successfully.");
       }
     }catch(e: any) {
       console.log(e.message);
@@ -82,7 +95,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
                                 <div>
                                   <div className="flex justify-between text-base font-medium text-gray-900">
                                     <h3>
-                                      <Link href={`/prodcut/${item.productId}`}>{item.productName}</Link>
+                                      <Link href={`/product/${item.productId}`}>{item.productName}</Link>
                                     </h3>
                                     <p className="ml-4">{item.finalPrice}</p>
                                   </div>
@@ -92,7 +105,9 @@ const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
                                   <p className="text-gray-500">Qty {item.quantity}</p>
 
                                   <div className="flex">
-                                    <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                    <button
+                                    onClick={() => handleDeleteCartItem(item.id)}
+                                    type="button" className="font-medium text-primary hover:text-orange-700">
                                       Remove
                                     </button>
                                   </div>
@@ -136,16 +151,16 @@ const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
                   <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                     <div className="flex justify-between text-base font-medium text-gray-900">
                       <p>Subtotal</p>
-                      <p>$262.00</p>
+                      <p>${carts.totalAmount}</p>
                     </div>
                     <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                     <div className="mt-6">
-                      <a
-                        href="#"
-                        className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-xs hover:bg-indigo-700"
+                      <Link
+                        href={"/checkout"}
+                        className="flex bg-orange-500 items-center justify-center rounded-md border border-transparent px-6 py-3 text-base font-medium text-white shadow-xs hover:bg-orange-700"
                       >
                         Checkout
-                      </a>
+                      </Link>
                     </div>
                     <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                       <p>
@@ -153,7 +168,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({open, setOpen}) => {
                         <button
                           type="button"
                           onClick={() => setOpen(false)}
-                          className="font-medium text-indigo-600 hover:text-indigo-500"
+                          className="font-medium text-primary hover:text-orange-700"
                         >
                           Continue Shopping
                           <span aria-hidden="true"> &rarr;</span>
