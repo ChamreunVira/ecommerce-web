@@ -40,7 +40,7 @@ const ProductDetail = () => {
   return (
     productData && (
       <>
-        <Navbar />
+        <Navbar handleToggleCartSidebar={() => true}/>
         <main className="pt-14 space-y-10">
           <div className="app-container realtive">
             {/* product detail wrapper */}

@@ -12,7 +12,7 @@ const CartPage = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar handleToggleCartSidebar={() => {}}/>
       <section className="app-container py-14 flex gap-10">
         <div className="w-full flex flex-col">
           <div className="w-full flex items-center justify-between">

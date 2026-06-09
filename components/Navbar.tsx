@@ -6,8 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-const navItems: Array<{path: string, label: string}> = [
-    {  
+const navItems: Array<{ path: string, label: string }> = [
+    {
         path: "/",
         label: "Home"
     },
@@ -29,47 +29,47 @@ type NavbarType = {
     handleToggleCartSidebar: () => void;
 }
 
-const Navbar: React.FC<NavbarType> = ({handleToggleCartSidebar}) => {
-    const {router , user} = useAppContext();
-  return (
-    <header className="app-container bg-white sticky top-0 left-0 z-40 flex justify-between items-center border-b border-slate-300">
-        {/* logo */}
-        <div
-            onClick={() => {router.push("/")}}
-        >
-            <Image
-                className='object-cover w-18 py-2.5'
-                src={assets.brand}
-                alt='brand'
-            />
-        </div>
-
-        {/* nav items */}
-        <nav className='max-w-lg flex items-center gap-4'>
-            {navItems.map((item , i) => (
-                <Link key={i} href={item.path} className='text-[0.85rem] font-medium px-2.5 py-0.5 hover:text-gray-900 transition-colors'>{item.label}</Link>
-            ))}
-        </nav>
-
-        {/* option */}
-        <div className='flex items-center gap-2'>
-            <button
-            onClick={handleToggleCartSidebar}
-            className='p-1.5 hover:bg-slate-100 rounded-full group'>
-                <ShoppingBag className='w-5 h-5 text-slate-600 group-hover:text-gray-800'/>
-            </button>
-            <span className='p-1.5 hover:bg-gray-100 rounded-full group'>
-                <Search className='w-5 h-5 text-gray-600 group-hover:text-gray-800'/>
-            </span>
-            <div className='flex items-center space-x-1.5'>
-                <span className='p-1.5 hover:bg-gray-100 rounded-full group'>
-                    <User className='w-5 h-5 text-gray-600 group-hover:text-gray-800'/>
-                </span>
-                <p className='hover:text-gray-800 cursor-pointer'>{user.fullName}</p>
+const Navbar: React.FC<NavbarType> = ({ handleToggleCartSidebar }) => {
+    const { router, user } = useAppContext();
+    return (
+        <header className="app-container bg-white sticky top-0 left-0 z-40 flex justify-between items-center border-b border-slate-300">
+            {/* logo */}
+            <div
+                onClick={() => { router.push("/") }}
+            >
+                <Image
+                    className='object-cover w-18 py-2.5'
+                    src={assets.brand}
+                    alt='brand'
+                />
             </div>
-        </div>
-    </header>
-  )
+
+            {/* nav items */}
+            <nav className='max-w-lg flex items-center gap-4'>
+                {navItems.map((item, i) => (
+                    <Link key={i} href={item.path} className='text-[0.85rem] font-medium px-2.5 py-0.5 hover:text-gray-900 transition-colors'>{item.label}</Link>
+                ))}
+            </nav>
+
+            {/* option */}
+            <div className='flex items-center gap-2'>
+                <button
+                    onClick={handleToggleCartSidebar}
+                    className='p-1.5 hover:bg-slate-100 rounded-full group'>
+                    <ShoppingBag className='w-5 h-5 text-slate-600 group-hover:text-gray-800' />
+                </button>
+                <span className='p-1.5 hover:bg-gray-100 rounded-full group'>
+                    <Search className='w-5 h-5 text-gray-600 group-hover:text-gray-800' />
+                </span>
+                <div className='flex items-center space-x-1.5'>
+                    <span className='p-1.5 hover:bg-gray-100 rounded-full group'>
+                        <User className='w-5 h-5 text-gray-600 group-hover:text-gray-800' />
+                    </span>
+                    <p className='hover:text-gray-800 cursor-pointer'>{user.fullName}</p>
+                </div>
+            </div>
+        </header>
+    )
 }
 
 export default Navbar

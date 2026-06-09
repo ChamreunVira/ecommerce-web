@@ -25,6 +25,11 @@ class ProductService {
         });
         return response.data;
     }
+    
+    async filterPrice(minPrice: number , maxPrice: number): Promise<ApiResponse<Product[]>> {
+        const response = await http.get(`${this.endPoint}/?minPrice=${minPrice}&maxPrice=${maxPrice}`);
+        return response.data;
+    }
 
     async delete(id: number): Promise<ApiResponse<null>> {
         const response = await http.delete<ApiResponse<null>>(`${this.endPoint}/${id}`);

@@ -25,7 +25,7 @@ const HomeProduct = () => {
     const handleSelectCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const category = e.target.value;
       if(category === "") {
-        setFilterProducts(products);
+        setFilterProducts(products.slice(0 , 10));
         return;
       }
       const filter = products.filter((product) => product.categoryName === category);
@@ -62,7 +62,7 @@ const HomeProduct = () => {
             {filterProducts.length > 0 ? (
                 filterProducts.map((product: Product , i: number) => (<ProductCard key={i} product={product}/>))
             ) : (
-                products.map((product: Product , i) => (<ProductCard key={i} product={product}/>)) 
+                products.slice(0 , 10).map((product: Product , i) => (<ProductCard key={i} product={product}/>)) 
             )}
         </div>
         <button 

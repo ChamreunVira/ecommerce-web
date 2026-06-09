@@ -53,7 +53,7 @@ const Footer = () => {
         <div className='flex items-center justify-between space-x-8'>
             <div className='w-1/2 flex flex-col items-start justify-center'>
                 <Image
-                className='w-50'
+                className='w-30 py-4'
                 src={assets.brand}
                 alt='brand'
                 />

@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AppContextProvider } from "@/context/AppContext";
-import { ToastProvider } from "./ToastProvider";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,15 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AppContextProvider>
-      <html lang="en">
-        <body
-          className={`min-h-full antialiased text-gray-700 ${inter.className}`}
-        >
-          {children}
-          <ToastProvider />
-        </body>
-      </html>
-    </AppContextProvider>
+    <html lang="en">
+      <body className={`min-h-full antialiased text-gray-700 ${inter.className}`}>
+        {children}
+      </body>
+    </html>
   );
 }
