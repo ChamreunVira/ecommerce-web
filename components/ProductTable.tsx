@@ -21,30 +21,25 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
       header: "Image",
       key: "image",
       className: "w-28",
-      render: (value, product) => {
-        const imageList = product.images || product.image || [];
-        const imageFile = imageList?.length > 0 ? imageList[0] : null;
-
-        if (!imageFile) {
-          return (
-            <div className="w-15 h-15 bg-gray-100/50 rounded flex items-center justify-center text-[10px] text-gray-400">
-              No Image
-            </div>
-          );
-        }
-
-        const image = "http://localhost:8080/api/v1/uploads/" + imageFile;
-        return (
-          <Image
-            src={image}
-            alt={product.name || "Product"}
-            width={60}
-            height={60}
-            className="rounded object-cover"
-            unoptimized
-          />
-        );
-      },
+      render: (value, product) => (
+        <div className="relative w-20 h-20 rounded overflow-hidden">
+          {product.images.length > 0 && products.flatMap((img) => {
+            const images = product.images as string[];
+            console.log("Product Images:", images);
+            return images.map((img, i) => (
+              <Image
+                key={i}
+                src={`http://localhost:8080/api/v1/uploads/${img}`}
+                alt={product.name}
+                width={80}
+                height={80}
+                className={`object-cover absolute w-full h-full z-${1 + i} translate-x-${i * 10} translate-y-${i * 2} rounded`}
+                unoptimized
+              />
+            ));
+          })}
+        </div>
+      )
     },
     {
       header: "Category",

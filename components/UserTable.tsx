@@ -2,6 +2,7 @@ import React from 'react'
 import Table, { Column } from './Table';
 import { User } from '@/types/user';
 import { Edit, Trash } from 'lucide-react';
+import Profile from './Profile';
 
 type UserTableType = {
   users: User[];
@@ -14,6 +15,13 @@ const UserTable: React.FC<UserTableType> = ({ users, handleDelete }) => {
       header: "#",
       key: "id",
       className: "w-16",
+    },
+    {
+      header: "Avata",
+      key: 'fullName',
+      render: (_, item) => (
+        <Profile fullName={item.fullName} />
+      )
     },
     {
       header: "Name",

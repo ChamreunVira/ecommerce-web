@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppContext } from "@/context/AppContext";
 import { categoryService } from "@/services/category-service";
 import { productService } from "@/services/product-service";
 import { Category } from "@/types/category";
@@ -28,7 +29,8 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({
     qty: 0,
   });
   const [categoryData, setCategoryData] = useState<Category[]>([]);
-  const [images, setImages] = useState<any | null>(null);
+  const [images, setImages] = useState<File[] | null>(null);
+  const {user} = useAppContext();
 
 
   const handleSubmitProduct = async (e: React.SubmitEvent) => {
@@ -49,7 +51,7 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({
 
     form.append("qty", String(productData.qty));
 
-    form.append("userId", "1");
+    form.append("userId", String(user.id));
 
     if (images) {
       for (let i = 0; i < images.length; i++) {
@@ -191,6 +193,14 @@ const CreateProductModal: React.FC<CreateProductModalType> = ({
           </div>
 
           <div className="mb-4">
+            <div className="p-2">
+              <p>Preview Image: </p>
+                <div className="flex gap-2.5 py-2">
+                  {images && [...images].map((img) => (
+                    <img key={img.name} src={URL.createObjectURL(img)} alt="Preview" className="w-32 h-32 object-cover" />
+                  ))}
+                </div>
+            </div>
             <label className="text-sm text-gray-800">Images</label>
             <input
               type="file"
