@@ -21,49 +21,54 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
       header: "Image",
       key: "image",
       className: "w-28",
-      render: (value, product) => (
-        <div className="relative w-20 h-20 rounded overflow-hidden">
-          {product.images.length > 0 && products.flatMap((img) => {
-            const images = product.images as string[];
-            console.log("Product Images:", images);
-            return images.map((img, i) => (
+      render: (value, product) => {
+        const images = (product.images as string[]) || [];
+
+        return (
+          <div className="relative w-16 h-16">
+            {images.slice(0, 3).map((img, i) => (
               <Image
                 key={i}
                 src={`http://localhost:8080/api/v1/uploads/${img}`}
                 alt={product.name}
-                width={80}
-                height={80}
-                className={`object-cover absolute w-full h-full z-${1 + i} translate-x-${i * 10} translate-y-${i * 2} rounded`}
+                width={64}
+                height={64}
+                className="absolute top-0 left-0 object-cover w-full h-full rounded border border-white shadow-sm transition-transform duration-200 hover:translate-y-1"
                 unoptimized
+                style={{
+                  zIndex: 10 - i,
+                  transform: `translate(${i * 6}px, ${i * 6}px)`,
+                }}
               />
-            ));
-          })}
-        </div>
-      )
+            ))}
+          </div>
+        );
+      }
     },
     {
       header: "Category",
       key: "categoryName",
+      render: (value) => <p className="text-sm text-gray-500">{value}</p>,
     },
     {
       header: "Name",
       key: "name",
-      className: "font-medium",
+      render: (value) => <p className="font-medium">{value}</p>,
     },
     {
       header: "Description",
       key: "description",
-      className: "max-w-xs truncate",
+      render: (value) => <p className="text-sm text-gray-500">{value}</p>,
     },
     {
       header: "Price",
       key: "price",
-      render: (value) => `$${value}`,
+      render: (value) => (<p className="text-emerald-500 font-medium">${value.toFixed(2)}</p>),
     },
     {
       header: "Discount",
       key: "discount",
-      render: (value) => `${value}%`,
+      render: (value) => (<p className="text-rose-500 font-medium">{value}%</p>),
     },
     {
       header: "Created At",
