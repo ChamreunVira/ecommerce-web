@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-// Table Component
+// Wrapper Table & Table Component
 interface TableProps {
   children: ReactNode;
   className?: string;
@@ -16,6 +16,8 @@ export const Table: React.FC<TableProps> = ({ children, className = "" }) => {
   );
 };
 
+
+// Table Head Components
 interface TheadProps {
   children: ReactNode;
   className?: string;
@@ -30,6 +32,7 @@ export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => {
 };
 
 
+// Table Heading, Body, Cell Components
 interface THeadingProps {
   children: ReactNode;
   className?: string;
@@ -48,6 +51,8 @@ export const THeading: React.FC<THeadingProps> = ({
   );
 };
 
+
+// Table Body & Cell Components
 interface TBodyProps {
   children: ReactNode;
   className?: string;
@@ -57,6 +62,7 @@ export const TBody: React.FC<TBodyProps> = ({ children, className = "" }) => {
   return <tbody className={className}>{children}</tbody>;
 };
 
+// Table Cell Component
 interface TCellProps {
   children: ReactNode;
   className?: string;
@@ -66,6 +72,7 @@ export const TCell: React.FC<TCellProps> = ({ children, className = "" }) => {
   return <td className={`px-4 py-3 text-gray-600 ${className}`}>{children}</td>;
 };
 
+// Column Type for Dynamic Table
 export type Column<T> = {
   header: string;
   key: keyof T;
@@ -73,6 +80,8 @@ export type Column<T> = {
   className?: string;
 };
 
+
+// Main Table Component Dynamic for map data and column
 type LegacyTableProps<T> = {
   data: T[];
   columns: Column<T>[];

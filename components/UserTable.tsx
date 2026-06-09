@@ -1,35 +1,35 @@
 import React from 'react'
-import Table, { Column} from './Table';
+import Table, { Column } from './Table';
 import { User } from '@/types/user';
 import { Edit, Trash } from 'lucide-react';
 
 type UserTableType = {
-    users: User[];
-    handleDelete: (id: number) => void;
+  users: User[];
+  handleDelete: (id: number) => void;
 }
 
-const UserTable: React.FC<UserTableType> = ({users, handleDelete}) => {
-    const columns: Column<User & {actions: string} | any>[] = [
+const UserTable: React.FC<UserTableType> = ({ users, handleDelete }) => {
+  const columns: Column<User & { actions: string } | any>[] = [
     {
       header: "#",
       key: "id",
       className: "w-16",
     },
     {
-        header: "Name",
-        key: "fullName"
+      header: "Name",
+      key: "fullName"
     },
     {
-        header: "Email",
-        key: "email"
+      header: "Email",
+      key: "email"
     },
     {
-        header: "Roles",
-        key: "roles"
+      header: "Roles",
+      key: "roles"
     },
     {
-        header: "UpdatedAt",
-        key: "updatedAt"
+      header: "UpdatedAt",
+      key: "updatedAt"
     },
     {
       header: "Actions",

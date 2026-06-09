@@ -24,7 +24,7 @@ export default function AdminLayout({
           active={isActive("/admin/dashboard")}
           path="/admin/dashboard"
         />
-        <SidebarItem
+        <SidebarItem  
           icon={<User />}
           label="Users"
           active={isActive("/admin/user")}

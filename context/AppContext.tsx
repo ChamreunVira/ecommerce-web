@@ -25,7 +25,11 @@ type AppContextType = {
 export const AppContext = createContext<AppContextType | any>(null);
 
 export const useAppContext = (): AppContextType => {
-  return useContext(AppContext);
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useAppContext must be used within an AppContextProvider");
+  }
+  return context;
 };
 
 export const AppContextProvider = ({
