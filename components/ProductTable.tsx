@@ -11,11 +11,12 @@ interface ProductTableProps {
 }
 
 const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) => {
-  const columns: Column<Product | any>[] = [
+  const columns: Column<Product>[] = [
     {
       header: "#",
       key: "id",
       className: "w-16",
+      cellClassName: "font-semibold text-slate-800",
     },
     {
       header: "Image",
@@ -25,22 +26,26 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
         const images = (product.images as string[]) || [];
 
         return (
-          <div className="relative w-16 h-16">
-            {images.slice(0, 3).map((img, i) => (
+          <div className="relative h-14 w-16">
+            {images.length > 0 ? images.slice(0, 3).map((img, i) => (
               <Image
                 key={i}
                 src={`http://localhost:8080/api/v1/uploads/${img}`}
                 alt={product.name}
                 width={64}
                 height={64}
-                className="absolute top-0 left-0 object-cover w-full h-full rounded border border-white shadow-sm transition-transform duration-200 hover:translate-y-1"
+                className="absolute left-0 top-0 h-12 w-12 rounded-lg border border-white object-cover shadow-sm"
                 unoptimized
                 style={{
                   zIndex: 10 - i,
                   transform: `translate(${i * 6}px, ${i * 6}px)`,
                 }}
               />
-            ))}
+            )) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400">
+                No img
+              </div>
+            )}
           </div>
         );
       }
@@ -48,48 +53,49 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
     {
       header: "Category",
       key: "categoryName",
-      render: (value) => <p className="text-sm text-gray-500">{value}</p>,
+      render: (value) => <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{String(value)}</span>,
     },
     {
       header: "Name",
       key: "name",
-      render: (value) => <p className="font-medium">{value}</p>,
+      render: (value) => <p className="max-w-48 truncate font-semibold text-slate-900">{String(value)}</p>,
     },
     {
       header: "Description",
       key: "description",
-      render: (value) => <p className="text-sm text-gray-500">{value}</p>,
+      render: (value) => <p className="max-w-xs truncate text-sm text-slate-500">{String(value)}</p>,
     },
     {
       header: "Price",
       key: "price",
-      render: (value) => (<p className="text-emerald-500 font-medium">${value.toFixed(2)}</p>),
+      render: (value) => (<p className="font-semibold text-emerald-600">${Number(value).toFixed(2)}</p>),
     },
     {
       header: "Discount",
       key: "discount",
-      render: (value) => (<p className="text-rose-500 font-medium">{value}%</p>),
+      render: (value) => (<p className="font-semibold text-rose-600">{Number(value)}%</p>),
     },
     {
-      header: "Created At",
-      key: "createdAt",
-    },
-    {
-      header: "Updated At",
+      header: "Updated",
       key: "updatedAt",
+      render: (value) => formatDate(value),
     },
     {
       header: "Actions",
       key: "actions",
+      className: "w-28 text-right",
+      cellClassName: "text-right",
       render: (_, item) => (
-        <div className="flex items-center gap-2">
-          <button className="p-1.5 text-amber-500 rounded-full hover:bg-amber-100">
-            <Edit className="w-4.5 h-4.5" />
+        <div className="flex items-center justify-end gap-2">
+          <button className="rounded-full p-2 text-amber-600 transition hover:bg-amber-50" aria-label="Edit product">
+            <Edit size={17} />
           </button>
           <button
-            onClick={() => handleDelete(item.id)}
-            className="text-rose-500 p-1.5 rounded-full hover:bg-rose-100">
-            <Trash className="w-4.5 h-4.5" />
+            onClick={() => handleDelete(Number(item.id))}
+            className="rounded-full p-2 text-rose-600 transition hover:bg-rose-50"
+            aria-label="Delete product"
+          >
+            <Trash size={17} />
           </button>
         </div>
       ),
@@ -100,3 +106,8 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
 };
 
 export default ProductTable;
+
+function formatDate(value: unknown) {
+  if (!value) return <span className="text-slate-400">-</span>;
+  return <span className="text-sm text-slate-500">{new Date(value as string).toLocaleDateString()}</span>;
+}

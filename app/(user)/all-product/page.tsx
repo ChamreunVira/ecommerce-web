@@ -53,8 +53,16 @@ const AllProduct = () => {
     setSearchTerm("");
   };
 
+  const handleFetchProduct = () => {
+    if(filterProducts.length === 0) {
+      setFilterProducts(products);
+    }else {
+      handleFilterProducts();
+    }
+  }
+
   useEffect(() => {
-    const timer = setTimeout(handleFilterProducts, 500);
+    const timer = setTimeout(handleFetchProduct, 500);
     return () => clearTimeout(timer);
   }, [priceRange, selectedCategory, searchTerm]);
 

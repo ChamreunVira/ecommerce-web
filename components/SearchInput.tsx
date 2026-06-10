@@ -16,9 +16,15 @@ const SearchInput = (props: SearchInputType) => {
     props.onInputChange(value);
   }
   return (
-    <div className='relative w-full max-w-sm'>
-        <Search className='absolute top-1/2 left-2 -translate-y-1/2 text-gray-400' />
-        <input type="text" className={`${props.className} px-10 py-2 rounded-md outline-1 -outline-offset-2 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-orange-500`} placeholder='Search...' value={inputValue} onChange={handleSearch}/>
+    <div className="relative w-full max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <input
+          type="text"
+          className={`${props.className || ""} w-full rounded-lg border border-slate-200 bg-white px-10 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100`}
+          placeholder="Search..."
+          value={inputValue}
+          onChange={handleSearch}
+        />
     </div>
   )
 }

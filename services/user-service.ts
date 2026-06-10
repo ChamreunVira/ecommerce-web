@@ -16,6 +16,11 @@ class UserService {
         return response.data;
     }
 
+    async create(req: Partial<User>): Promise<ApiResponse<User[]>> {
+        const response = await http.post<ApiResponse<User[]>>(`/auth/sign-up` , req);
+        return response.data;
+    }
+
     async delete(id: number): Promise<ApiResponse<null>> {
         const response = await http.delete<ApiResponse<null>>(`${this.endPoint}/${id}`);
         return response.data;

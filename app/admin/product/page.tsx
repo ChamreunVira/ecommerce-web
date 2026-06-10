@@ -4,14 +4,13 @@ import ProductTable from "@/components/ProductTable";
 import SearchInput from "@/components/SearchInput";
 import { productService } from "@/services/product-service";
 import { Product } from "@/types/product";
-import { Plus, ShoppingBag } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const ProductAdminPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [search, setSearch] = useState<string>("");
   const [categories, setCategoies] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -25,8 +24,8 @@ const ProductAdminPage = () => {
         setCategoies([...new Set(existsCategory)]);
         setProducts(response.data);
       }
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -41,8 +40,8 @@ const ProductAdminPage = () => {
         toast.success("Product deleted successfully");
         handleFetchProduct();
       }
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -57,47 +56,66 @@ const ProductAdminPage = () => {
   };
 
   useEffect(() => {
-    handleFetchProduct();
-    return () => new AbortController().abort();
+    const fetchInitialProducts = async () => {
+      try {
+        const response = await productService.getAll();
+        if (response.success) {
+          const existsCategory = response.data.map(
+            (product) => product.categoryName
+          );
+          setCategoies([...new Set(existsCategory)]);
+          setProducts(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchInitialProducts();
   }, []);
 
   return (
-    <section className="relative h-full overflow-x-hidden p-12">
+    <section className="min-h-full px-6 py-8 md:px-10 lg:px-12">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <p className="text-sm font-medium text-orange-600">Inventory</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-950">Products</h1>
+            <p className="mt-2 text-sm text-slate-500">Manage product catalog, pricing, discount, and stock levels.</p>
+          </div>
 
-      {/* To label */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="flex items-center text-2xl text-gray-800 font-medium leading-12">Product</h1>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+          >
+            <Plus size={18} />
+            Create product
+          </button>
+        </div>
 
-        <button
-          onClick={() => setIsModalOpen(!isModalOpen)}
-          className="flex items-center px-6 py-2 bg-orange-500 rounded-md text-white"
-        >
-          <span className="mr-2">
-            <Plus />
-          </span>
-          Create
-        </button>
+        <div className="flex flex-col gap-3 rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200 md:flex-row md:items-center">
+          <SearchInput onInputChange={handleSearchByName} />
+
+          <select
+            onChange={(e) => {
+              if (!e.target.value) {
+                setFilteredProducts([]);
+                return;
+              }
+              handleFilterByCategory(e.target.value);
+            }}
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 md:w-56">
+            <option value="">All categories</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <ProductTable products={filteredProducts.length > 0 ? filteredProducts : products} handleDelete={handleDelete} />
       </div>
-
-      {/* search & filter */}
-      <div className="flex items-center space-x-2 mb-8">
-       
-        <SearchInput onInputChange={handleSearchByName} />
-        
-        <select
-          onChange={(e) => handleFilterByCategory(e.target.value)}
-          className="px-3 py-1.5 rounded-md border border-gray-300">
-          <option value="">All Categories</option>
-          {categories.map((category, i) => (
-            <option key={i} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* list data */}
-      <ProductTable products={filteredProducts.length > 0 ? filteredProducts : products} handleDelete={handleDelete} />
 
       {/* modal */}
       {isModalOpen && (

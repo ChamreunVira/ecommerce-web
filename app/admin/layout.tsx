@@ -1,7 +1,7 @@
 "use client";
 import AdminNavbar from "@/components/AdminNavbar";
 import Sidbar, { SidebarItem } from "@/components/Sidbar";
-import { Box, Compass, LayoutDashboard, List, ListOrdered, Settings, ShoppingBag, ShoppingCart, User, Users } from "lucide-react";
+import { Box, LayoutDashboard, ListOrdered, Settings, ShoppingCart, Users } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -16,7 +16,7 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden bg-slate-50">
       <Sidbar>
         <SidebarItem
           icon={<LayoutDashboard />}
@@ -56,9 +56,9 @@ export default function AdminLayout({
           path="/admin/setting"
         />
       </Sidbar>
-      <main className="flex-1 flex flex-col bg-white">
+      <main className="flex min-w-0 flex-1 flex-col bg-slate-50">
         <AdminNavbar />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
       </main>
     </div>
   );

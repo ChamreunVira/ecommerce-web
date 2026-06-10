@@ -1,9 +1,459 @@
-import React from 'react'
+import Link from "next/link";
+import type { ReactNode } from "react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  BadgeDollarSign,
+  Boxes,
+  Clock3,
+  CreditCard,
+  PackagePlus,
+  ShoppingCart,
+  Star,
+  Truck,
+  UserPlus,
+  Users,
+  WalletCards,
+} from "lucide-react";
 
-const DashboardPage = () => {
-  return (
-    <div>DashboardPage</div>
-  )
+type StatCard = {
+  label: string;
+  value: string;
+  change: string;
+  trend: "up" | "down";
+  caption: string;
+  icon: ReactNode;
+  accent: string;
+};
+
+type RevenuePoint = {
+  month: string;
+  revenue: number;
+  orders: number;
+};
+
+type QuickAction = {
+  label: string;
+  description: string;
+  href: string;
+  icon: ReactNode;
+};
+
+type RecentOrder = {
+  id: string;
+  customer: string;
+  total: string;
+  status: "Paid" | "Pending" | "Shipping";
+  date: string;
+};
+
+const stats: StatCard[] = [
+  {
+    label: "Total revenue",
+    value: "$128,430",
+    change: "+12.8%",
+    trend: "up",
+    caption: "vs. last month",
+    icon: <BadgeDollarSign size={22} />,
+    accent: "bg-orange-50 text-orange-600 ring-orange-100",
+  },
+  {
+    label: "Orders",
+    value: "2,846",
+    change: "+8.2%",
+    trend: "up",
+    caption: "412 ready to ship",
+    icon: <ShoppingCart size={22} />,
+    accent: "bg-sky-50 text-sky-600 ring-sky-100",
+  },
+  {
+    label: "Customers",
+    value: "18,920",
+    change: "+5.4%",
+    trend: "up",
+    caption: "new and returning",
+    icon: <Users size={22} />,
+    accent: "bg-emerald-50 text-emerald-600 ring-emerald-100",
+  },
+  {
+    label: "Low stock",
+    value: "24",
+    change: "-3.1%",
+    trend: "down",
+    caption: "items need attention",
+    icon: <Boxes size={22} />,
+    accent: "bg-rose-50 text-rose-600 ring-rose-100",
+  },
+];
+
+const revenueData: RevenuePoint[] = [
+  { month: "Jan", revenue: 26000, orders: 310 },
+  { month: "Feb", revenue: 31500, orders: 358 },
+  { month: "Mar", revenue: 28400, orders: 331 },
+  { month: "Apr", revenue: 40200, orders: 442 },
+  { month: "May", revenue: 45600, orders: 490 },
+  { month: "Jun", revenue: 52100, orders: 548 },
+  { month: "Jul", revenue: 48800, orders: 519 },
+  { month: "Aug", revenue: 61200, orders: 636 },
+];
+
+const topCategories = [
+  { name: "Headphones", value: 68, revenue: "$32.4k", color: "bg-orange-500" },
+  { name: "Gaming", value: 56, revenue: "$24.8k", color: "bg-sky-500" },
+  { name: "Laptops", value: 49, revenue: "$21.7k", color: "bg-emerald-500" },
+  { name: "Smartphones", value: 42, revenue: "$18.6k", color: "bg-violet-500" },
+];
+
+const quickActions: QuickAction[] = [
+  {
+    label: "Add product",
+    description: "Create inventory item",
+    href: "/admin/product",
+    icon: <PackagePlus size={20} />,
+  },
+  {
+    label: "Review orders",
+    description: "Open pending sales",
+    href: "/admin/order",
+    icon: <Truck size={20} />,
+  },
+  {
+    label: "Add customer",
+    description: "Create user account",
+    href: "/admin/user",
+    icon: <UserPlus size={20} />,
+  },
+  {
+    label: "Store settings",
+    description: "Payment and profile",
+    href: "/admin/setting",
+    icon: <WalletCards size={20} />,
+  },
+];
+
+const recentOrders: RecentOrder[] = [
+  { id: "#ORD-1048", customer: "Nara Sok", total: "$482.00", status: "Paid", date: "Today" },
+  { id: "#ORD-1047", customer: "Lina Chan", total: "$129.00", status: "Shipping", date: "Today" },
+  { id: "#ORD-1046", customer: "Vireak Kim", total: "$2,240.00", status: "Pending", date: "Yesterday" },
+  { id: "#ORD-1045", customer: "Malis Yim", total: "$374.00", status: "Paid", date: "Yesterday" },
+];
+
+const statusStyles: Record<RecentOrder["status"], string> = {
+  Paid: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  Pending: "bg-amber-50 text-amber-700 ring-amber-100",
+  Shipping: "bg-sky-50 text-sky-700 ring-sky-100",
+};
+
+function formatCompactCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
 }
 
-export default DashboardPage
+function buildChartPoints(data: RevenuePoint[]) {
+  const width = 640;
+  const height = 230;
+  const padding = 18;
+  const values = data.map((item) => item.revenue);
+  const min = Math.min(...values) * 0.86;
+  const max = Math.max(...values) * 1.08;
+  const stepX = (width - padding * 2) / (data.length - 1);
+
+  const points = data.map((item, index) => {
+    const x = padding + index * stepX;
+    const y =
+      height -
+      padding -
+      ((item.revenue - min) / (max - min)) * (height - padding * 2);
+    return { ...item, x, y };
+  });
+
+  return {
+    width,
+    height,
+    points,
+    linePath: points.map((point) => `${point.x},${point.y}`).join(" "),
+    areaPath: `${padding},${height - padding} ${points
+      .map((point) => `${point.x},${point.y}`)
+      .join(" ")} ${width - padding},${height - padding}`,
+  };
+}
+
+export default function DashboardPage() {
+  const chart = buildChartPoints(revenueData);
+  const highestRevenue = revenueData.reduce((best, item) =>
+    item.revenue > best.revenue ? item : best
+  );
+
+  return (
+    <section className="min-h-full bg-slate-50 px-6 py-8 text-slate-900 md:px-10 lg:px-12">
+      <div className="mx-auto flex max-w-7xl flex-col gap-8">
+        <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
+          <div>
+            <p className="text-sm font-medium text-orange-600">Overview</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-normal text-slate-950">
+              Ecommerce performance
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+              Mock analytics for revenue, orders, customers, inventory, and daily operations.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:flex">
+            <Link
+              href="/admin/product"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800"
+            >
+              <PackagePlus size={18} />
+              New product
+            </Link>
+            <Link
+              href="/admin/order"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-100"
+            >
+              <Clock3 size={18} />
+              Pending orders
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {stats.map((item) => {
+            const TrendIcon = item.trend === "up" ? ArrowUpRight : ArrowDownRight;
+            const trendClass = item.trend === "up" ? "text-emerald-600" : "text-rose-600";
+
+            return (
+              <article
+                key={item.label}
+                className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className={`rounded-lg p-2.5 ring-1 ${item.accent}`}>{item.icon}</div>
+                  <span className={`inline-flex items-center gap-1 text-sm font-semibold ${trendClass}`}>
+                    <TrendIcon size={16} />
+                    {item.change}
+                  </span>
+                </div>
+                <div className="mt-5">
+                  <p className="text-sm font-medium text-slate-500">{item.label}</p>
+                  <h3 className="mt-2 text-3xl font-semibold text-slate-950">{item.value}</h3>
+                  <p className="mt-1 text-sm text-slate-500">{item.caption}</p>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.9fr)]">
+          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-950">Revenue trend</h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Monthly revenue with order volume for the current sales period.
+                </p>
+              </div>
+              <div className="rounded-lg bg-slate-50 px-4 py-3 ring-1 ring-slate-200">
+                <p className="text-xs font-medium uppercase text-slate-500">Best month</p>
+                <p className="mt-1 text-sm font-semibold text-slate-950">
+                  {highestRevenue.month} · {formatCompactCurrency(highestRevenue.revenue)}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 overflow-hidden">
+              <svg
+                viewBox={`0 0 ${chart.width} ${chart.height}`}
+                className="h-72 w-full"
+                role="img"
+                aria-label="Revenue chart by month"
+              >
+                <defs>
+                  <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stopColor="#f97316" stopOpacity="0.26" />
+                    <stop offset="100%" stopColor="#f97316" stopOpacity="0.02" />
+                  </linearGradient>
+                </defs>
+                {[0, 1, 2, 3].map((line) => {
+                  const y = 26 + line * 48;
+                  return (
+                    <line
+                      key={line}
+                      x1="18"
+                      x2="622"
+                      y1={y}
+                      y2={y}
+                      stroke="#e2e8f0"
+                      strokeDasharray="5 5"
+                      strokeWidth="1"
+                    />
+                  );
+                })}
+                <polygon points={chart.areaPath} fill="url(#revenueFill)" />
+                <polyline
+                  points={chart.linePath}
+                  fill="none"
+                  stroke="#f97316"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="4"
+                />
+                {chart.points.map((point) => (
+                  <g key={point.month}>
+                    <circle cx={point.x} cy={point.y} r="5" fill="#ffffff" stroke="#f97316" strokeWidth="3" />
+                    <text x={point.x} y="224" textAnchor="middle" className="fill-slate-500 text-[11px] font-medium">
+                      {point.month}
+                    </text>
+                  </g>
+                ))}
+              </svg>
+            </div>
+
+            <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3">
+              <div>
+                <p className="text-sm text-slate-500">Average revenue</p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">$43.0k</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Total orders</p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">3,634</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-500">Conversion rate</p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">6.8%</p>
+              </div>
+            </div>
+          </article>
+
+          <div className="grid gap-6">
+            <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-950">Top categories</h3>
+                  <p className="mt-1 text-sm text-slate-500">Revenue share this month</p>
+                </div>
+                <Star className="text-amber-500" size={22} />
+              </div>
+              <div className="mt-6 space-y-5">
+                {topCategories.map((category) => (
+                  <div key={category.name}>
+                    <div className="mb-2 flex items-center justify-between text-sm">
+                      <span className="font-medium text-slate-700">{category.name}</span>
+                      <span className="font-semibold text-slate-950">{category.revenue}</span>
+                    </div>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className={`h-full rounded-full ${category.color}`}
+                        style={{ width: `${category.value}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-lg bg-slate-950 p-5 text-white shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold">Payment summary</h3>
+                  <p className="mt-1 text-sm text-slate-300">Ready to settle with providers</p>
+                </div>
+                <CreditCard className="text-orange-400" size={24} />
+              </div>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="rounded-lg bg-white/10 p-4">
+                  <p className="text-sm text-slate-300">Collected</p>
+                  <p className="mt-2 text-2xl font-semibold">$42.8k</p>
+                </div>
+                <div className="rounded-lg bg-white/10 p-4">
+                  <p className="text-sm text-slate-300">Refunds</p>
+                  <p className="mt-2 text-2xl font-semibold">$1.2k</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[minmax(340px,0.85fr)_minmax(0,1.15fr)]">
+          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+            <h3 className="text-lg font-semibold text-slate-950">Quick actions</h3>
+            <p className="mt-1 text-sm text-slate-500">Common admin tasks for daily operations.</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+              {quickActions.map((action) => (
+                <Link
+                  key={action.label}
+                  href={action.href}
+                  className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/60"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-orange-500 group-hover:text-white">
+                    {action.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold text-slate-900">{action.label}</span>
+                    <span className="mt-0.5 block text-sm text-slate-500">{action.description}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-950">Recent orders</h3>
+                <p className="mt-1 text-sm text-slate-500">Latest customer purchases and payment state.</p>
+              </div>
+              <Link href="/admin/order" className="text-sm font-semibold text-orange-600 hover:text-orange-700">
+                View all
+              </Link>
+            </div>
+
+            <div className="mt-5 overflow-hidden rounded-lg border border-slate-200">
+              <div className="hidden grid-cols-[1fr_1fr_0.8fr_0.8fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500 md:grid">
+                <span>Order</span>
+                <span>Customer</span>
+                <span>Total</span>
+                <span>Status</span>
+              </div>
+              {recentOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
+                >
+                  <div className="flex items-start justify-between gap-3 md:block">
+                    <div>
+                      <p className="font-semibold text-slate-900">{order.id}</p>
+                      <p className="mt-0.5 text-xs text-slate-500">{order.date}</p>
+                    </div>
+                    <span
+                      className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:hidden ${statusStyles[order.status]}`}
+                    >
+                      {order.status}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 md:contents">
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">Customer</p>
+                      <p className="truncate font-medium text-slate-700">{order.customer}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">Total</p>
+                      <p className="font-semibold text-slate-950">{order.total}</p>
+                    </div>
+                  </div>
+                  <span
+                    className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:inline-flex ${statusStyles[order.status]}`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  );
+}

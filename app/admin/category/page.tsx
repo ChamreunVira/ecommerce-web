@@ -2,23 +2,25 @@
 import CategoryTable from "@/components/CategoryTable";
 import CreateCategoryModal from "@/components/CreateCategoryModal";
 import SearchInput from "@/components/SearchInput";
+import UpdateCategoryModal from "@/components/UpdateCategoryModal";
 import { categoryService } from "@/services/category-service";
 import { Category } from "@/types/category";
-import { List, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const CategoryAdminPage = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
 
   const handleFetchCategory = async () => {
     try {
       const response = await categoryService.getAll();
       setCategories(response.data);
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -34,9 +36,9 @@ const CategoryAdminPage = () => {
         toast.success("Category deleted successfully.");
         handleFetchCategory();
       }
-    } catch (e: any) {
+    } catch (error) {
       toast.error("Failare to deleted category.")
-      console.log(e.message);
+      console.error(error);
     }
   }
 
@@ -46,38 +48,61 @@ const CategoryAdminPage = () => {
   }
 
   useEffect(() => {
-    handleFetchCategory();
-    return () => new AbortController().abort();
+    const fetchInitialCategories = async () => {
+      try {
+        const response = await categoryService.getAll();
+        setCategories(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchInitialCategories();
   }, []);
 
   return (
-    <section className="relative h-full overflow-x-hidden p-12">
+    <section className="min-h-full px-6 py-8 md:px-10 lg:px-12">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <p className="text-sm font-medium text-orange-600">Catalog</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-950">Categories</h1>
+            <p className="mt-2 text-sm text-slate-500">Create, search, edit, and organize product categories.</p>
+          </div>
 
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="flex items-center text-2xl text-gray-800 font-medium leading-12">Product</h1>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+          >
+            <Plus size={18} />
+            Create category
+          </button>
+        </div>
 
-        <button
-          onClick={() => setIsModalOpen(!isModalOpen)}
-          className="flex items-center px-6 py-2 bg-orange-500 rounded-md text-white"
-        >
-          <span className="mr-2">
-            <Plus />
-          </span>
-          Create
-        </button>
+        <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
+          <SearchInput onInputChange={handleSearchByName} />
+        </div>
+
+        <CategoryTable
+          categories={filteredCategories.length > 0 ? filteredCategories : categories}
+          handleDelete={handleDeleteByCategory}
+          handleEdit={setEditingCategory}
+        />
       </div>
-
-      <div className="flex items-center space-x-2 mb-8">
-        <SearchInput onInputChange={handleSearchByName} />
-      </div>
-      
-      <CategoryTable categories={filteredCategories.length > 0 ? filteredCategories : categories} handleDelete={handleDeleteByCategory} />
 
       {isModalOpen && (
         <CreateCategoryModal
           handleClose={handleCallbackFromModal}
         />
       )}
+
+      {editingCategory ? (
+        <UpdateCategoryModal
+          category={editingCategory}
+          onClose={() => setEditingCategory(null)}
+          onUpdated={handleFetchCategory}
+        />
+      ) : null}
 
     </section>
   );

@@ -1,10 +1,8 @@
-import React from 'react'
-import Table, { Column } from './Table';
-import { User } from '@/types/user';
-import { Edit, Trash } from 'lucide-react';
-import { Order } from '@/types/order';
-import Image from 'next/image';
-import { OrderStatus } from '@/constant/constant';
+import React from "react";
+import Table, { Column } from "./Table";
+import { Edit, Trash } from "lucide-react";
+import { Order } from "@/types/order";
+import Image from "next/image";
 
 type OrderTableType = {
   order: Order[];
@@ -12,85 +10,88 @@ type OrderTableType = {
 }
 
 const OrderTable: React.FC<OrderTableType> = ({ order, handleDelete }) => {
-  const columns: Column<Order & { actions: string } | any>[] = [
+  const columns: Column<Order>[] = [
     {
       header: "#",
       key: "orderId",
       className: "w-16",
+      cellClassName: "font-semibold text-slate-800",
     },
     {
       header: "Image",
       key: "image",
       className: "w-28",
-      render: (value, order) => {
-
-        const image = order.primaryImage;
+      render: (_, item) => {
+        const firstItem = item.orderItems?.[0];
+        const image = firstItem?.imageUrl;
 
         if (!image) {
           return (
-            <div className="w-15 h-15 bg-gray-100/50 rounded flex items-center justify-center text-[10px] text-gray-400">
-              No Image
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400">
+              No img
             </div>
           );
         }
 
-        const imageSrc = "http://localhost:8080/api/v1/uploads/" + image;
+        const imageSrc = image.startsWith("http") ? image : `http://localhost:8080/api/v1/uploads/${image}`;
         return (
           <Image
             src={imageSrc}
-            alt={order.name || "Product"}
-            width={60}
-            height={60}
-            className="rounded object-cover"
+            alt={firstItem.productName || "Product"}
+            width={48}
+            height={48}
+            className="h-12 w-12 rounded-lg object-cover"
             unoptimized
           />
         );
       },
     },
     {
-      header: "OrderCode",
-      key: "orderCode"
+      header: "Order code",
+      key: "orderCode",
+      render: (value) => <span className="font-semibold text-slate-900">{String(value)}</span>,
     },
     {
-      header: "OrderStatus",
+      header: "Status",
       key: "status",
-      render: (value , order: Order) => {
-        console.log(order.status , OrderStatus.PENDING_PAYMENT ,order.status === "PENDING_PAYMENT")
-        return (
-          <div className='text-slate-800'>
-            {order.status == "PENDING_PAYMENT" ? <button className='px-2 py-0.5 text-xs bg-amber-200 rounded-sm text-amber-600'>PENDING</button> : ""}
-          </div>
-        )
-      }
+      render: (value) => <OrderStatusBadge status={String(value)} />,
     },
     {
-      header: "PaymentMethod",
-      key: "paymentMethod"
+      header: "Payment",
+      key: "paymentMethod",
+      render: (value) => <span className="text-sm text-slate-600">{String(value).replaceAll("_", " ")}</span>,
     },
     {
-      header: "TotalItems",
-      key: "totalItems"
+      header: "Items",
+      key: "orderItems",
+      render: (_, item) => <span className="font-medium text-slate-700">{item.orderItems?.length || 0}</span>,
     },
     {
-      header: "TotalAmount",
-      key: "totalAmount"
+      header: "Total",
+      key: "totalAmount",
+      render: (value) => <span className="font-semibold text-emerald-600">${Number(value).toFixed(2)}</span>,
     },
     {
-      header: "CreatedAt",
-      key: "createdAt"
+      header: "Created",
+      key: "createdAt",
+      render: (value) => formatDate(value),
     },
     {
       header: "Actions",
       key: "actions",
+      className: "w-28 text-right",
+      cellClassName: "text-right",
       render: (_, item) => (
-        <div className="flex items-center gap-2">
-          <button className="p-1.5 text-amber-500 rounded-full hover:bg-amber-100">
-            <Edit className="w-4.5 h-4.5" />
+        <div className="flex items-center justify-end gap-2">
+          <button className="rounded-full p-2 text-amber-600 transition hover:bg-amber-50" aria-label="Edit order">
+            <Edit size={17} />
           </button>
           <button
             onClick={() => handleDelete(item.orderId)}
-            className="text-rose-500 p-1.5 rounded-full hover:bg-rose-100">
-            <Trash className="w-4.5 h-4.5" />
+            className="rounded-full p-2 text-rose-600 transition hover:bg-rose-50"
+            aria-label="Delete order"
+          >
+            <Trash size={17} />
           </button>
         </div>
       ),
@@ -101,3 +102,27 @@ const OrderTable: React.FC<OrderTableType> = ({ order, handleDelete }) => {
 }
 
 export default OrderTable;
+
+function OrderStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    PENDING_PAYMENT: "bg-amber-50 text-amber-700 ring-amber-100",
+    PENDING: "bg-amber-50 text-amber-700 ring-amber-100",
+    PROCESSING: "bg-sky-50 text-sky-700 ring-sky-100",
+    PRESESSING: "bg-sky-50 text-sky-700 ring-sky-100",
+    SHIPPED: "bg-indigo-50 text-indigo-700 ring-indigo-100",
+    DELIVERED: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+    CANCELLED: "bg-rose-50 text-rose-700 ring-rose-100",
+    REFUNDED: "bg-slate-100 text-slate-700 ring-slate-200",
+  };
+
+  return (
+    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${styles[status] || styles.PENDING}`}>
+      {status.replaceAll("_", " ")}
+    </span>
+  );
+}
+
+function formatDate(value: unknown) {
+  if (!value) return <span className="text-slate-400">-</span>;
+  return <span className="text-sm text-slate-500">{new Date(value as string).toLocaleDateString()}</span>;
+}
