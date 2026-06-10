@@ -9,7 +9,7 @@ const AdminNavbar = () => {
   const { user, router } = useAppContext();
 
   return (
-    <header className="sticky top-0 z-40 flex min-h-20 items-center justify-between gap-5 border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur md:px-10 lg:px-12">
+    <header className="sticky top-0 z-40 flex min-h-20 items-center justify-between gap-5 px-6 py-4 backdrop-blur md:px-10 lg:px-12">
       <div className="min-w-0">
         <h1 className="truncate text-2xl font-semibold text-slate-900">Dashboard</h1>
       </div>

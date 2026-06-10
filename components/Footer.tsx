@@ -1,80 +1,77 @@
-import { assets } from '@/assets/assets';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react'
+import { assets } from "@/assets/assets";
+import Image from "next/image";
+import Link from "next/link";
 
 type FooterItems = {
-    category: string;
-    items: {label: string, path: string}[]
-}
+  category: string;
+  items: { label: string; path: string }[];
+};
+
+const footer: FooterItems[] = [
+  {
+    category: "Company",
+    items: [
+      { label: "Home", path: "/" },
+      { label: "Shop", path: "/all-product" },
+      { label: "About us", path: "/" },
+      { label: "Contact us", path: "/" },
+    ],
+  },
+  {
+    category: "Support",
+    items: [
+      { label: "Shipping", path: "/" },
+      { label: "Returns", path: "/" },
+      { label: "Privacy policy", path: "/" },
+      { label: "Help center", path: "/" },
+    ],
+  },
+];
 
 const Footer = () => {
-
-    const footer: FooterItems[] = [
-        {
-            category: "Company",
-            items: [
-                {
-                    label: "Home",
-                    path: "/"
-                },
-                {
-                    label: "About us",
-                    path: "/"
-                },
-                {
-                    label: "Contact us",
-                    path: "/"
-                },
-                {
-                    label: "Privacy policy",
-                    path: "/"
-                }
-            ]
-        },
-        {
-            category: "Get in touch",
-            items: [
-                {
-                    label: "(097) 3056 7474",
-                    path: ""
-                },
-                {
-                    label: "virachamreun@gmail.com",
-                    path: ""
-                }
-            ]
-        }
-    ]
-
   return (
-    <div className='relative w-full pb-14 lg:px-32 md:px-16 px-6'>
-        {/* logo and description */}
-        <div className='flex items-center justify-between space-x-8'>
-            <div className='w-1/2 flex flex-col items-start justify-center'>
-                <Image
-                className='w-30 py-4'
-                src={assets.brand}
-                alt='brand'
-                />
-                <p className='text-gray-600 text-sm'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-            </div>
-            <div className='flex-1 flex justify-between'>
-                {footer.flatMap((item ,i) => (
-                    <ul key={i}>
-                        <p className='font-semibold pb-4'>{item.category}</p>
-                        {item.items.map((l , i) => (
-                            <Link key={i} href={l.path}>
-                                <li className='text-sm mb-2 text-gray-600'>{l.label}</li>
-                            </Link>
-                        ))}
-                    </ul>
-                ))}
-            </div>
-            
-        </div>
-    </div>
-  )
-}
+    <footer className="border-t border-slate-200 bg-white">
+      <div className="app-container py-10">
+        <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <Image className="w-20 object-contain" src={assets.brand} alt="brand" />
+            <p className="mt-4 max-w-md text-sm leading-6 text-slate-500">
+              Clean shopping for everyday tech, accessories, and essentials with
+              simple checkout and reliable local delivery.
+            </p>
+          </div>
 
-export default Footer
+          {footer.map((section) => (
+            <div key={section.category}>
+              <h2 className="text-sm font-semibold text-slate-950">
+                {section.category}
+              </h2>
+              <ul className="mt-3 space-y-2">
+                {section.items.map((item) => (
+                  <li key={`${section.category}-${item.label}`}>
+                    <Link
+                      href={item.path}
+                      className="text-sm text-slate-500 transition hover:text-orange-600"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 flex flex-col justify-between gap-3 border-t border-slate-200 pt-5 text-sm text-slate-500 md:flex-row md:items-center">
+          <p>© 2026 Ecommerce App. All rights reserved.</p>
+          <div className="flex flex-wrap gap-4">
+            <span>(097) 3056 7474</span>
+            <span>virachamreun@gmail.com</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;

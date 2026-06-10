@@ -16,7 +16,6 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
       header: "#",
       key: "id",
       className: "w-16",
-      cellClassName: "font-semibold text-slate-800",
     },
     {
       header: "Image",

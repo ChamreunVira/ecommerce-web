@@ -1,5 +1,9 @@
 import { ReactNode } from "react";
 
+function cn(...classes: Array<string | undefined | false>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 // Wrapper Table & Table Component
 interface TableProps {
   children: ReactNode;
@@ -8,10 +12,10 @@ interface TableProps {
 
 export const Table: React.FC<TableProps> = ({ children, className = "" }) => {
   return (
-    <div
-      className={`overflow-x-auto ${className}`}
-    >
-      <table className="min-w-full text-left text-sm">{children}</table>
+    <div className={cn("overflow-x-auto", className)}>
+      <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
+        {children}
+      </table>
     </div>
   );
 };
@@ -25,7 +29,12 @@ interface TheadProps {
 
 export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => {
   return (
-    <thead className={`sticky top-0 z-10 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 ${className}`}>
+    <thead
+      className={cn(
+        "sticky top-0 z-10 bg-white text-lg tracking-normal text-slate-500",
+        className
+      )}
+    >
       <tr>{children}</tr>
     </thead>
   );
@@ -44,7 +53,10 @@ export const THeading: React.FC<THeadingProps> = ({
 }) => {
   return (
     <th
-      className={`whitespace-nowrap border-b border-slate-200 px-5 py-3 ${className}`}
+      className={cn(
+        "whitespace-nowrap border-b border-slate-200 bg-white px-4 py-3 text-left align-middle first:pl-5 last:pr-5",
+        className
+      )}
     >
       {children}
     </th>
@@ -69,7 +81,16 @@ interface TCellProps {
 }
 
 export const TCell: React.FC<TCellProps> = ({ children, className = "" }) => {
-  return <td className={`border-b border-slate-100 px-5 py-4 align-middle text-slate-600 ${className}`}>{children}</td>;
+  return (
+    <td
+      className={cn(
+        "border-b border-slate-100 bg-white px-4 py-3.5 align-middle text-slate-600 first:pl-5 last:pr-5",
+        className
+      )}
+    >
+      {children}
+    </td>
+  );
 };
 
 // Column Type for Dynamic Table
@@ -86,11 +107,27 @@ export type Column<T> = {
 type LegacyTableProps<T> = {
   data: T[];
   columns: Column<T>[];
+  className?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  rowKey?: keyof T | ((item: T, index: number) => string | number);
 };
 
-export default function LegacyTable<T>({ data, columns }: LegacyTableProps<T>) {
+export default function LegacyTable<T>({
+  data,
+  columns,
+  className,
+  emptyTitle = "No data found",
+  emptyDescription = "Try changing the search or create a new record.",
+  rowKey,
+}: LegacyTableProps<T>) {
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+    <div
+      className={cn(
+        "overflow-hidden rounded-md border border-slate-200 bg-white",
+        className
+      )}
+    >
       <Table className="max-h-[calc(100vh-280px)]">
         <Thead>
           {columns.map((column) => (
@@ -103,12 +140,21 @@ export default function LegacyTable<T>({ data, columns }: LegacyTableProps<T>) {
         <TBody>
           {data.length > 0 ? (
             data.map((item, index) => (
-              <tr key={index} className="transition hover:bg-orange-50/40">
+              <tr
+                key={getRowKey(item, index, rowKey)}
+                className="group transition-colors hover:bg-orange-50/40"
+              >
                 {columns.map((column) => {
                   const value = item[column.key as keyof T];
 
                   return (
-                    <TCell key={String(column.key)} className={column.cellClassName}>
+                    <TCell
+                      key={String(column.key)}
+                      className={cn(
+                        "group-hover:bg-orange-50/40",
+                        column.cellClassName
+                      )}
+                    >
                       {column.render ? column.render(value, item) : formatCellValue(value)}
                     </TCell>
                   );
@@ -119,23 +165,58 @@ export default function LegacyTable<T>({ data, columns }: LegacyTableProps<T>) {
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-5 py-12 text-center text-sm text-slate-500"
+                className="bg-white px-5 py-14 text-center text-sm text-slate-500"
               >
-                <div className="mx-auto max-w-sm">
-                  <p className="font-medium text-slate-700">No data found</p>
-                  <p className="mt-1 text-slate-500">Try changing the search or create a new record.</p>
+                <div className="mx-auto flex max-w-sm flex-col items-center">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
+                    <svg
+                      aria-hidden="true"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                    >
+                      <path d="M4 7h16" />
+                      <path d="M4 12h16" />
+                      <path d="M4 17h10" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-slate-800">{emptyTitle}</p>
+                  <p className="mt-1 text-slate-500">{emptyDescription}</p>
                 </div>
               </td>
             </tr>
           )}
         </TBody>
       </Table>
-      <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-5 py-3 text-sm text-slate-500">
-        <span>Total records</span>
-        <span className="font-semibold text-slate-800">{data.length}</span>
+      <div className="flex items-center justify-between border-t border-slate-200 bg-white px-5 py-3 text-sm text-slate-600">
+        <span className="font-medium">Total records</span>
+        <span className="rounded-md border border-orange-100 bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600">
+          {data.length}
+        </span>
       </div>
     </div>
   );
+}
+
+function getRowKey<T>(
+  item: T,
+  index: number,
+  rowKey?: keyof T | ((item: T, index: number) => string | number)
+) {
+  if (typeof rowKey === "function") {
+    return rowKey(item, index);
+  }
+
+  if (rowKey) {
+    const value = item[rowKey];
+    if (typeof value === "string" || typeof value === "number") {
+      return value;
+    }
+  }
+
+  return index;
 }
 
 function formatCellValue(value: unknown) {

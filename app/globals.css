@@ -80,3 +80,17 @@ body {
     @apply border-0 hover:outline-2 hover:-outline-offset-2 hover:outline-orange-500;
   }
 }
+
+@layer components {
+  #product-price-range {
+    @apply h-1.5 rounded-full bg-slate-200;
+  }
+
+  #product-price-range .range-slider__range {
+    @apply bg-orange-500;
+  }
+
+  #product-price-range .range-slider__thumb {
+    @apply h-4 w-4 border-2 border-white bg-orange-500;
+  }
+}

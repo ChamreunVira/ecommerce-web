@@ -93,7 +93,8 @@ const ProductAdminPage = () => {
           </button>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200 md:flex-row md:items-center">
+        {/* top search and filtering */}
+        <div className="flex flex-col gap-3 rounded-md bg-white p-4  md:flex-row md:items-center">
           <SearchInput onInputChange={handleSearchByName} />
 
           <select

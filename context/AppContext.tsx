@@ -13,16 +13,15 @@ import { Cart, CartItem } from "@/types/cart";
 type AppContextType = {
   router: AppRouterInstance;
   products: Product[];
-  handleAddProductToCart: (id: string) => void;
+  handleAddProductToCart: (id: string | number, quantity?: number) => Promise<void>;
+  refreshCart: () => Promise<void>;
   getTotalCart: () => number;
   cartItems: CartItem[];
-  accessToken: string | null;
-  setAccessToken: (accessToken: string) => void;
   user: Partial<User>;
   cart: Partial<Cart>;
 };
 
-export const AppContext = createContext<AppContextType | any>(null);
+export const AppContext = createContext<AppContextType | null>(null);
 
 export const useAppContext = (): AppContextType => {
   const context = useContext(AppContext);
@@ -41,77 +40,84 @@ export const AppContextProvider = ({
 
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [user , setUser] = useState<Partial<User>>({});
-  const [cart , setCart] = useState<Partial<Cart>>({});
-
-  const handleFetchProduct = async () => {
-    try {
-      const response = await productService.getAll();
-      if(response.success) {
-        setProducts(response.data);
-      }
-    }catch (e: any) {
-      console.log(e.message);
-    }
-  };
+  const [user, setUser] = useState<Partial<User>>({});
+  const [cart, setCart] = useState<Partial<Cart>>({});
 
   const getTotalCart = () => {
-    return new Set(cartItems).size;
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const handleAddProductToCart = async (productId: number) => {
+  const handleAddProductToCart = async (productId: string | number, quantity = 1) => {
     try {
-      const response = await cartService.addToCart(productId , 1);
+      const response = await cartService.addToCart(Number(productId), quantity);
       if(response.success) {
+        setCart(response.data);
+        setCartItems(response.data.cartItems);
         toast.success("Product added into cart.");
       }
-    }catch(e: any) {
-      console.log(e.message);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const handleFetchCart = async () => {
+  const refreshCart = async () => {
     try {
       const response = await cartService.getAll();
-      if(response.success) {
+      if (response.success) {
+        setCart(response.data);
         setCartItems(response.data.cartItems);
       }
-    }catch(e: any) {
-      console.log(e.message);
+    } catch (error) {
+      console.log(error);
     }
-  }
-
-  const isAuthenticated = async () => {
-    try {
-      const response = await authService.isAuthenticated();
-      return response;
-    }catch(e: any) {
-      console.log(e.message);
-    }
-  }
-
-  const handleCurrentUser = async () => {
-    if(await isAuthenticated()) {
-      const response = await authService.me();
-    if(response.success) {
-      console.log(response.data);
-      setUser(response.data);
-    }
-    }
-  }
+  };
 
   useEffect(() => {
-    handleCurrentUser();
-    handleFetchProduct();
-    handleFetchCart();
+    let isCurrent = true;
+
+    const hydrateApp = async () => {
+      try {
+        const [authResponse, productResponse, cartResponse] = await Promise.all([
+          authService.isAuthenticated(),
+          productService.getAll(),
+          cartService.getAll(),
+        ]);
+
+        if (!isCurrent) return;
+
+        if (authResponse) {
+          const currentUserResponse = await authService.me();
+          if (currentUserResponse.success && isCurrent) {
+            setUser(currentUserResponse.data);
+          }
+        }
+
+        if (productResponse.success) {
+          setProducts(productResponse.data);
+        }
+
+        if (cartResponse.success) {
+          setCart(cartResponse.data);
+          setCartItems(cartResponse.data.cartItems);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    hydrateApp();
+
+    return () => {
+      isCurrent = false;
+    };
   }, []);
 
-  const contextValue = {
+  const contextValue: AppContextType = {
     cart,
-    setCart,
     router,
     products,
     handleAddProductToCart,
+    refreshCart,
     getTotalCart,
     cartItems,
     user

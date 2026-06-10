@@ -76,7 +76,7 @@ const OrderAdminPage = () => {
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-4 shadow-sm ring-1 ring-slate-200">
+        <div className="flex flex-col gap-3 rounded-md bg-white p-4  md:flex-row md:items-center">
           <SearchInput onInputChange={handleSearchByName} />
         </div>
 

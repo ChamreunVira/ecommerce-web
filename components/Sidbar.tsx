@@ -20,14 +20,14 @@ const Sidbar: React.FC<Sidebar> = ({ children }) => {
   const { user } = useAppContext();
 
   return (
-    <aside className="sticky top-0 h-screen w-72 flex-none overflow-hidden">
+    <aside className="sticky top-0 h-screen w-72 flex-none overflow-hidden bg-slate-100/50">
       <div className="h-full min-w-0">
         <div className="flex h-full flex-col items-center justify-between">
           {/* top logo */}
           <div className="w-full px-5 py-6">
-            <div className="flex items-center gap-3 rounded-lg px-4 py-3 ring-1 ring-slate-200">
+            <div className="flex items-center gap-3 rounded-lg px-4 py-3">
               <LayoutGridIcon fill="orange" strokeWidth={0} className="h-8 w-8 shrink-0 text-orange-500" />
-              <h1 className="truncate text-xl font-semibold text-slate-900">ViraDev</h1>
+              <h1 className="truncate text-2xl font-semibold text-slate-900">ViraDev</h1>
             </div>
           </div>
 
@@ -36,7 +36,7 @@ const Sidbar: React.FC<Sidebar> = ({ children }) => {
 
           {/* sidebar footer */}
           <div className="w-full border-t border-slate-200 p-5">
-            <div className="flex min-w-0 items-center gap-3 rounded-lg bg-slate-50 p-3 ring-1 ring-slate-200">
+            <div className="flex min-w-0 items-center gap-3 rounded-lg bg-slate-200/50 p-3">
               <div className="shrink-0">
                 <Profile fullName={user.fullName || "Anonymous"} />
               </div>
