@@ -24,15 +24,15 @@ const Sidbar: React.FC<Sidebar> = ({ children }) => {
       <div className="h-full min-w-0">
         <div className="flex h-full flex-col items-center justify-between">
           {/* top logo */}
-          <div className="w-full px-5 py-6">
-            <div className="flex items-center gap-3 rounded-lg px-4 py-3">
+          <div className="w-full px-5 py-4">
+            <div className="flex items-center gap-3 rounded-lg py-2 px-4">
               <LayoutGridIcon fill="orange" strokeWidth={0} className="h-8 w-8 shrink-0 text-orange-500" />
               <h1 className="truncate text-2xl font-semibold text-slate-900">ViraDev</h1>
             </div>
           </div>
 
           {/* sidebar items */}
-          <div className="w-full flex-1 space-y-2 overflow-y-auto px-5 py-2">{children}</div>
+          <div className="w-full flex-1 flex flex-col space-y-2.5 overflow-y-auto px-5 py-2">{children}</div>
 
           {/* sidebar footer */}
           <div className="w-full border-t border-slate-200 p-5">

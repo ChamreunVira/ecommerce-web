@@ -13,7 +13,7 @@ interface ProductTableProps {
 const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) => {
   const columns: Column<Product>[] = [
     {
-      header: "#",
+      header: "ID",
       key: "id",
       className: "w-16",
     },
@@ -25,7 +25,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
         const images = (product.images as string[]) || [];
 
         return (
-          <div className="relative h-14 w-16">
+          <div className="relative h-24 w-24">
             {images.length > 0 ? images.slice(0, 3).map((img, i) => (
               <Image
                 key={i}
@@ -33,15 +33,15 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
                 alt={product.name}
                 width={64}
                 height={64}
-                className="absolute left-0 top-0 h-12 w-12 rounded-lg border border-white object-cover shadow-sm"
+                className="absolute left-0 top-0 h-20 w-20 rounded-sm bg-slate-100/50 object-cover"
                 unoptimized
                 style={{
                   zIndex: 10 - i,
-                  transform: `translate(${i * 6}px, ${i * 6}px)`,
+                  transform: `translate(${i * 6}px, -${i *6}px)`,
                 }}
               />
             )) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-sm bg-slate-100 text-xs text-slate-400">
                 No img
               </div>
             )}
@@ -57,7 +57,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
     {
       header: "Name",
       key: "name",
-      render: (value) => <p className="max-w-48 truncate font-semibold text-slate-900">{String(value)}</p>,
+      render: (value) => <p className="max-w-48 text-lg truncate font-semibold text-slate-800/90">{String(value)}</p>,
     },
     {
       header: "Description",
@@ -67,7 +67,7 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
     {
       header: "Price",
       key: "price",
-      render: (value) => (<p className="font-semibold text-emerald-600">${Number(value).toFixed(2)}</p>),
+      render: (value) => (<p className="font-semibold text-lg text-emerald-600">${Number(value).toFixed(2)}</p>),
     },
     {
       header: "Discount",

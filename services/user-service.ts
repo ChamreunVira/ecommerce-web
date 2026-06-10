@@ -21,6 +21,11 @@ class UserService {
         return response.data;
     }
 
+    async update(customerId: number , req: Partial<User>): Promise<ApiResponse<User>> {
+        const response = await http.put<ApiResponse<User>>(`/auth/profile/${req.id}` , req);
+        return response.data;
+    }
+
     async delete(id: number): Promise<ApiResponse<null>> {
         const response = await http.delete<ApiResponse<null>>(`${this.endPoint}/${id}`);
         return response.data;

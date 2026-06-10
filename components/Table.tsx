@@ -30,10 +30,7 @@ interface TheadProps {
 export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => {
   return (
     <thead
-      className={cn(
-        "sticky top-0 z-10 bg-white text-lg tracking-normal text-slate-500",
-        className
-      )}
+      className={cn("sticky top-0 z-10 bg-white text-lg tracking-normal text-slate-500",className)}
     >
       <tr>{children}</tr>
     </thead>
@@ -54,7 +51,7 @@ export const THeading: React.FC<THeadingProps> = ({
   return (
     <th
       className={cn(
-        "whitespace-nowrap border-b border-slate-200 bg-white px-4 py-3 text-left align-middle first:pl-5 last:pr-5",
+        "font-semibold text-sm whitespace-nowrap border-b border-slate-200 bg-white px-4 py-5 text-left align-middle first:pl-5 last:pr-5",
         className
       )}
     >
@@ -142,7 +139,7 @@ export default function LegacyTable<T>({
             data.map((item, index) => (
               <tr
                 key={getRowKey(item, index, rowKey)}
-                className="group transition-colors hover:bg-orange-50/40"
+                className="group transition-colors"
               >
                 {columns.map((column) => {
                   const value = item[column.key as keyof T];
@@ -150,11 +147,7 @@ export default function LegacyTable<T>({
                   return (
                     <TCell
                       key={String(column.key)}
-                      className={cn(
-                        "group-hover:bg-orange-50/40",
-                        column.cellClassName
-                      )}
-                    >
+                      className={cn(column.cellClassName)}>
                       {column.render ? column.render(value, item) : formatCellValue(value)}
                     </TCell>
                   );
@@ -190,7 +183,7 @@ export default function LegacyTable<T>({
           )}
         </TBody>
       </Table>
-      <div className="flex items-center justify-between border-t border-slate-200 bg-white px-5 py-3 text-sm text-slate-600">
+      <div className="flex items-center justify-between bg-white px-5 py-3 text-sm text-slate-600">
         <span className="font-medium">Total records</span>
         <span className="rounded-md border border-orange-100 bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600">
           {data.length}

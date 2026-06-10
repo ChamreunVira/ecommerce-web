@@ -1,6 +1,7 @@
 "use client";
 import CategoryTable from "@/components/CategoryTable";
 import CreateCategoryModal from "@/components/CreateCategoryModal";
+import Loading from "@/components/Loading";
 import SearchInput from "@/components/SearchInput";
 import UpdateCategoryModal from "@/components/UpdateCategoryModal";
 import { categoryService } from "@/services/category-service";
@@ -14,6 +15,7 @@ const CategoryAdminPage = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleFetchCategory = async () => {
     try {
@@ -37,23 +39,28 @@ const CategoryAdminPage = () => {
         handleFetchCategory();
       }
     } catch (error) {
-      toast.error("Failare to deleted category.")
+      toast.error("Failare to deleted category.");
       console.error(error);
     }
-  }
+  };
 
   const handleSearchByName = (name: string) => {
-    const filtered = categories.filter((category) => category.name.toLowerCase().includes(name.toLowerCase()));
+    const filtered = categories.filter((category) =>
+      category.name.toLowerCase().includes(name.toLowerCase())
+    );
     setFilteredCategories(filtered);
-  }
+  };
 
   useEffect(() => {
     const fetchInitialCategories = async () => {
+      setIsLoading(true);
       try {
         const response = await categoryService.getAll();
         setCategories(response.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -61,8 +68,8 @@ const CategoryAdminPage = () => {
   }, []);
 
   return (
-    <section className="min-h-full px-6 py-8 md:px-10 lg:px-12">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <section className="min-h-full">
+      <div className="space-y-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Catalog</p>
@@ -80,21 +87,23 @@ const CategoryAdminPage = () => {
         </div>
 
         {/* top search and filtering */}
-        <div className="flex flex-col gap-3 rounded-md bg-white p-4  md:flex-row md:items-center">
+        <div className="flex flex-col gap-3 rounded-md bg-white p-4 md:flex-row md:items-center">
           <SearchInput onInputChange={handleSearchByName} />
         </div>
 
-        <CategoryTable
-          categories={filteredCategories.length > 0 ? filteredCategories : categories}
-          handleDelete={handleDeleteByCategory}
-          handleEdit={setEditingCategory}
-        />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <CategoryTable
+            categories={filteredCategories.length > 0 ? filteredCategories : categories}
+            handleDelete={handleDeleteByCategory}
+            handleEdit={setEditingCategory}
+          />
+        )}
       </div>
 
       {isModalOpen && (
-        <CreateCategoryModal
-          handleClose={handleCallbackFromModal}
-        />
+        <CreateCategoryModal handleClose={handleCallbackFromModal} />
       )}
 
       {editingCategory ? (
@@ -104,7 +113,6 @@ const CategoryAdminPage = () => {
           onUpdated={handleFetchCategory}
         />
       ) : null}
-
     </section>
   );
 };

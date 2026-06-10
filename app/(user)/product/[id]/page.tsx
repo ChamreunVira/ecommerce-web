@@ -81,11 +81,11 @@ const ProductDetail = () => {
       <main className="bg-white">
         <section className="app-container py-8">
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,520px)_minmax(360px,1fr)] lg:gap-12">
-            <div className="w-full max-w-[520px]">
+            <div className="w-full max-w-130">
               <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50">
                 {primaryImg ? (
                   <Image
-                    className="aspect-[4/3] w-full object-contain p-5 mix-blend-multiply"
+                    className="aspect-4/3 w-full object-contain p-5 mix-blend-multiply"
                     src={`http://localhost:8080/api/v1/uploads/${primaryImg}`}
                     alt={productData.name}
                     width={720}
@@ -93,7 +93,7 @@ const ProductDetail = () => {
                     unoptimized
                   />
                 ) : (
-                  <div className="flex aspect-[4/3] items-center justify-center text-sm text-slate-400">
+                  <div className="flex aspect-4/3 items-center justify-center text-sm text-slate-400">
                     No image
                   </div>
                 )}

@@ -1,4 +1,5 @@
 "use client";
+import Loading from "@/components/Loading";
 import OrderTable from "@/components/OrderTable";
 import SearchInput from "@/components/SearchInput";
 import { orderService } from "@/services/order-service";
@@ -10,6 +11,7 @@ import { toast } from "react-toastify";
 const OrderAdminPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setfilteredOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleFetchOrder = async () => {
     try {
@@ -24,20 +26,18 @@ const OrderAdminPage = () => {
 
   const handleDelete = async (id: number) => {
     toast.info(`Delete endpoint is not connected yet for order ${id}.`);
-  }
-
-  // const handleFilterByCategory = (order: string) => {
-  //   const filtered = products.filter((product) => product.categoryName === category);
-  //   setFilteredProducts(filtered);
-  // };
+  };
 
   const handleSearchByName = (name: string) => {
-    const filtered = orders.filter((order) => order.orderCode.toLowerCase().includes(name.toLowerCase()));
+    const filtered = orders.filter((order) =>
+      order.orderCode.toLowerCase().includes(name.toLowerCase())
+    );
     setfilteredOrders(filtered);
   };
 
   useEffect(() => {
     const fetchInitialOrders = async () => {
+      setIsLoading(true);
       try {
         const response = await orderService.getAll();
         if (response.success) {
@@ -45,6 +45,8 @@ const OrderAdminPage = () => {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -52,8 +54,8 @@ const OrderAdminPage = () => {
   }, []);
 
   return (
-    <section className="min-h-full px-6 py-8 md:px-10 lg:px-12">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <section className="min-h-full">
+      <div className="space-y-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Sales</p>
@@ -76,13 +78,19 @@ const OrderAdminPage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-md bg-white p-4  md:flex-row md:items-center">
+        <div className="flex flex-col gap-3 rounded-md bg-white p-4 md:flex-row md:items-center">
           <SearchInput onInputChange={handleSearchByName} />
         </div>
 
-        <OrderTable order={filteredOrders.length > 0 ? filteredOrders : orders} handleDelete={handleDelete} />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <OrderTable
+            order={filteredOrders.length > 0 ? filteredOrders : orders}
+            handleDelete={handleDelete}
+          />
+        )}
       </div>
-
     </section>
   );
 };

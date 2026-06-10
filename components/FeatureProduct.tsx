@@ -43,7 +43,7 @@ const FeatureProduct = () => {
             {product.map(({image , title , description} , i) => (
                 <div key={i} className='relative group'>
                     <Image
-                        className='group-hover:brightness-75 transition object-cover w-full h-auto'
+                        className='group-hover:brightness-75 transition object-cover w-full h-full'
                         src={image}
                         alt={title}
                     />

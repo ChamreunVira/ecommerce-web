@@ -189,8 +189,8 @@ export default function DashboardPage() {
   );
 
   return (
-    <section className="min-h-full bg-slate-50 px-6 py-8 text-slate-900 md:px-10 lg:px-12">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8">
+    <section className="min-h-full bg-slate-50 text-slate-900">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Overview</p>

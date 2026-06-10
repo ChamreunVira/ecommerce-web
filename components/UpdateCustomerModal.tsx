@@ -1,30 +1,31 @@
 "use client";
 
-import { categoryService } from "@/services/category-service";
-import { Category } from "@/types/category";
 import { Save } from "lucide-react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import AdminModal from "./AdminModal";
+import { User } from "@/types/user";
+import { userService } from "@/services/user-service";
 
-type CategoryFormData = Omit<Category, "id" | "createdAt" | "updatedAt">;
+type UserFormData = Omit<User, "id" | "refreshToken" | "accessToken" | "createdAt" | "updatedAt">;
 
 type UpdateCategoryModalProps = {
-  category: Category;
+  user: User;
   onClose: () => void;
   onUpdated: () => void;
 };
 
-export default function UpdateCategoryModal({
-  category,
+export default function UpdateCustomerModal({
+  user,
   onClose,
   onUpdated,
 }: UpdateCategoryModalProps) {
-  const [formData, setFormData] = useState<CategoryFormData>({
-    name: category.name,
-    description: category.description,
-    products: category.products || [],
+  const [formData, setFormData] = useState<UserFormData>({
+    fullName: user.fullName,
+    email: user.email,
+    password: '',
+    roles: [...user.roles]
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -40,15 +41,15 @@ export default function UpdateCategoryModal({
     setIsSaving(true);
 
     try {
-      const response = await categoryService.update(category.id, formData);
+      const response = await userService.update(user.id, formData);
       if (response.success) {
-        toast.success("Category updated successfully.");
+        toast.success("Customer updated successfully.");
         onUpdated();
         onClose();
       }
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update category.");
+      toast.error("Failed to update customer.");
     } finally {
       setIsSaving(false);
     }
@@ -56,8 +57,8 @@ export default function UpdateCategoryModal({
 
   return (
     <AdminModal
-      title="Update category"
-      description="update category."
+      title="Update Cusomter"
+      description="update customer."
       onClose={onClose}
       footer={
         <div className="flex justify-end gap-3">
@@ -81,36 +82,61 @@ export default function UpdateCategoryModal({
       }
     >
       <form id="update-category-form" onSubmit={handleSubmit} className="space-y-4">
+        
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="category-name">
-            Name
+          <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
+            Fullname
           </label>
           <input
-            id="category-name"
-            name="name"
+            id="fullName"
+            name="fullName"
             type="text"
-            value={formData.name}
+            value={formData.fullName}
             onChange={handleChange}
             className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
             placeholder="Category name"
             required
           />
         </div>
+
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="category-description">
-            Description
+          <label className="text-sm font-medium text-slate-700" htmlFor="email">
+            Email
           </label>
-          <textarea
-            id="category-description"
-            name="description"
-            value={formData.description}
+          <input
+            id="email"
+            name="email"
+            type="text"
+            value={formData.email}
             onChange={handleChange}
-            rows={5}
-            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
-            placeholder="Short category description"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            placeholder="Category name"
             required
           />
         </div>
+
+        <div>
+          <label className="text-sm font-medium text-slate-700" htmlFor="password">
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="text"
+            value={formData.password}
+            onChange={handleChange}
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            placeholder="Category name"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-slate-700" htmlFor="role">
+            Role
+          </label>
+        </div>
+      
       </form>
     </AdminModal>
   );

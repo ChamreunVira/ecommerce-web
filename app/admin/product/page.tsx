@@ -1,5 +1,6 @@
 "use client";
 import CreateProductModal from "@/components/CreateProductModal";
+import Loading from "@/components/Loading";
 import ProductTable from "@/components/ProductTable";
 import SearchInput from "@/components/SearchInput";
 import { productService } from "@/services/product-service";
@@ -13,6 +14,7 @@ const ProductAdminPage = () => {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategoies] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleFetchProduct = async () => {
     try {
@@ -43,7 +45,7 @@ const ProductAdminPage = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const handleFilterByCategory = (category: string) => {
     const filtered = products.filter((product) => product.categoryName === category);
@@ -51,12 +53,15 @@ const ProductAdminPage = () => {
   };
 
   const handleSearchByName = (name: string) => {
-    const filtered = products.filter((product) => product.name.toLowerCase().includes(name.toLowerCase()));
+    const filtered = products.filter((product) =>
+      product.name.toLowerCase().includes(name.toLowerCase())
+    );
     setFilteredProducts(filtered);
   };
 
   useEffect(() => {
     const fetchInitialProducts = async () => {
+      setIsLoading(true);
       try {
         const response = await productService.getAll();
         if (response.success) {
@@ -68,6 +73,8 @@ const ProductAdminPage = () => {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -75,8 +82,8 @@ const ProductAdminPage = () => {
   }, []);
 
   return (
-    <section className="min-h-full px-6 py-8 md:px-10 lg:px-12">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <section className="min-h-full">
+      <div className="space-y-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Inventory</p>
@@ -94,7 +101,7 @@ const ProductAdminPage = () => {
         </div>
 
         {/* top search and filtering */}
-        <div className="flex flex-col gap-3 rounded-md bg-white p-4  md:flex-row md:items-center">
+        <div className="flex flex-col gap-3 rounded-md bg-white p-4 md:flex-row md:items-center">
           <SearchInput onInputChange={handleSearchByName} />
 
           <select
@@ -105,7 +112,8 @@ const ProductAdminPage = () => {
               }
               handleFilterByCategory(e.target.value);
             }}
-            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 md:w-56">
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 md:w-56"
+          >
             <option value="">All categories</option>
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -115,7 +123,14 @@ const ProductAdminPage = () => {
           </select>
         </div>
 
-        <ProductTable products={filteredProducts.length > 0 ? filteredProducts : products} handleDelete={handleDelete} />
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <ProductTable
+            products={filteredProducts.length > 0 ? filteredProducts : products}
+            handleDelete={handleDelete}
+          />
+        )}
       </div>
 
       {/* modal */}
@@ -125,7 +140,6 @@ const ProductAdminPage = () => {
           closeModal={() => setIsModalOpen(!isModalOpen)}
         />
       )}
-
     </section>
   );
 };

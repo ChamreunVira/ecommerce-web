@@ -20,7 +20,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories, handleDelete,
     {
       header: "Name",
       key: "name",
-      render: (value) => <span className="font-semibold text-slate-900">{String(value)}</span>,
+      render: (value) => <span className="font-semibold text-lg text-slate-800/90">{String(value)}</span>,
     },
     {
       header: "Description",

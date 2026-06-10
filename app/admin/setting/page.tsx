@@ -71,8 +71,8 @@ export default function SettingAdminPage() {
   };
 
   return (
-    <section className="min-h-full px-6 py-8 md:px-10 lg:px-12">
-      <form onSubmit={handleSubmit} className="mx-auto max-w-7xl space-y-6">
+    <section className="min-h-full">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="flex items-center gap-2 text-sm font-medium text-orange-600">

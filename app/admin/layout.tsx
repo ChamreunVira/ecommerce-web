@@ -58,7 +58,7 @@ export default function AdminLayout({
       </Sidbar>
       <main className="flex min-w-0 flex-1 flex-col bg-slate-50">
         <AdminNavbar />
-        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-6 py-8 md:px-10 lg:px-12">{children}</div>
       </main>
     </div>
   );
