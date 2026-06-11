@@ -4,11 +4,8 @@ import {
   Bell,
   CreditCard,
   Globe2,
-  Mail,
-  MapPin,
   Save,
   Settings,
-  ShieldCheck,
   Store,
   Truck,
 } from "lucide-react";
@@ -81,7 +78,7 @@ export default function SettingAdminPage() {
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-slate-950">Store settings</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-500">
-              Mock settings page for store profile, payments, shipping, security, and notifications.
+              Settings page for store profile, payments, shipping, security, and notifications.
             </p>
           </div>
 
@@ -109,8 +106,8 @@ export default function SettingAdminPage() {
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Globe2 size={20} />} title="Localization" description="Currency, tax, and reporting defaults." />
               <div className="mt-5 grid gap-4 md:grid-cols-3">
-                <Select label="Currency" name="currency" value={settings.currency} onChange={updateField} options={["USD", "KHR", "THB"]} />
-                <Select label="Timezone" name="timezone" value={settings.timezone} onChange={updateField} options={["Asia/Phnom_Penh", "UTC", "Asia/Bangkok"]} />
+                <Select label="Currency" name="currency" value={settings.currency} onChange={updateField} options={["USD", "KHR"]} />
+                <Select label="Timezone" name="timezone" value={settings.timezone} onChange={updateField} options={["Asia/Phnom_Penh", "UTC"]} />
                 <Input label="Tax rate (%)" name="taxRate" type="number" value={settings.taxRate} onChange={updateField} />
               </div>
             </section>
@@ -140,22 +137,6 @@ export default function SettingAdminPage() {
                 <Toggle label="New order alerts" checked={settings.notifications.newOrders} onChange={(checked) => updateNestedToggle("notifications", "newOrders", checked)} />
                 <Toggle label="Low stock alerts" checked={settings.notifications.lowStock} onChange={(checked) => updateNestedToggle("notifications", "lowStock", checked)} />
                 <Toggle label="Weekly report" checked={settings.notifications.weeklyReport} onChange={(checked) => updateNestedToggle("notifications", "weeklyReport", checked)} />
-              </div>
-            </section>
-
-            <section className="rounded-lg bg-slate-950 p-5 text-white shadow-sm">
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="mt-0.5 text-orange-400" size={22} />
-                <div>
-                  <h2 className="text-lg font-semibold">API suggestion</h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-300">
-                    Create `GET /settings` and `PUT /settings` endpoints returning this page shape. Keep nested objects for payments and notifications.
-                  </p>
-                </div>
-              </div>
-              <div className="mt-5 grid gap-3 text-sm text-slate-300">
-                <p className="flex items-center gap-2"><Mail size={16} /> Send email when paid order is created</p>
-                <p className="flex items-center gap-2"><MapPin size={16} /> Store location for shipping fee rules</p>
               </div>
             </section>
           </div>

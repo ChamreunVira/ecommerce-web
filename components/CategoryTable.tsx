@@ -12,7 +12,7 @@ interface CategoryTableProps {
 const CategoryTable: React.FC<CategoryTableProps> = ({ categories, handleDelete, handleEdit }) => {
   const columns: Column<Category>[] = [
     {
-      header: "No.",
+      header: "ID",
       key: "id",
       className: "w-20",
       cellClassName: "font-semibold text-slate-800",

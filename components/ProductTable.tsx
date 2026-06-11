@@ -8,9 +8,10 @@ import { Edit, Trash } from "lucide-react";
 interface ProductTableProps {
   products: Product[];
   handleDelete: (id: number) => void;
+  handleUpdate?: (product: Product) => void;
 }
 
-const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) => {
+const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete, handleUpdate }) => {
   const columns: Column<Product>[] = [
     {
       header: "ID",
@@ -86,7 +87,9 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete }) =
       cellClassName: "text-right",
       render: (_, item) => (
         <div className="flex items-center justify-end gap-2">
-          <button className="rounded-full p-2 text-amber-600 transition hover:bg-amber-50" aria-label="Edit product">
+          <button
+          onClick={() => handleUpdate?.(item)}
+          className="rounded-full p-2 text-amber-600 transition hover:bg-amber-50" aria-label="Edit product">
             <Edit size={17} />
           </button>
           <button

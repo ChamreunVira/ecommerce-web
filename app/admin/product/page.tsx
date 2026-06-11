@@ -3,7 +3,9 @@ import CreateProductModal from "@/components/CreateProductModal";
 import Loading from "@/components/Loading";
 import ProductTable from "@/components/ProductTable";
 import SearchInput from "@/components/SearchInput";
+import UpdateProductModal from "@/components/UpdateProductModal";
 import { productService } from "@/services/product-service";
+import { Category } from "@/types/category";
 import { Product } from "@/types/product";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -12,7 +14,9 @@ import { toast } from "react-toastify";
 const ProductAdminPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [categories, setCategoies] = useState<string[]>([]);
+  const [editProduct , setEditProduct] = useState<Product | null>(null);
+  const [categories, setCategoies] = useState<Category[]>([]);
+  const [categoryNames , setCategoryNames] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -23,7 +27,7 @@ const ProductAdminPage = () => {
         const existsCategory = response.data.map(
           (product) => product.categoryName
         );
-        setCategoies([...new Set(existsCategory)]);
+        setCategoryNames([...new Set(existsCategory)]);
         setProducts(response.data);
       }
     } catch (error) {
@@ -68,7 +72,7 @@ const ProductAdminPage = () => {
           const existsCategory = response.data.map(
             (product) => product.categoryName
           );
-          setCategoies([...new Set(existsCategory)]);
+          setCategoryNames([...new Set(existsCategory)]);
           setProducts(response.data);
         }
       } catch (error) {
@@ -115,7 +119,7 @@ const ProductAdminPage = () => {
             className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 md:w-56"
           >
             <option value="">All categories</option>
-            {categories.map((category) => (
+            {categoryNames.map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
@@ -129,6 +133,7 @@ const ProductAdminPage = () => {
           <ProductTable
             products={filteredProducts.length > 0 ? filteredProducts : products}
             handleDelete={handleDelete}
+            handleUpdate={setEditProduct}
           />
         )}
       </div>
@@ -140,6 +145,15 @@ const ProductAdminPage = () => {
           closeModal={() => setIsModalOpen(!isModalOpen)}
         />
       )}
+
+      {editProduct && <UpdateProductModal
+        categories={categories}
+        product={editProduct}
+        onClose={() => setEditProduct(null)}
+        onUpdated={handleFetchProduct}
+      />}
+
+
     </section>
   );
 };

@@ -25,8 +25,17 @@ class ProductService {
         });
         return response.data;
     }
-    
-    async filterPrice(minPrice: number , maxPrice: number): Promise<ApiResponse<Product[]>> {
+
+    async update(productId: number, req: Partial<Product>): Promise<ApiResponse<Product>> {
+        const response = await http.put(`${this.endPoint}/${productId}`, req, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        return response.data;
+    }
+
+    async filterPrice(minPrice: number, maxPrice: number): Promise<ApiResponse<Product[]>> {
         const response = await http.get(`${this.endPoint}/?minPrice=${minPrice}&maxPrice=${maxPrice}`);
         return response.data;
     }

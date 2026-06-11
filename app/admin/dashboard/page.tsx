@@ -183,6 +183,7 @@ function buildChartPoints(data: RevenuePoint[]) {
 }
 
 export default function DashboardPage() {
+  
   const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.reduce((best, item) =>
     item.revenue > best.revenue ? item : best
@@ -198,7 +199,7 @@ export default function DashboardPage() {
               Ecommerce performance
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Mock analytics for revenue, orders, customers, inventory, and daily operations.
+              Analytics for revenue, orders, customers, inventory, and daily operations.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:flex">

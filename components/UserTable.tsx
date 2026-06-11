@@ -7,9 +7,10 @@ import Profile from "./Profile";
 type UserTableType = {
   users: User[];
   handleDelete: (id: number) => void;
+  handleUpdate?: (user: User) => void;
 }
 
-const UserTable: React.FC<UserTableType> = ({ users, handleDelete }) => {
+const UserTable: React.FC<UserTableType> = ({ users, handleDelete , handleUpdate }) => {
   const columns: Column<User>[] = [
     {
       header: "#",
@@ -60,7 +61,9 @@ const UserTable: React.FC<UserTableType> = ({ users, handleDelete }) => {
       cellClassName: "text-right",
       render: (_, item) => (
         <div className="flex items-center justify-end gap-2">
-          <button className="rounded-full p-2 text-amber-600 transition hover:bg-amber-50" aria-label="Edit user">
+          <button
+            onClick={() => handleUpdate?.(item)}
+           className="rounded-full p-2 text-amber-600 transition hover:bg-amber-50" aria-label="Edit user">
             <Edit size={17} />
           </button>
           <button

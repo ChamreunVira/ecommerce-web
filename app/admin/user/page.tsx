@@ -2,6 +2,7 @@
 import AddUserModal from "@/components/AddUserModal";
 import Loading from "@/components/Loading";
 import SearchInput from "@/components/SearchInput";
+import UpdateCustomerModal from "@/components/UpdateCustomerModal";
 import UserTable from "@/components/UserTable";
 import { userService } from "@/services/user-service";
 import { User } from "@/types/user";
@@ -123,6 +124,7 @@ const UserAdminPage = () => {
           <UserTable
             users={filterUsers.length > 0 ? filterUsers : users}
             handleDelete={handleDeleteByUserId}
+            handleUpdate={setEditUser}
           />
         )}
       </div>
@@ -134,6 +136,12 @@ const UserAdminPage = () => {
           onCreateSuccess={onCreateUserSuccess}
         />
       )}
+
+      {editUser && <UpdateCustomerModal
+      user={editUser}
+      onClose={() => setEditUser(null)}
+      onUpdated={handleFetchUser}
+      />}
     </section>
   );
 };
