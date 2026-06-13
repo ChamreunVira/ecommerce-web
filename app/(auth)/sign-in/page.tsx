@@ -3,6 +3,7 @@ import { useAppContext } from "@/context/AppContext";
 import { clearAccessToken, setAccessToken } from "@/lib/axios";
 import { authService } from "@/services/auth-service";
 import { User } from "@/types/user";
+import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -11,6 +12,7 @@ const SignInPage = () => {
     email: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { router } = useAppContext();
 
@@ -18,63 +20,93 @@ const SignInPage = () => {
     setAuthData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSignIn = async (e: React.SubmitEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     clearAccessToken();
+    setIsLoading(true);
     try {
       const response = await authService.signIn(authData);
       if (response.success) {
-        toast.success("Sign in successfully.");
+        toast.success("Welcome back!");
         setAccessToken(response.data.accessToken);
         if (response.data.roles.includes("ROLE_ADMIN")) {
-          router.push("/dashboard");
+          // Re-route to dashboard assuming it's under admin
+          router.push("/admin/dashboard");
         } else {
           router.push("/");
         }
+      } else {
+         toast.error(response.message || "Sign in failed");
       }
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (error: any) {
+       toast.error(error?.response?.data?.message || "Sign in failed");
+       console.log(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center">
-      <div className="p-6 min-w-xl rounded-md border border-gray-300">
-        <h1 className="text-2xl mb-4 font-medium text-center uppercase text-orange-500">
-          Sign Up
-        </h1>
-        <form action="#" onSubmit={handleSignIn}>
-          <div className="mb-4">
-            <label className="text-sm text-gray-800">Email</label>
-            <input
-              type="text"
-              placeholder="Enter email..."
-              name="email"
-              onChange={handleAuthDataChange}
-              className="w-full rounded-md px-3 py-1.5 text-gray-500/90 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500"
-            />
+    <div className="min-h-screen flex text-gray-900 bg-white">
+      <div className="w-full flex items-center justify-center p-8 sm:p-12 lg:p-24 shadow-2xl relative z-10 bg-white">
+        <div className="w-full max-w-md">
+          <div className="mb-10 text-center lg:text-left">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
+            <p className="text-gray-500">
+              Please enter your credentials to access your account.
+            </p>
           </div>
+          
+          <form onSubmit={handleSignIn} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                name="email"
+                required
+                onChange={handleAuthDataChange}
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
+              />
+            </div>
 
-          <div>
-            <label className="text-sm text-gray-800">Password</label>
-            <input
-              type="text"
-              name="password"
-              onChange={handleAuthDataChange}
-              placeholder="Enter password..."
-              className="w-full rounded-md px-3 py-1.5 text-gray-500/90 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500"
-            />
-          </div>
-          <p className="py-4 text-gray-500/90">
-            Do you don't have an account?{" "}
-            <span className="font-medium underline cursor-pointer ml-2">
-              sign Up
-            </span>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <Link href="#" className="text-sm font-medium text-orange-600 hover:text-orange-500 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
+              <input
+                type="password"
+                name="password"
+                required
+                onChange={handleAuthDataChange}
+                placeholder="Enter password..."
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg text-sm font-bold text-white bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
+            >
+              {isLoading ? "Signing In..." : "Sign In"}
+            </button>
+          </form>
+
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Don't have an account yet?{" "}
+            <Link href="/sign-up" className="font-semibold text-orange-600 hover:text-orange-500 transition-colors">
+              Create an account
+            </Link>
           </p>
-          <button className="w-full text-white font-medium rounded-md bg-orange-500 px-3 py-1.5">
-            Sign In
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

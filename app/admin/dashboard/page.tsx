@@ -228,7 +228,7 @@ export default function DashboardPage() {
             return (
               <article
                 key={item.label}
-                className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80"
+                className="rounded-lg bg-white p-5 shadow-sm   ring-1 ring-slate-200/80"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className={`rounded-lg p-2.5 ring-1 ${item.accent}`}>{item.icon}</div>

@@ -77,7 +77,7 @@ const AllProduct = () => {
 
       <main className="bg-white">
         <div className="app-container flex flex-col gap-7 py-7 lg:flex-row lg:items-start">
-          <aside className="w-full lg:sticky lg:top-20 lg:w-72">
+          <aside className="w-full lg:sticky lg:top-20 lg:w-100">
             <div className="max-h-none overflow-hidden rounded-md border border-slate-200 bg-white lg:max-h-[calc(100vh-6rem)]">
               <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
                 <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ const AllProduct = () => {
                 <section>
                   <label
                     htmlFor="product-sort"
-                    className="mb-2 block text-base font-medium text-slate-500"
+                    className="mb-2 block text-base font-medium text-slate-800"
                   >
                     Sort
                   </label>
@@ -116,7 +116,7 @@ const AllProduct = () => {
                     id="product-sort"
                     value={sortBy}
                     onChange={(event) => setSortBy(event.target.value)}
-                    className="h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+                    className="h-12 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-500"
                   >
                     <option value="latest">Latest</option>
                     <option value="price-low">Price: low to high</option>
@@ -128,7 +128,7 @@ const AllProduct = () => {
                 <section>
                   <label
                     htmlFor="product-search"
-                    className="mb-2 block text-base font-medium text-slate-500"
+                    className="mb-2 block text-base font-medium text-slate-800"
                   >
                     Search
                   </label>
@@ -147,10 +147,10 @@ const AllProduct = () => {
 
                 <section className="border-t border-slate-200 pt-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-base font-medium text-slate-500">
+                    <h3 className="text-base font-medium text-slate-800">
                       Price range
                     </h3>
-                    <span className="rounded-md px-2 py-0.5 text-sm font-semibold text-orange-600">
+                    <span className="rounded-md px-2 py-0.5 text-sm font-semibold text-emerald-500">
                       ${priceRange[0]} - ${priceRange[1]}
                     </span>
                   </div>
@@ -169,7 +169,7 @@ const AllProduct = () => {
 
                 <section className="border-t border-slate-200 pt-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <h3 className="text-base font-medium text-slate-500">
+                    <h3 className="text-base font-medium text-slate-800">
                       Categories
                     </h3>
                     <span className="text-xs text-slate-400">

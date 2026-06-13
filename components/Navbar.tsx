@@ -17,11 +17,11 @@ const navItems: Array<{ path: string, label: string }> = [
         label: "Shop"
     },
     {
-        path: "/",
+        path: "/about",
         label: "About Us"
     },
     {
-        path: "/",
+        path: "/contact",
         label: "Contact"
     }
 ]
