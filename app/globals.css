@@ -61,36 +61,39 @@ body {
   body {
     font-family: var(--font-sans);
   }
+  
   .btn {
     @apply px-3 py-1.5 rounded-md text-white;
   }
+  
   .btn-primary {
     @apply bg-orange-500;
   }
+  
   .form-control {
     @apply px-3 py-1.5 rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-orange-500 text-slate-800;
   }
+
   .app-container {
     @apply px-6 md:px-16 lg:px-32 overflow-x-hidden;
   }
+  
   button {
-    @apply cursor-pointer;
+    @apply cursor-pointer transition-all duration-300;
   }
+  
   input {
-    @apply border-0 hover:outline-2 hover:-outline-offset-2 hover:outline-orange-500;
+    @apply transition-all duration-300;
+  }
+
+  .form-control {
+    @apply border-0 outline-1 -outline-offset-1 outline-slate-300 hover:outline-2 hover:-outline-offset-2 hover:outline-orange-500;
   }
 }
 
 @layer components {
-  #product-price-range {
-    @apply h-1.5 rounded-full bg-slate-200;
-  }
-
-  #product-price-range .range-slider__range {
-    @apply bg-orange-500;
-  }
 
   #product-price-range .range-slider__thumb {
-    @apply h-4 w-4 border-2 border-white bg-orange-500;
+    @apply h-4 w-4;
   }
 }

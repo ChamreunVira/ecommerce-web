@@ -8,30 +8,30 @@ import Link from "next/link";
 import React from "react";
 
 const navItems: Array<{ path: string, label: string }> = [
-    {
-        path: "/",
-        label: "Home"
-    },
-    {
-        path: "/all-product",
-        label: "Shop"
-    },
-    {
-        path: "/about",
-        label: "About Us"
-    },
-    {
-        path: "/contact",
-        label: "Contact"
-    }
+  {
+    path: "/",
+    label: "Home"
+  },
+  {
+    path: "/all-product",
+    label: "Shop"
+  },
+  {
+    path: "/about",
+    label: "About Us"
+  },
+  {
+    path: "/contact",
+    label: "Contact"
+  }
 ]
 
 type NavbarType = {
-    handleToggleCartSidebar: () => void;
+  toggleCart: () => void;
 }
 
-const Navbar: React.FC<NavbarType> = ({ handleToggleCartSidebar }) => {
-  const { router, user } = useAppContext();
+const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
+  const { router, user , getTotalCart } = useAppContext();
 
   return (
     <header className="sticky top-0 left-0 z-40 border-b border-slate-200 bg-white">
@@ -65,14 +65,19 @@ const Navbar: React.FC<NavbarType> = ({ handleToggleCartSidebar }) => {
           >
             <Search size={18} />
           </button>
-          <button
-            type="button"
-            onClick={handleToggleCartSidebar}
-            className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-orange-50 hover:text-orange-600"
-            aria-label="Open shopping cart"
-          >
-            <ShoppingBag size={18} />
-          </button>
+          <div className="relative">
+            <div className="w-4 h-4 flex items-center justify-center rounded-full absolute -top-0.5 right-0.5 bg-rose-500">
+              <span className="text-xs text-white">{getTotalCart()}</span>
+            </div>
+            <button
+              type="button"
+              onClick={toggleCart}
+              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+              aria-label="Open shopping cart"
+            >
+              <ShoppingBag size={18} />
+            </button>
+          </div>
           <div className="hidden items-center gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 text-sm text-slate-700 sm:flex">
             <User size={16} className="text-slate-500" />
             <span className="max-w-28 truncate">

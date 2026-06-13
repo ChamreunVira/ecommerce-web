@@ -65,10 +65,12 @@ const AllProduct = () => {
 
   return (
     <>
-      <main className="bg-white">
+      <main className="bg-white md:h-[calc(100vh-12rem)]">
         <div className="app-container flex flex-col gap-7 py-7 lg:flex-row lg:items-start">
+          
+          {/* sidebar */}
           <aside className="w-full lg:sticky lg:top-20 lg:w-100">
-            <div className="max-h-none overflow-hidden rounded-md border border-slate-200 bg-white lg:max-h-[calc(100vh-6rem)]">
+            <div className="max-h-none overflow-hidden rounded-md border border-slate-200 bg-white lg:min-h-[calc(100vh-20rem)]">
               <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
                 <div className="flex items-center gap-2">
                   <span className="flex h-10 w-10 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
@@ -86,7 +88,7 @@ const AllProduct = () => {
                   <button
                     type="button"
                     onClick={resetFilters}
-                    className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"
+                    className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-sm font-semibold text-rose-500 hover:bg-rose-50"
                   >
                     <X size={15} />
                     Reset
@@ -167,17 +169,17 @@ const AllProduct = () => {
                     </span>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
                       onClick={() => setSelectedCategory("")}
-                      className={`flex w-full items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${selectedCategory === ""
-                          ? "text-orange-500"
-                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      className={`flex w-fit font-semibold items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${selectedCategory === ""
+                        ? "text-white bg-orange-500"
+                        : "border-slate-200 bg-slate-100/50 text-slate-600 hover:bg-slate-50"
                         }`}
                     >
                       <span>All products</span>
-                      <span className="text-xs">{products.length}</span>
+                      <span className="ml-3 text-xs">{products.length}</span>
                     </button>
 
                     {categories.map((category) => (
@@ -185,9 +187,9 @@ const AllProduct = () => {
                         key={category.name}
                         type="button"
                         onClick={() => setSelectedCategory(category.name)}
-                        className={`flex w-full items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${selectedCategory === category.name
-                            ? "text-orange-500"
-                            : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                        className={`flex w-fit font-semibold items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${selectedCategory === category.name
+                          ? "text-white bg-orange-500"
+                          : "border-slate-200 bg-slate-100/50 text-slate-600 hover:bg-slate-50"
                           }`}
                       >
                         <span className="truncate">{category.name}</span>

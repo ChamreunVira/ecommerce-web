@@ -1,10 +1,13 @@
 "use client";
 
 import { useAppContext } from '@/context/AppContext';
-import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import BAKONG_LOGO from "@/assets/bakong_logo.png"
+import { toast } from 'react-toastify';
 
 export default function CheckoutPage() {
-    const [paymentMethod, setPaymentMethod] = useState("KHQR");
+    const [paymentMethod, setPaymentMethod] = useState("KHQR_BAKONG");
     const [note, setNote] = useState("");
 
     const { cartItems } = useAppContext();
@@ -23,7 +26,7 @@ export default function CheckoutPage() {
     const [isCreatingAddress, setIsCreatingAddress] = useState(false);
     const [newAddress, setNewAddress] = useState({ fullName: "", phone: "", addressLine: "", city: "" });
 
-    const shippingFee = 2.00;
+    const shippingFee = 0.00;
     const subtotal = cartItems.reduce((total, item) => {
         const finalPrice = item.unitPrice * (1 - item.discountRate);
         return total + (finalPrice * item.quantity);
@@ -48,13 +51,13 @@ export default function CheckoutPage() {
     const handlePlaceOrder = (e: any) => {
         e.preventDefault();
         if (cartItems.length === 0) {
-            alert("កន្ត្រកទំនិញរបស់អ្នកទទេរ!");
+            toast.warning("កន្ត្រកទំនិញរបស់អ្នកទទេរ!");
             return;
         }
 
         const selectedAddress = savedAddresses.find(a => a.id === selectedAddressId);
         if (!selectedAddress && !isCreatingAddress) {
-            alert("Please select or create a shipping address.");
+            toast.warning("Please select or create a shipping address.");
             return;
         }
 
@@ -83,8 +86,8 @@ export default function CheckoutPage() {
                                         Shipping Address
                                     </h2>
                                     {!isCreatingAddress && (
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             onClick={() => setIsCreatingAddress(true)}
                                             className="text-sm text-orange-600 font-medium hover:underline"
                                         >
@@ -96,18 +99,18 @@ export default function CheckoutPage() {
                                 {!isCreatingAddress ? (
                                     <div className="space-y-4">
                                         {savedAddresses.map((addr) => (
-                                            <div 
-                                                key={addr.id} 
+                                            <div
+                                                key={addr.id}
                                                 onClick={() => setSelectedAddressId(addr.id)}
-                                                className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-orange-500 bg-orange-50/20 ring-1 ring-orange-500' : 'border-gray-200 hover:border-orange-500'}`}
+                                                className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'bg-slate-100/50 border-slate-200' : 'border-gray-200'}`}
                                             >
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
-                                                        <input 
-                                                            type="radio" 
+                                                        <input
+                                                            type="radio"
                                                             checked={selectedAddressId === addr.id}
                                                             readOnly
-                                                            className="w-4 h-4 text-orange-500 accent-orange-500"
+                                                            className="w-4 h-4"
                                                         />
                                                         <span className="font-bold text-gray-800">{addr.fullName}</span>
                                                         <span className="text-gray-400">|</span>
@@ -121,80 +124,80 @@ export default function CheckoutPage() {
                                         ))}
                                     </div>
                                 ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Full Name <span className='text-rose-500'>*</span></label>
-                                        <input
-                                            type="text"
-                                            value={newAddress.fullName}
-                                            onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })}
-                                            className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
-                                            placeholder="John Doe"
-                                            required
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Full Name <span className='text-rose-500'>*</span></label>
+                                            <input
+                                                type="text"
+                                                value={newAddress.fullName}
+                                                onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })}
+                                                className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                                                placeholder="John Doe"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Phone <span className='text-rose-500'>*</span></label>
+                                            <input
+                                                type="tel"
+                                                value={newAddress.phone}
+                                                onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+                                                className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                                                placeholder="012345678"
+                                                required
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">City/Province <span className='text-rose-500'>*</span></label>
+                                            <input
+                                                type="text"
+                                                value={newAddress.city}
+                                                onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                                                placeholder="Phnom Penh"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Address Line <span className='text-rose-500'>*</span></label>
+                                            <input
+                                                type="text"
+                                                value={newAddress.addressLine}
+                                                onChange={(e) => setNewAddress({ ...newAddress, addressLine: e.target.value })}
+                                                className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                                                placeholder="House No., Street, Sangkat..."
+                                                required
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2 flex justify-end gap-2 mt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsCreatingAddress(false)}
+                                                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    if (newAddress.fullName && newAddress.phone && newAddress.addressLine && newAddress.city) {
+                                                        const newId = savedAddresses.length ? Math.max(...savedAddresses.map(a => a.id)) + 1 : 1;
+                                                        setSavedAddresses([...savedAddresses, { id: newId, ...newAddress }]);
+                                                        setSelectedAddressId(newId);
+                                                        setNewAddress({ fullName: "", phone: "", addressLine: "", city: "" });
+                                                        setIsCreatingAddress(false);
+                                                    } else {
+                                                        alert("Please fill all required fields.");
+                                                    }
+                                                }}
+                                                className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 transition"
+                                            >
+                                                Save Address
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Phone <span className='text-rose-500'>*</span></label>
-                                        <input
-                                            type="tel"
-                                            value={newAddress.phone}
-                                            onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
-                                            className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
-                                            placeholder="012345678"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">City/Province <span className='text-rose-500'>*</span></label>
-                                        <input
-                                            type="text"
-                                            value={newAddress.city}
-                                            onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
-                                            className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
-                                            placeholder="Phnom Penh"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Address Line <span className='text-rose-500'>*</span></label>
-                                        <input
-                                            type="text"
-                                            value={newAddress.addressLine}
-                                            onChange={(e) => setNewAddress({ ...newAddress, addressLine: e.target.value })}
-                                            className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
-                                            placeholder="House No., Street, Sangkat..."
-                                            required
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 flex justify-end gap-2 mt-2">
-                                        <button 
-                                            type="button" 
-                                            onClick={() => setIsCreatingAddress(false)}
-                                            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button 
-                                            type="button"
-                                            onClick={() => {
-                                                if(newAddress.fullName && newAddress.phone && newAddress.addressLine && newAddress.city) {
-                                                    const newId = savedAddresses.length ? Math.max(...savedAddresses.map(a => a.id)) + 1 : 1;
-                                                    setSavedAddresses([...savedAddresses, { id: newId, ...newAddress }]);
-                                                    setSelectedAddressId(newId);
-                                                    setNewAddress({ fullName: "", phone: "", addressLine: "", city: "" });
-                                                    setIsCreatingAddress(false);
-                                                } else {
-                                                    alert("Please fill all required fields.");
-                                                }
-                                            }}
-                                            className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 transition"
-                                        >
-                                            Save Address
-                                        </button>
-                                    </div>
-                                </div>
                                 )}
-                                
+
                                 <div className="mt-6 pt-4 border-t border-slate-100">
                                     <label className="block text-sm font-medium text-gray-600 mb-1">Note (Optional)</label>
                                     <textarea
@@ -213,28 +216,21 @@ export default function CheckoutPage() {
                                     Payment Method
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <label className={`border p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'KHQR' ? 'border-orange-500 bg-orange-50/10' : 'border-slate-200 hover:border-orange-500'}`}>
-                                        <input
-                                            type="radio"
-                                            name="paymentMethod"
-                                            value="KHQR"
-                                            checked={paymentMethod === 'KHQR'}
-                                            onChange={() => setPaymentMethod('KHQR')}
-                                            className="w-5 h-5 accent-orange-500 cursor-pointer"
-                                        />
-                                        <div className="ml-3">
-                                            <span className="block font-medium text-slate-800">ABA KHQR</span>
+                                    <div onClick={() => setPaymentMethod('KHQR_BAKONG')} className={`border-0 p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'KHQR_BAKONG' ? 'outline-2 outline-orange-500' : 'border-slate-200'}`}>
+                                        <Image className='w-20 object-cover' src={BAKONG_LOGO} alt='bakong_logo'/>
+                                        <div>
+                                            <span className="block font-medium text-slate-800">BAKONG KHQR</span>
                                             <span className="text-xs text-gray-500">ទូទាត់ភ្លាមៗតាម App ធនាគារ</span>
                                         </div>
-                                    </label>
-                                    <label className={`border p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'CASH_ON_DELIVERY' ? 'border-orange-500 bg-orange-50/10' : 'border-slate-200 hover:border-orange-500'}`}>
+                                    </div>
+                                    <label className={`border-0 p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'CASH_ON_DELIVERY' ? 'outline-2 outline-orange-500' : 'border-slate-200'}`}>
                                         <input
                                             type="radio"
                                             name="paymentMethod"
                                             value="CASH_ON_DELIVERY"
                                             checked={paymentMethod === 'CASH_ON_DELIVERY'}
                                             onChange={() => setPaymentMethod('CASH_ON_DELIVERY')}
-                                            className="w-5 h-5 accent-orange-500 cursor-pointer"
+                                            className="w-5 h-5 cursor-pointer"
                                         />
                                         <div className="ml-3">
                                             <span className="block font-medium text-slate-800">ទូទាត់ពេលទំនិញមកដល់</span>
@@ -284,10 +280,10 @@ export default function CheckoutPage() {
                             <button
                                 type="button"
                                 onClick={handlePlaceOrder}
-                                className="btn btn-primary w-full mt-6 py-3 font-bold shadow-md shadow-orange-500/20 flex items-center justify-center gap-2"
+                                className="btn btn-primary w-full mt-6 py-3 font-bold flex items-center justify-center gap-2 hover:bg-orange-600"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                បញ្ជាទិញឥឡូវនេះ
+                                Checkout
                             </button>
                         </div>
                     </div>

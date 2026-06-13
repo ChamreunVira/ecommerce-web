@@ -1,8 +1,6 @@
 import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
 import { Product } from "@/types/product";
-import { User } from "@/types/user";
-import axios from "axios";
 
 class ProductService {
     private endPoint = "/products";

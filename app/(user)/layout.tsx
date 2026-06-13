@@ -10,7 +10,7 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <Navbar handleToggleCartSidebar={() => setCartOpen(true)} />
+      <Navbar toggleCart={() => setCartOpen(true)} />
       <CartSidbar open={cartOpen} setOpen={setCartOpen} />
       {children}
       <Footer />
