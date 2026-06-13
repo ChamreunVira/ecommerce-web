@@ -1,8 +1,6 @@
 "use client";
 
-import CartSidbar from "@/components/CartSidbar";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+
 import ProductCard from "@/components/ProductCard";
 import { useAppContext } from "@/context/AppContext";
 import { Product } from "@/types/product";
@@ -17,7 +15,6 @@ const AllProduct = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
-  const [cartOpen, setCartOpen] = useState(false);
 
   const categories = useMemo(() => {
     const counts = new Map<string, number>();
@@ -31,22 +28,17 @@ const AllProduct = () => {
   const filteredProducts = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
 
+    // search
     const filtered = products.filter((product) => {
-      const discountedPrice =
-        product.price - product.price * (product.discount / 100);
-      const matchesPrice =
-        discountedPrice >= priceRange[0] && discountedPrice <= priceRange[1];
-      const matchesCategory =
-        !selectedCategory || product.categoryName === selectedCategory;
-      const matchesSearch =
-        !query ||
-        product.name.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query) ||
-        product.categoryName.toLowerCase().includes(query);
+      const discountedPrice = product.price - product.price * (product.discount / 100);
+      const matchesPrice = discountedPrice >= priceRange[0] && discountedPrice <= priceRange[1];
+      const matchesCategory = !selectedCategory || product.categoryName === selectedCategory;
+      const matchesSearch = !query || product.name.toLowerCase().includes(query) || product.description.toLowerCase().includes(query) || product.categoryName.toLowerCase().includes(query);
 
       return matchesPrice && matchesCategory && matchesSearch;
     });
 
+    // sort filter price by selected
     return filtered.sort((a, b) => {
       const priceA = a.price - a.price * (a.discount / 100);
       const priceB = b.price - b.price * (b.discount / 100);
@@ -58,11 +50,12 @@ const AllProduct = () => {
     });
   }, [products, priceRange, selectedCategory, searchTerm, sortBy]);
 
-  const activeFilterCount =
-    Number(Boolean(searchTerm.trim())) +
-    Number(Boolean(selectedCategory)) +
-    Number(priceRange[0] > 0 || priceRange[1] < 1000);
 
+  //count all option filter
+  const activeFilterCount = Number(Boolean(searchTerm.trim())) + Number(Boolean(selectedCategory)) + Number(priceRange[0] > 0 || priceRange[1] < 1000);
+
+
+  // reset filter
   const resetFilters = () => {
     setPriceRange([0, 1000]);
     setSelectedCategory("");
@@ -72,9 +65,6 @@ const AllProduct = () => {
 
   return (
     <>
-      <Navbar handleToggleCartSidebar={() => setCartOpen(true)} />
-      <CartSidbar open={cartOpen} setOpen={setCartOpen} />
-
       <main className="bg-white">
         <div className="app-container flex flex-col gap-7 py-7 lg:flex-row lg:items-start">
           <aside className="w-full lg:sticky lg:top-20 lg:w-100">
@@ -181,11 +171,10 @@ const AllProduct = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedCategory("")}
-                      className={`flex w-full items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${
-                        selectedCategory === ""
+                      className={`flex w-full items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${selectedCategory === ""
                           ? "text-orange-500"
                           : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                      }`}
+                        }`}
                     >
                       <span>All products</span>
                       <span className="text-xs">{products.length}</span>
@@ -196,11 +185,10 @@ const AllProduct = () => {
                         key={category.name}
                         type="button"
                         onClick={() => setSelectedCategory(category.name)}
-                        className={`flex w-full items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${
-                          selectedCategory === category.name
+                        className={`flex w-full items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${selectedCategory === category.name
                             ? "text-orange-500"
                             : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                        }`}
+                          }`}
                       >
                         <span className="truncate">{category.name}</span>
                         <span className="ml-3 text-xs">{category.count}</span>
@@ -255,7 +243,6 @@ const AllProduct = () => {
           </section>
         </div>
       </main>
-      <Footer />
     </>
   );
 };

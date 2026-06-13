@@ -1,11 +1,10 @@
 "use client";
-import Navbar from '@/components/Navbar';
+
 import React from 'react';
 
 export default function AboutPage() {
     return (
         <>
-            <Navbar handleToggleCartSidebar={() => false} />
             <div className="bg-white min-h-screen text-gray-800">
                 {/* Main Content */}
                 <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">

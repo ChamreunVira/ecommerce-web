@@ -1,5 +1,5 @@
 "use client";
-import Navbar from '@/components/Navbar';
+
 import { useAppContext } from '@/context/AppContext';
 import React, { useEffect, useState } from 'react';
 
@@ -69,7 +69,6 @@ export default function CheckoutPage() {
 
     return (
         <>
-            <Navbar handleToggleCartSidebar={() => { return false }} />
             <div className="app-container">
                 <section className="max-w-7xl mx-auto py-8">
 

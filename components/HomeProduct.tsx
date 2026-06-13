@@ -8,19 +8,8 @@ import React, { useEffect, useState } from 'react'
 const HomeProduct = () => {
 
     const [filterProducts , setFilterProducts] = useState<Product[]>([]);
-    const [categories , setCategories] = useState<string[]>([]);
-    const { products , router } = useAppContext();
-    
-    const handleFetchCategory = async () => {
-      try {
-        const resposne = await categoryService.getAll();
-        if(resposne.message) {
-          setCategories([...new Set(resposne.data.map((category) => category.name))]);
-        }
-      }catch(e: any) {
-        console.log(e.message);
-      }
-    }
+    const { categories, products , router } = useAppContext();
+  
 
     const handleSelectCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const category = e.target.value;
@@ -33,9 +22,8 @@ const HomeProduct = () => {
     }
 
     useEffect(() => {
-      handleFetchCategory();
-      return () => new AbortController().abort();
-    } , []);
+      console.log(categories , products)
+    })
 
   return (
     <div className='flex flex-col items-center pt-14'>
@@ -46,8 +34,8 @@ const HomeProduct = () => {
           className='rounded-md border border-slate-300 px-3 py-1.5 cursor-pointer'>
             <option value="">All Categories</option>
             {categories.map((category , i) => (
-              <option key={i} value={category}>
-                {category}
+              <option key={i} value={category.id}>
+                {category.name}
               </option>
             ))}
           </select>

@@ -9,10 +9,13 @@ import { authService } from "@/services/auth-service";
 import { cartService } from "@/services/cart-service";
 import { toast } from "react-toastify";
 import { Cart, CartItem } from "@/types/cart";
+import { Category } from "@/types/category";
+import { categoryService } from "@/services/category-service";
 
 type AppContextType = {
   router: AppRouterInstance;
   products: Product[];
+  categories: Category[];
   handleAddProductToCart: (id: string | number, quantity?: number) => Promise<void>;
   refreshCart: () => Promise<void>;
   getTotalCart: () => number;
@@ -38,6 +41,7 @@ export const AppContextProvider = ({
 }) => {
   const router = useRouter();
 
+  const [categories , setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [user, setUser] = useState<Partial<User>>({});
@@ -53,10 +57,9 @@ export const AppContextProvider = ({
       if(response.success) {
         setCart(response.data);
         setCartItems(response.data.cartItems);
-        toast.success("Product added into cart.");
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("Fials to add product to cart: " + error.message);
     }
   };
 
@@ -67,45 +70,50 @@ export const AppContextProvider = ({
         setCart(response.data);
         setCartItems(response.data.cartItems);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.log("Fials to refresh cart: " + error.message);
     }
   };
 
   useEffect(() => {
     let isCurrent = true;
 
-    const hydrateApp = async () => {
+    const initApp = async () => {
       try {
-        const [authResponse, productResponse, cartResponse] = await Promise.all([
-          authService.isAuthenticated(),
-          productService.getAll(),
-          cartService.getAll(),
+        const [authResponse, categoryResponse, cartResponse] = await Promise.all([
+          authService.isAuthenticated().catch(() => false),
+          categoryService.getAll().catch(() => ({ success: false, data: [] })),
+          cartService.getAll().catch(() => ({ success: false, data: { cartItems: [] } })),
         ]);
 
         if (!isCurrent) return;
 
         if (authResponse) {
-          const currentUserResponse = await authService.me();
-          if (currentUserResponse.success && isCurrent) {
-            setUser(currentUserResponse.data);
+          try {
+            const currentUserResponse = await authService.me();
+            if (currentUserResponse.success && isCurrent) {
+              setUser(currentUserResponse.data);
+            }
+          } catch (err: any) {
+            console.log(err.message);
           }
         }
 
-        if (productResponse.success) {
-          setProducts(productResponse.data);
+        if (categoryResponse && categoryResponse.success) {
+          setCategories(categoryResponse.data);
+          setProducts(categoryResponse.data.flatMap((category: Category) => category.products || []));
         }
 
-        if (cartResponse.success) {
+        if (cartResponse && cartResponse.success) {
           setCart(cartResponse.data);
-          setCartItems(cartResponse.data.cartItems);
+          setCartItems(cartResponse.data.cartItems || []);
         }
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        console.log(error.message);
       }
     };
 
-    hydrateApp();
+    initApp();
 
     return () => {
       isCurrent = false;
@@ -116,6 +124,7 @@ export const AppContextProvider = ({
     cart,
     router,
     products,
+    categories,
     handleAddProductToCart,
     refreshCart,
     getTotalCart,

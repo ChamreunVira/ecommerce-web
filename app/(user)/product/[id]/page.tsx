@@ -1,8 +1,6 @@
 "use client";
 
-import CartSidbar from "@/components/CartSidbar";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+
 import ProductCard from "@/components/ProductCard";
 import { useAppContext } from "@/context/AppContext";
 import { productService } from "@/services/product-service";
@@ -18,7 +16,7 @@ const ProductDetail = () => {
   const [primaryImg, setPrimaryImg] = useState<string | null>(null);
   const [productData, setProductData] = useState<Product>();
   const [quantity, setQuantity] = useState(1);
-  const [cartOpen, setCartOpen] = useState(false);
+
 
   useEffect(() => {
     let isCurrent = true;
@@ -66,7 +64,6 @@ const ProductDetail = () => {
   const handleAddToCart = async () => {
     if (!productData) return;
     await handleAddProductToCart(productData.id, quantity);
-    setCartOpen(true);
   };
 
   if (!productData) {
@@ -75,9 +72,6 @@ const ProductDetail = () => {
 
   return (
     <>
-      <Navbar handleToggleCartSidebar={() => setCartOpen(true)} />
-      <CartSidbar open={cartOpen} setOpen={setCartOpen} />
-
       <main className="bg-white">
         <section className="app-container py-8">
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,520px)_minmax(360px,1fr)] lg:gap-12">
@@ -260,8 +254,6 @@ const ProductDetail = () => {
           </section>
         </section>
       </main>
-
-      <Footer />
     </>
   );
 };

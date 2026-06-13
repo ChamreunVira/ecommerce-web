@@ -1,7 +1,6 @@
 "use client";
 import { assets } from "@/assets/assets";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+
 import OrderSummary from "@/components/OrderSummary";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
@@ -12,7 +11,6 @@ const CartPage = () => {
 
   return (
     <>
-      <Navbar handleToggleCartSidebar={() => {}}/>
       <section className="app-container py-14 flex gap-10">
         <div className="w-full flex flex-col">
           <div className="w-full flex items-center justify-between">
@@ -50,7 +48,6 @@ const CartPage = () => {
         </div>
         <OrderSummary />
       </section>
-      <Footer />
     </>
   );
 };
