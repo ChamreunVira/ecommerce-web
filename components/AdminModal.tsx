@@ -21,7 +21,7 @@ export default function AdminModal({
   onClose,
 }: AdminModalProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm">
+    <div className="fixed inset-0 z-999 flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm">
       <div className={`flex max-h-[90vh] w-full ${maxWidth} flex-col overflow-hidden rounded-lg bg-white shadow-2xl ring-1 ring-slate-200`}>
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
           <div className="min-w-0">

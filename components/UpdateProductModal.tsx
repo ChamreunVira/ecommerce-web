@@ -20,7 +20,7 @@ type UpdateCategoryModalProps = {
     onUpdated: () => void;
 };
 
-export default function UpdateProductModal({ categories, product, onClose, onUpdated}: UpdateCategoryModalProps) {
+export default function UpdateProductModal({ categories, product, onClose, onUpdated }: UpdateCategoryModalProps) {
 
 
     const [formData, setFormData] = useState<CategoryFormData>({
@@ -67,10 +67,13 @@ export default function UpdateProductModal({ categories, product, onClose, onUpd
         form.append("discount", String(formData.discount));
         form.append("qty", String(formData.qty));
         form.append("userId", String(user.id));
-        images.forEach((image) => form.append("images", image));
+        if (images) {
+            console.log("Image logic is working....")
+            images.forEach((image) => form.append("images", image));
+        }
 
         try {
-            const response = await productService.update(product.id, formData);
+            const response = await productService.update(product.id, form);
             if (response.success) {
                 toast.success("Product created successfully.");
                 onUpdated();
@@ -88,7 +91,7 @@ export default function UpdateProductModal({ categories, product, onClose, onUpd
         setImages(Array.from(event.target.files || []));
     };
 
-    useEffect(() => console.log(categories) , [])
+    useEffect(() => console.log(categories), [])
 
     return (
         <AdminModal

@@ -1,7 +1,7 @@
 "use client";
 import AdminNavbar from "@/components/AdminNavbar";
 import Sidbar, { SidebarItem } from "@/components/Sidbar";
-import { Box, LayoutDashboard, ListOrdered, Settings, ShoppingCart, Users } from "lucide-react";
+import { Box, LayoutDashboard, ListOrdered, Package, Settings, ShoppingCart, Tags, Users } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -31,13 +31,13 @@ export default function AdminLayout({
           path="/admin/user"
         />
         <SidebarItem
-          icon={<Box />}
+          icon={<Package />}
           label="Products"
           active={isActive("/admin/product")}
           path="/admin/product"
         />
         <SidebarItem
-          icon={<ListOrdered />}
+          icon={<Tags />}
           label="Categories"
           active={isActive("/admin/category")}
           path="/admin/category"

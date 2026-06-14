@@ -242,7 +242,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                 <div className="border-t border-slate-200 px-5 py-5">
                   <div className="flex items-center justify-between text-base font-semibold text-slate-950">
                     <p>Subtotal</p>
-                    <p>{formatCurrency(cart.totalAmount || 0)}</p>
+                    <p>{cart.totalAmount}</p>
                   </div>
                   <p className="mt-1 text-sm text-slate-500">
                     Shipping and taxes are calculated at checkout.

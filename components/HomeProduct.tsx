@@ -1,15 +1,13 @@
 "use client";
 import ProductCard from '@/components/ProductCard';
 import { useAppContext } from '@/context/AppContext'
-import { categoryService } from '@/services/category-service';
 import { Product } from '@/types/product';
-import React, { useEffect, useState } from 'react'
+import{ useState } from 'react'
 
 const HomeProduct = () => {
 
     const [filterProducts , setFilterProducts] = useState<Product[]>([]);
     const { categories, products , router } = useAppContext();
-  
 
     // const handleSelectCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
     //   const category = e.target.value;
@@ -54,7 +52,7 @@ const HomeProduct = () => {
             )}
         </div>
         <button 
-        onClick={() => {router.push("/all-product")}}
+        onClick={() => {router.push("/products")}}
         className='rounded-sm cursor-pointer border border-gray-300 px-12 py-2 text-gray-500 hover:bg-gray-50 font-medium'>See more</button>
     </div>
   )

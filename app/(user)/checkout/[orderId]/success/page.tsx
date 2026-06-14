@@ -1,6 +1,12 @@
+"use client";
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
-export default function OrderSuccessPage({ params }: { params: { orderId: string } }) {
+export default function OrderSuccessPage() {
+
+    const params = useParams();
+    const orderId = params.orderId;
+
     return (
         <div className="app-container min-h-[60vh] flex items-center justify-center py-12">
             <div className="bg-white p-10 rounded-lg border border-slate-100 max-w-lg w-full text-center space-y-6">
@@ -18,7 +24,7 @@ export default function OrderSuccessPage({ params }: { params: { orderId: string
                 <div className="bg-slate-50 border border-slate-100 p-5 rounded-lg text-sm text-slate-600 space-y-3 mx-auto mt-6">
                     <div className="flex justify-between items-center text-base">
                         <span>Order ID:</span>
-                        <span className="font-bold text-slate-900">#{params.orderId}</span>
+                        <span className="font-bold text-slate-900">#{orderId}</span>
                     </div>
                 </div>
 

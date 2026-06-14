@@ -11,8 +11,11 @@ import { orderService } from '@/services/order-service';
 import { paymentService } from '@/services/payment-service';
 import { Payment } from '@/types/payment';
 import QrCodeModal from '@/components/QrCodeModal';
-import { PaymentStatus } from '@/constant/constant';
+import { OrderStatus, PaymentStatus } from '@/constant/constant';
 import { cartService } from '@/services/cart-service';
+import { OrderItem } from '@/types/order-item';
+import { stat } from 'fs';
+import { OrderSummary } from '@/types/order-summary';
 
 export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState("KHQR_BAKONG");
@@ -22,16 +25,7 @@ export default function CheckoutPage() {
 
     const { cartItems, router } = useAppContext();
 
-    const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([
-        // {
-        //     id: 1,
-        //     fullName: "",
-        //     phone: "",
-        //     addressLine: "",
-        //     city: "",
-        //     default: false
-        // }
-    ]);
+    const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<number | null>(1);
     const [isCreatingAddress, setIsCreatingAddress] = useState(false);
     const [newAddress, setNewAddress] = useState({
@@ -46,10 +40,12 @@ export default function CheckoutPage() {
     );
 
     const shippingFee = 0.00;
+
     const subtotal = cartItems.reduce((total, item) => {
         const finalPrice = item.unitPrice * (1 - item.discountRate);
         return total + (finalPrice * item.quantity);
     }, 0);
+
     const totalAmount = subtotal + shippingFee;
 
     const orderItems = cartItems.map((item, index) => {
@@ -58,12 +54,12 @@ export default function CheckoutPage() {
             orderItemId: index + 1,
             productId: item.productId,
             productName: item.productName,
-            imageUrl: item.productImage,
+            primaryImage: item.productImage,
             unitPrice: item.unitPrice,
             discountRate: item.discountRate,
             finalPrice: finalPrice,
             quantity: item.quantity,
-            subtotal: finalPrice * item.quantity
+            totalAmount: finalPrice * item.quantity,
         };
     });
 
@@ -71,8 +67,7 @@ export default function CheckoutPage() {
         try {
             const response = await paymentService.create(orderId);
             if (response.success) {
-                setPayment(response.data)
-                console.log(response.data);
+                setPayment(response.data);
             }
         } catch (error) {
             console.log(error);
@@ -84,6 +79,14 @@ export default function CheckoutPage() {
         if (cartItems.length === 0) {
             toast.warning("កន្ត្រកទំនិញរបស់អ្នកទទេរ!");
             return;
+        }
+
+        if (!selectedAddressId) {
+            const defaultAddr = savedAddresses.find(a => a.default);
+            console.log("Default address is:", defaultAddr)
+            if (defaultAddr) {
+                setSelectedAddressId(defaultAddr.id);
+            }
         }
 
         const selectedAddress = savedAddresses.find(a => a.id === selectedAddressId);
@@ -137,8 +140,7 @@ export default function CheckoutPage() {
         try {
             const response = await shippingAddressService.getAll();
             if (response.success) {
-                const defaultAddress = response.data.filter(address => address.default);
-                setSavedAddresses(defaultAddress);
+                setSavedAddresses(response.data);
             }
         } catch (e: any) {
             console.log("Fails to load shipping address: ", e.message);
@@ -157,8 +159,6 @@ export default function CheckoutPage() {
                         toast.success("Payment successfully.");
 
                         setPayment(null);
-
-                        await cartService.clearCart();
 
                         router.push(`/checkout/${payment.orderId}/success`);
                     }
@@ -345,18 +345,17 @@ export default function CheckoutPage() {
                             <h2 className="text-lg font-bold mb-4 text-gray-700">Order Summary</h2>
 
                             <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto mb-4 pr-1">
-                                {orderItems.map((item) => {
-                                    const finalPrice = item.unitPrice * (1 - item.discountRate);
+                                {orderItems.map((item, i) => {
                                     return (
-                                        <div key={item.productId} className="flex items-center justify-between py-3">
+                                        <div key={i} className="flex items-center justify-between py-3">
                                             <div className="flex items-center gap-3">
-                                                <img src={`http://localhost:8080/api/v1/uploads/${item.imageUrl}`} alt={item.productName} className="w-12 h-12 object-cover rounded border border-slate-100 bg-gray-50" />
+                                                <img src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.primaryImage}`} alt="primary-image" className="w-12 h-12 object-cover rounded border border-slate-100 bg-gray-50" />
                                                 <div>
                                                     <h4 className="text-sm font-medium text-slate-800 max-w-40 truncate">{item.productName}</h4>
                                                     <span className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">Qty: {item.quantity}</span>
                                                 </div>
                                             </div>
-                                            <span className="text-sm font-semibold text-slate-900">${(finalPrice * item.quantity).toFixed(2)}</span>
+                                            <span className="text-sm font-semibold text-slate-900">${item.totalAmount.toFixed(2)}</span>
                                         </div>
                                     );
                                 })}
@@ -381,9 +380,10 @@ export default function CheckoutPage() {
                                 type="button"
                                 onClick={handlePlaceOrder}
                                 className="btn btn-primary w-full mt-6 py-3 font-bold flex items-center justify-center gap-2 hover:bg-orange-600"
+                                disabled={loading}
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                Checkout
+                                {loading ? "Processing..." : "Checkout"}
                             </button>
                         </div>
                     </div>

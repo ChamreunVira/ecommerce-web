@@ -5,7 +5,7 @@ import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const { router , handleAddProductToCart } = useAppContext();
+  const { router, handleAddProductToCart } = useAppContext();
 
   return (
     <div className="relative max-w-50">
@@ -14,9 +14,9 @@ const ProductCard = ({ product }: { product: Product }) => {
       </div>
       <div className="bg-gray-500/10 rounded-md group">
         <Image
-          onClick={() => {router.push(`/product/${product.id}`)}}
+          onClick={() => { router.push(`/product/${product.id}`) }}
           className="cover group-hover:scale-110 transition-transform duration-300"
-          src={`http://localhost:8080/api/v1/uploads/${product.images[0]}`}
+          src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${product.images[0]}`}
           alt={product.name}
           width={800}
           height={800}
@@ -45,8 +45,8 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="flex items-center justify-between mt-4">
           <h5 className="font-medium text-[0.9rem]">${product.price}</h5>
           <button
-          onClick={() => handleAddProductToCart(product.id)}
-          className="text-[0.8rem] flex gap-2 rounded-lg px-3 text-gray-900 py-1 border border-gray-300 hover:bg-gray-100 cursor-pointer">
+            onClick={() => handleAddProductToCart(product.id)}
+            className="text-[0.8rem] flex gap-2 rounded-lg px-3 text-gray-900 py-1 border border-gray-300 hover:bg-gray-100 cursor-pointer">
             <ShoppingCart className="w-4 h-4" /> Add to cart
           </button>
         </div>
