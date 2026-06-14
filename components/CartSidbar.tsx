@@ -19,7 +19,7 @@ type CartSidbarType = {
 };
 
 const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
-  const { handleAddProductToCart, refreshCart } = useAppContext();
+  const { handleAddProductToCart, handleMinusProductFromCart, refreshCart } = useAppContext();
   const [cart, setCart] = useState<Partial<Cart>>({});
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [updatingItemId, setUpdatingItemId] = useState<number | null>(null);
@@ -44,6 +44,24 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
     }
   };
 
+  const handleDecrementQuantity = async (item: CartItem) => {
+    try {
+      const updated = cartItems.find(item => item.id === item.id);
+      let qauntity = updated?.quantity as number;
+      qauntity -= 1;
+      setUpdatingItemId(item.productId);
+      await handleMinusProductFromCart(item.id, qauntity);
+      const response = await cartService.getAll();
+      if(response.success) {
+        syncCart(response.data);
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setUpdatingItemId(null)
+    }
+  }
+
   const handleDeleteCartItem = async (cartItemId: number) => {
     try {
       setUpdatingItemId(cartItemId);
@@ -59,6 +77,11 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
       setUpdatingItemId(null);
     }
   };
+
+  function formatCurrency(value: number) {
+    return `$${Number(value || 0).toFixed(2)}`;
+  }
+
 
   useEffect(() => {
     if (!open) return;
@@ -166,10 +189,10 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                               <div className="flex h-8 items-center rounded-md border border-slate-200 bg-white">
                                 <button
                                   type="button"
-                                  disabled
-                                  className="flex h-full w-8 cursor-not-allowed items-center justify-center text-slate-300"
+                                  disabled={updatingItemId === item.id}
+                                  onClick={() => handleDecrementQuantity(item)}
+                                  className="flex h-full w-8 items-center justify-center text-slate-500 hover:bg-slate-50 disabled:cursor-wait disabled:text-slate-300"
                                   aria-label="Decrease quantity"
-                                  title="Quantity decrease needs a cart update API"
                                 >
                                   <Minus size={14} />
                                 </button>
@@ -250,7 +273,3 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
 };
 
 export default CartSidbar;
-
-function formatCurrency(value: number) {
-  return `$${Number(value || 0).toFixed(2)}`;
-}

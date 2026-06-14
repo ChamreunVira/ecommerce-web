@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         hostname: 'localhost',
         port: '8080',
       },
+      {
+        protocol: 'https',
+        hostname: 'bakong.nbc.gov.kh/en/images/qr/BKRTKHPPXXX.png',
+      }
     ],
   },
 };

@@ -21,6 +21,6 @@ export enum PaymentStatus {
 }
 
 export enum Currency {
-    KM = "KM",
-    EN = "EN"
+    KM = "KHR",
+    EN = "USD"
 }

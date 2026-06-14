@@ -12,7 +12,7 @@ export default function AboutPage() {
                         <div>
                             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">Our Story</h2>
                             <p className="mt-4 text-lg text-gray-500">
-                                Founded in 2024, QuickCart started with a simple idea: making online shopping accessible and reliable for everyone. What began as a small operation has grown into a premier destination for thousands of happy customers.
+                                Founded in 2026, ViraDev started with a simple idea: making online shopping accessible and reliable for everyone. What began as a small operation has grown into a premier destination for thousands of happy customers.
                             </p>
                             <p className="mt-4 text-lg text-gray-500">
                                 We rigorously source our products, ensuring that everything you buy meets our high standards for quality. Your satisfaction is our absolute priority.

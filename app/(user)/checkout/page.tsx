@@ -2,29 +2,48 @@
 
 import { useAppContext } from '@/context/AppContext';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { EventHandler, useEffect, useState } from 'react';
 import BAKONG_LOGO from "@/assets/bakong_logo.png"
 import { toast } from 'react-toastify';
+import { shippingAddressService } from '@/services/shipping-address-service';
+import { ShippingAddress } from '@/types/shipping-address';
+import { orderService } from '@/services/order-service';
+import { paymentService } from '@/services/payment-service';
+import { Payment } from '@/types/payment';
+import QrCodeModal from '@/components/QrCodeModal';
+import { PaymentStatus } from '@/constant/constant';
+import { cartService } from '@/services/cart-service';
 
 export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState("KHQR_BAKONG");
     const [note, setNote] = useState("");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [payment, setPayment] = useState<Payment | null>(null);
 
-    const { cartItems } = useAppContext();
-    console.log(cartItems);
+    const { cartItems, router } = useAppContext();
 
-    const [savedAddresses, setSavedAddresses] = useState([
-        {
-            id: 1,
-            fullName: "ចំរើន វីរ៉ា",
-            phone: "(097) 3056 747",
-            addressLine: "ផ្ទះលេខ 67, ផ្លូវ ០67, សង្កាត់បឹងសាឡាង",
-            city: "Phnom Penh"
-        }
+    const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([
+        // {
+        //     id: 1,
+        //     fullName: "",
+        //     phone: "",
+        //     addressLine: "",
+        //     city: "",
+        //     default: false
+        // }
     ]);
     const [selectedAddressId, setSelectedAddressId] = useState<number | null>(1);
     const [isCreatingAddress, setIsCreatingAddress] = useState(false);
-    const [newAddress, setNewAddress] = useState({ fullName: "", phone: "", addressLine: "", city: "" });
+    const [newAddress, setNewAddress] = useState({
+        fullName: "",
+        phone: "",
+        addressLine: "",
+        province: "",
+        city: "",
+        country: "Cabodia",
+        isDefault: false
+    }
+    );
 
     const shippingFee = 0.00;
     const subtotal = cartItems.reduce((total, item) => {
@@ -48,7 +67,19 @@ export default function CheckoutPage() {
         };
     });
 
-    const handlePlaceOrder = (e: any) => {
+    const handleGenerateQrCode = async (orderId: number) => {
+        try {
+            const response = await paymentService.create(orderId);
+            if (response.success) {
+                setPayment(response.data)
+                console.log(response.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handlePlaceOrder = async (e: any) => {
         e.preventDefault();
         if (cartItems.length === 0) {
             toast.warning("កន្ត្រកទំនិញរបស់អ្នកទទេរ!");
@@ -61,14 +92,88 @@ export default function CheckoutPage() {
             return;
         }
 
-        console.log("Order placed:", {
-            items: orderItems,
-            shippingAddress: selectedAddress,
-            paymentMethod,
-            note,
-            totalAmount
-        });
+        try {
+            setLoading(true);
+            const response = await orderService.create({
+                shippingAddressId: selectedAddress?.id || 1,
+                paymentMethod: paymentMethod,
+                note: note
+            });
+            if (response.success) {
+                handleGenerateQrCode(response.data.orderId);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleShippingAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        if (value.toLowerCase().includes("phnom penh")) {
+            setNewAddress((prev) => ({ ...prev, city: value }));
+        }
+        setNewAddress((prev) => ({ ...prev, [name]: value }));
+    }
+
+    const handleCreateShippingAddress = async () => {
+        try {
+            setLoading(true);
+            const response = await shippingAddressService.create(newAddress);
+            if (response.success) {
+                handleFetchShippingAddress();
+                setIsCreatingAddress(true);
+                toast.success("Success to create shipping address.");
+            }
+        } catch (e: any) {
+            console.log("Faild to create shipping address: ", e.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleFetchShippingAddress = async () => {
+        try {
+            const response = await shippingAddressService.getAll();
+            if (response.success) {
+                const defaultAddress = response.data.filter(address => address.default);
+                setSavedAddresses(defaultAddress);
+            }
+        } catch (e: any) {
+            console.log("Fails to load shipping address: ", e.message);
+        }
+    }
+
+    useEffect(() => {
+        if (!payment?.transactionId) return;
+        const interval = setInterval(async () => {
+            try {
+                const response = await paymentService.checkStatus(payment.transactionId);
+                if (response.success) {
+                    if (response.data.status === PaymentStatus.PAID) {
+                        clearInterval(interval);
+
+                        toast.success("Payment successfully.");
+
+                        setPayment(null);
+
+                        await cartService.clearCart();
+
+                        router.push(`/checkout/${payment.orderId}/success`);
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }, 5000);
+        return () => clearInterval(interval)
+    }, [payment]);
+
+    useEffect(() => {
+        handleFetchShippingAddress();
+        return () => new AbortController().abort();
+    }, [])
 
     return (
         <>
@@ -98,9 +203,9 @@ export default function CheckoutPage() {
 
                                 {!isCreatingAddress ? (
                                     <div className="space-y-4">
-                                        {savedAddresses.map((addr) => (
+                                        {savedAddresses.map((addr, i) => (
                                             <div
-                                                key={addr.id}
+                                                key={i}
                                                 onClick={() => setSelectedAddressId(addr.id)}
                                                 className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'bg-slate-100/50 border-slate-200' : 'border-gray-200'}`}
                                             >
@@ -129,10 +234,11 @@ export default function CheckoutPage() {
                                             <label className="block text-sm font-medium text-gray-600 mb-1">Full Name <span className='text-rose-500'>*</span></label>
                                             <input
                                                 type="text"
+                                                name="fullName"
                                                 value={newAddress.fullName}
-                                                onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })}
+                                                onChange={handleShippingAddressChange}
                                                 className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
-                                                placeholder="John Doe"
+                                                placeholder="ឆុន ប៊ុនឈាន"
                                                 required
                                             />
                                         </div>
@@ -140,8 +246,9 @@ export default function CheckoutPage() {
                                             <label className="block text-sm font-medium text-gray-600 mb-1">Phone <span className='text-rose-500'>*</span></label>
                                             <input
                                                 type="tel"
+                                                name="phone"
                                                 value={newAddress.phone}
-                                                onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })}
+                                                onChange={handleShippingAddressChange}
                                                 className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
                                                 placeholder="012345678"
                                                 required
@@ -151,8 +258,9 @@ export default function CheckoutPage() {
                                             <label className="block text-sm font-medium text-gray-600 mb-1">City/Province <span className='text-rose-500'>*</span></label>
                                             <input
                                                 type="text"
-                                                value={newAddress.city}
-                                                onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
+                                                name="province"
+                                                value={newAddress.province}
+                                                onChange={handleShippingAddressChange}
                                                 className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
                                                 placeholder="Phnom Penh"
                                                 required
@@ -162,8 +270,9 @@ export default function CheckoutPage() {
                                             <label className="block text-sm font-medium text-gray-600 mb-1">Address Line <span className='text-rose-500'>*</span></label>
                                             <input
                                                 type="text"
+                                                name="addressLine"
                                                 value={newAddress.addressLine}
-                                                onChange={(e) => setNewAddress({ ...newAddress, addressLine: e.target.value })}
+                                                onChange={handleShippingAddressChange}
                                                 className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
                                                 placeholder="House No., Street, Sangkat..."
                                                 required
@@ -179,17 +288,8 @@ export default function CheckoutPage() {
                                             </button>
                                             <button
                                                 type="button"
-                                                onClick={() => {
-                                                    if (newAddress.fullName && newAddress.phone && newAddress.addressLine && newAddress.city) {
-                                                        const newId = savedAddresses.length ? Math.max(...savedAddresses.map(a => a.id)) + 1 : 1;
-                                                        setSavedAddresses([...savedAddresses, { id: newId, ...newAddress }]);
-                                                        setSelectedAddressId(newId);
-                                                        setNewAddress({ fullName: "", phone: "", addressLine: "", city: "" });
-                                                        setIsCreatingAddress(false);
-                                                    } else {
-                                                        alert("Please fill all required fields.");
-                                                    }
-                                                }}
+                                                onClick={() => handleCreateShippingAddress()}
+                                                disabled={loading}
                                                 className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 transition"
                                             >
                                                 Save Address
@@ -216,14 +316,14 @@ export default function CheckoutPage() {
                                     Payment Method
                                 </h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div onClick={() => setPaymentMethod('KHQR_BAKONG')} className={`border-0 p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'KHQR_BAKONG' ? 'outline-2 outline-orange-500' : 'border-slate-200'}`}>
-                                        <Image className='w-20 object-cover' src={BAKONG_LOGO} alt='bakong_logo'/>
+                                    <div onClick={() => setPaymentMethod('KHQR_BAKONG')} className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'KHQR_BAKONG' ? 'outline-2 outline-orange-500' : 'border-slate-200'}`}>
+                                        <Image className='w-20 object-cover' src={BAKONG_LOGO} alt='bakong_logo' />
                                         <div>
                                             <span className="block font-medium text-slate-800">BAKONG KHQR</span>
                                             <span className="text-xs text-gray-500">ទូទាត់ភ្លាមៗតាម App ធនាគារ</span>
                                         </div>
                                     </div>
-                                    <label className={`border-0 p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'CASH_ON_DELIVERY' ? 'outline-2 outline-orange-500' : 'border-slate-200'}`}>
+                                    <label className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'CASH_ON_DELIVERY' ? 'outline-2 outline-orange-500' : 'border-slate-200'}`}>
                                         <input
                                             type="radio"
                                             name="paymentMethod"
@@ -288,6 +388,10 @@ export default function CheckoutPage() {
                         </div>
                     </div>
                 </section>
+
+                {/* modal */}
+                {payment?.qrString && <QrCodeModal qrString={payment.qrString} amount={payment.amount} currency={payment.currency} expiresAt={payment.expiresAt} onClose={() => setPayment(null)} />}
+
             </div>
         </>
     );

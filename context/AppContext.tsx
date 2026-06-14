@@ -16,7 +16,8 @@ type AppContextType = {
   router: AppRouterInstance;
   products: Product[];
   categories: Category[];
-  handleAddProductToCart: (id: string | number, quantity?: number) => Promise<void>;
+  handleAddProductToCart: (id: number, quantity?: number) => Promise<void>;
+  handleMinusProductFromCart: (id: number , quantity: number) => Promise<void>;
   refreshCart: () => Promise<void>;
   getTotalCart: () => number;
   cartItems: CartItem[];
@@ -34,14 +35,14 @@ export const useAppContext = (): AppContextType => {
   return context;
 };
 
-export const AppContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+type AppContextProviderType = {
+  children: React.ReactNode
+}
+
+export const AppContextProvider: React.FC<AppContextProviderType> = ({ children }) => {
   const router = useRouter();
 
-  const [categories , setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [user, setUser] = useState<Partial<User>>({});
@@ -51,17 +52,29 @@ export const AppContextProvider = ({
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
-  const handleAddProductToCart = async (productId: string | number, quantity = 1) => {
+  const handleAddProductToCart = async (productId: number, quantity = 1) => {
     try {
-      const response = await cartService.addToCart(Number(productId), quantity);
-      if(response.success) {
+      const response = await cartService.addToCart(productId, quantity);
+      if (response.success) {
         setCart(response.data);
         setCartItems(response.data.cartItems);
       }
-    } catch (error: any) {
-      console.log("Fials to add product to cart: " + error.message);
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const handleMinusProductFromCart = async (cartId: number, quantity: number) => {
+    try {
+      const response = await cartService.updateCart(cartId, quantity);
+      if (response.success) {
+        setCart(response.data);
+        setCartItems(response.data.cartItems);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const refreshCart = async () => {
     try {
@@ -80,6 +93,7 @@ export const AppContextProvider = ({
 
     const initApp = async () => {
       try {
+
         const [authResponse, categoryResponse, cartResponse] = await Promise.all([
           authService.isAuthenticated().catch(() => false),
           categoryService.getAll().catch(() => ({ success: false, data: [] })),
@@ -108,6 +122,7 @@ export const AppContextProvider = ({
           setCart(cartResponse.data);
           setCartItems(cartResponse.data.cartItems || []);
         }
+
       } catch (error: any) {
         console.log(error.message);
       }
@@ -126,6 +141,7 @@ export const AppContextProvider = ({
     products,
     categories,
     handleAddProductToCart,
+    handleMinusProductFromCart,
     refreshCart,
     getTotalCart,
     cartItems,
