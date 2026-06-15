@@ -1,5 +1,5 @@
 export interface ShippingAddress {
-    id: number
+    addressId: number
     fullName: string;
     phone: string;
     addressLine: string;

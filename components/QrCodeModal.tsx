@@ -52,9 +52,10 @@ const QrCodeModal: React.FC<QrCodeModalType> = ({ qrString, currency, amount, ex
                 </button>
 
                 {/* Header */}
-                <div className="w-full bg-linear-to-r from-red-600 to-red-500 text-white text-center py-5">
-                    <h2 className="text-2xl font-bold tracking-wider">KHQR PAYMENT</h2>
-                    <p className="text-red-100 text-sm mt-1">Scan to pay with any banking app</p>
+                <div className="w-full bg-linear-to-r from-orange-500 to-orange-400 text-white text-center py-5">
+                    <h2 className="text-2xl font-bold tracking-wider">Payment</h2>
+                    <p>Acleda, ABA, ChipMong, Amret, MayBank, Brasak etc.
+                    </p>
                 </div>
 
                 <div className='w-full p-8 flex flex-col items-center justify-center'>
@@ -75,15 +76,15 @@ const QrCodeModal: React.FC<QrCodeModalType> = ({ qrString, currency, amount, ex
                                 <div className="w-full h-1 bg-red-500/50 shadow-[0_0_15px_3px_rgba(239,68,68,0.5)] absolute top-0 animate-[scan_2s_ease-in-out_infinite]"></div>
                             </div>
                         </div>
-                        <div className='absolute z-20 -mb-62.5'>
+                        <div className='absolute z-20 -mb-62.5 *:text-center'>
                             <h1 className="text-xl font-semibold text-gray-800 tracking-wide">Chamreun Vira</h1>
                             <p className='text-slate-800 font-sm'>vira_chamreun@bkrt</p>
                         </div>
                     </div>
 
                     <div className="mt-10 text-center w-full bg-gray-50 py-4 rounded-xl border border-gray-100">
-                        <p className="text-sm text-gray-500 tracking-widest mb-1 font-semibold">Total Amount</p>
-                        <p className="text-2xl font-extrabold text-rose-500">
+                        <p className="text-sm text-gray-500 tracking-widest mb-1 font-medium">Total Amount</p>
+                        <p className="text-xl font-semibold text-rose-500">
                             {currency === 'USD' && '$'} {amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} {currency === "KHR" && "៛"}
                         </p>
                     </div>

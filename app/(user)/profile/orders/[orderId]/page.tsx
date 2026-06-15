@@ -18,11 +18,11 @@ export default function ViewOrderPage() {
 
     useEffect(() => {
         if (orderId) {
-            fetchOrderDetails(orderId);
+            fetchOrderDetails(Number(order));
         }
     }, [orderId]);
 
-    const fetchOrderDetails = async (id: string) => {
+    const fetchOrderDetails = async (id: number) => {
         try {
             setLoading(true);
             const response = await orderService.getById(id);
@@ -100,7 +100,7 @@ export default function ViewOrderPage() {
                                 {order.orderItems.map((item, index) => (
                                     <div key={index} className="flex gap-4 pt-4 first:pt-0">
                                         <div className="w-20 h-20 bg-slate-50 border border-slate-100 rounded overflow-hidden shrink-0">
-                                            <img src={`http://localhost:8080/api/v1/uploads/${item.imageUrl}`} alt={item.productName} className="w-full h-full object-cover" />
+                                            <img src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.imageUrl}`} alt={item.productName} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-slate-800 text-sm">{item.productName}</h3>

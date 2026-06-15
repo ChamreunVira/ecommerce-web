@@ -11,7 +11,7 @@ export default function OrderSuccessPage() {
         <div className="app-container min-h-[60vh] flex items-center justify-center py-12">
             <div className="bg-white p-10 rounded-lg border border-slate-100 max-w-lg w-full text-center space-y-6">
                 <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-12 h-12 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
@@ -32,7 +32,7 @@ export default function OrderSuccessPage() {
                     <Link href="/" className="px-6 py-3 font-semibold text-white bg-orange-500 rounded-md hover:bg-orange-600 transition flex-1">
                         Continue Shopping
                     </Link>
-                    <Link href="/profile" className="px-6 py-3 font-semibold text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 transition flex-1">
+                    <Link href={`/profile/orders/${orderId}`} className="px-6 py-3 font-semibold text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 transition flex-1">
                         View Orders
                     </Link>
                 </div>

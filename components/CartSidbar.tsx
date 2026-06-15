@@ -242,18 +242,18 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                 <div className="border-t border-slate-200 px-5 py-5">
                   <div className="flex items-center justify-between text-base font-semibold text-slate-950">
                     <p>Subtotal</p>
-                    <p>{cart.totalAmount}</p>
+                    <p>{cart.totalAmount}$</p>
                   </div>
                   <p className="mt-1 text-sm text-slate-500">
                     Shipping and taxes are calculated at checkout.
                   </p>
 
                   <Link
-                    href="/checkout"
+                    href={cartItems.length < 0 ? "" : '/checkout'}
                     onClick={() => setOpen(false)}
                     className="mt-5 flex h-11 items-center justify-center rounded-md bg-orange-500 px-6 text-sm font-semibold text-white transition hover:bg-orange-600"
                   >
-                    Checkout
+                    Processed to Checkout
                   </Link>
                   <button
                     type="button"

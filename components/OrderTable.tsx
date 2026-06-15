@@ -22,10 +22,10 @@ const OrderTable: React.FC<OrderTableType> = ({ order, handleDelete }) => {
       key: "image",
       className: "w-28",
       render: (_, item) => {
-        const firstItem = item.orderItems?.[0];
-        const image = firstItem?.imageUrl;
+        const orderItem = item.orderItems;
+        const firstItem = orderItem?.[0].imageUrl;
 
-        if (!image) {
+        if (!firstItem) {
           return (
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-xs text-slate-400">
               No img
@@ -33,11 +33,11 @@ const OrderTable: React.FC<OrderTableType> = ({ order, handleDelete }) => {
           );
         }
 
-        const imageSrc = image.startsWith("http") ? image : `http://localhost:8080/api/v1/uploads/${image}`;
+        const imageSrc = `${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${firstItem}`;
         return (
           <Image
             src={imageSrc}
-            alt={firstItem.productName || "Product"}
+            alt={""}
             width={48}
             height={48}
             className="h-12 w-12 rounded-lg object-cover"

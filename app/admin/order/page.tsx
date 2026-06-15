@@ -2,10 +2,11 @@
 import Loading from "@/components/Loading";
 import OrderTable from "@/components/OrderTable";
 import SearchInput from "@/components/SearchInput";
+import { OrderStatus, PaymentStatus } from "@/constant/constant";
 import { orderService } from "@/services/order-service";
 import { Order } from "@/types/order";
 import { Download, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const OrderAdminPage = () => {
@@ -13,14 +14,17 @@ const OrderAdminPage = () => {
   const [filteredOrders, setfilteredOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const handleFetchOrder = async () => {
+  const handleFetchOrder = async (status: OrderStatus) => {
     try {
-      const response = await orderService.getAll();
+      setIsLoading(true);
+      const response = await orderService.getAll(status);
       if (response.success) {
         setOrders(response.data);
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -35,22 +39,18 @@ const OrderAdminPage = () => {
     setfilteredOrders(filtered);
   };
 
-  useEffect(() => {
-    const fetchInitialOrders = async () => {
-      setIsLoading(true);
-      try {
-        const response = await orderService.getAll();
-        if (response.success) {
-          setOrders(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const handleFilterByStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const {value} = e.target;
+    if(value === '') {
+      handleFetchOrder(value as OrderStatus);
+    } else {
+      handleFetchOrder(value as OrderStatus);
+    }
+  }
 
-    fetchInitialOrders();
+  useEffect(() => {
+    handleFetchOrder(OrderStatus.PENDING);
+    return () => new AbortController().abort();
   }, []);
 
   return (
@@ -65,7 +65,7 @@ const OrderAdminPage = () => {
 
           <div className="flex gap-3">
             <button
-              onClick={handleFetchOrder}
+              onClick={() => handleFetchOrder(OrderStatus.PENDING)}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-100"
             >
               <RefreshCw size={18} />
@@ -80,6 +80,20 @@ const OrderAdminPage = () => {
 
         <div className="flex flex-col gap-3 rounded-md bg-white p-4 md:flex-row md:items-center">
           <SearchInput onInputChange={handleSearchByName} />
+
+          <select
+            onChange={handleFilterByStatus}
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 md:w-56"
+          >
+            <option value="">All categories</option>
+            <option value={OrderStatus.CANCELLED}>{OrderStatus.CANCELLED}</option>
+            <option value={OrderStatus.DELIVERED}>{OrderStatus.DELIVERED}</option>
+            <option value={OrderStatus.PENDING}>{OrderStatus.PENDING}</option>
+            <option value={OrderStatus.PENDING_PAYMENT}>{OrderStatus.PENDING_PAYMENT}</option>
+            <option value={OrderStatus.PROCESSING}>{OrderStatus.PROCESSING}</option>
+            <option value={OrderStatus.REFUNDED}>{OrderStatus.REFUNDED}</option>
+            <option value={OrderStatus.SHIPPED}>{OrderStatus.SHIPPED}</option>
+          </select>
         </div>
 
         {isLoading ? (

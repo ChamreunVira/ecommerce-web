@@ -3,6 +3,7 @@ import { useAppContext } from "@/context/AppContext";
 import { Product } from "@/types/product";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { router, handleAddProductToCart } = useAppContext();
@@ -45,9 +46,10 @@ const ProductCard = ({ product }: { product: Product }) => {
         <div className="flex items-center justify-between mt-4">
           <h5 className="font-medium text-[0.9rem]">${product.price}</h5>
           <button
+            disabled={product.qty === 0}
             onClick={() => handleAddProductToCart(product.id)}
-            className="text-[0.8rem] flex gap-2 rounded-lg px-3 text-gray-900 py-1 border border-gray-300 hover:bg-gray-100 cursor-pointer">
-            <ShoppingCart className="w-4 h-4" /> Add to cart
+            className={`text-[0.8rem] flex gap-2 rounded-lg px-3 py-1 border cursor-pointer ${product.qty <= 0 ? 'border-amber-500 text-amber-500' : 'border-gray-300 hover:bg-gray-100 text-gray-900'}`}>
+            <ShoppingCart className="w-4 h-4" /> {product.qty <= 0 ? "Out of stock" : "Add to cart"}
           </button>
         </div>
       </div>

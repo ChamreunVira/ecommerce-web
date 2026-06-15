@@ -1,4 +1,4 @@
-import { http, setAccessToken, clearAccessToken } from "@/lib/axios";
+import { clearAccessToken, http, setAccessToken } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
 import { User } from "@/types/user";
 

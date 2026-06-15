@@ -201,7 +201,7 @@ export default function CreateProductModal({
             </label>
             <input
               id="discount"
-              type="number"
+              type="text"
               min="0"
               max="100"
               placeholder="10"

@@ -2,7 +2,7 @@
 
 import { useAppContext } from '@/context/AppContext';
 import Image from 'next/image';
-import React, { EventHandler, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import BAKONG_LOGO from "@/assets/bakong_logo.png"
 import { toast } from 'react-toastify';
 import { shippingAddressService } from '@/services/shipping-address-service';
@@ -11,11 +11,8 @@ import { orderService } from '@/services/order-service';
 import { paymentService } from '@/services/payment-service';
 import { Payment } from '@/types/payment';
 import QrCodeModal from '@/components/QrCodeModal';
-import { OrderStatus, PaymentStatus } from '@/constant/constant';
-import { cartService } from '@/services/cart-service';
-import { OrderItem } from '@/types/order-item';
-import { stat } from 'fs';
-import { OrderSummary } from '@/types/order-summary';
+import { PaymentStatus } from '@/constant/constant';
+import { Trash } from 'lucide-react';
 
 export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState("KHQR_BAKONG");
@@ -26,7 +23,7 @@ export default function CheckoutPage() {
     const { cartItems, router } = useAppContext();
 
     const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([]);
-    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(1);
+    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
     const [isCreatingAddress, setIsCreatingAddress] = useState(false);
     const [newAddress, setNewAddress] = useState({
         fullName: "",
@@ -51,7 +48,6 @@ export default function CheckoutPage() {
     const orderItems = cartItems.map((item, index) => {
         const finalPrice = item.unitPrice * (1 - item.discountRate);
         return {
-            orderItemId: index + 1,
             productId: item.productId,
             productName: item.productName,
             primaryImage: item.productImage,
@@ -82,14 +78,15 @@ export default function CheckoutPage() {
         }
 
         if (!selectedAddressId) {
-            const defaultAddr = savedAddresses.find(a => a.default);
+            const defaultAddr = savedAddresses.find((a) => a.default === true);
             console.log("Default address is:", defaultAddr)
             if (defaultAddr) {
-                setSelectedAddressId(defaultAddr.id);
+                const id = defaultAddr.addressId;
+                setSelectedAddressId(id);
             }
         }
 
-        const selectedAddress = savedAddresses.find(a => a.id === selectedAddressId);
+        const selectedAddress = savedAddresses.find(a => a.addressId === selectedAddressId);
         if (!selectedAddress && !isCreatingAddress) {
             toast.warning("Please select or create a shipping address.");
             return;
@@ -98,7 +95,7 @@ export default function CheckoutPage() {
         try {
             setLoading(true);
             const response = await orderService.create({
-                shippingAddressId: selectedAddress?.id || 1,
+                shippingAddressId: selectedAddress?.addressId || 1,
                 paymentMethod: paymentMethod,
                 note: note
             });
@@ -120,6 +117,12 @@ export default function CheckoutPage() {
         setNewAddress((prev) => ({ ...prev, [name]: value }));
     }
 
+    const handleValidateShippingAddress = async () => {
+        if (savedAddresses.length > 5) {
+            toast.warn("Cannot create shipping address. because max address 10.");
+        }
+    }
+
     const handleCreateShippingAddress = async () => {
         try {
             setLoading(true);
@@ -139,11 +142,29 @@ export default function CheckoutPage() {
     const handleFetchShippingAddress = async () => {
         try {
             const response = await shippingAddressService.getAll();
-            if (response.success) {
+            if (response.success && response.data) {
                 setSavedAddresses(response.data);
+
+                const defaultAddr = response.data.find((a) => a.default);
+                if (defaultAddr) {
+                    const id = defaultAddr.addressId;
+                    setSelectedAddressId(id);
+                }
             }
         } catch (e: any) {
             console.log("Fails to load shipping address: ", e.message);
+        }
+    }
+
+    const handleDeleteAddress = async (addressId: number) => {
+        try {
+            const response = await shippingAddressService.delete(addressId);
+            if(response.success) {
+                toast.success("Deleted shipping addresss successfully.");
+                handleFetchShippingAddress();
+            }
+        }catch(e: any) {
+            toast.error("Failed to delete shipping address.");
         }
     }
 
@@ -193,7 +214,10 @@ export default function CheckoutPage() {
                                     {!isCreatingAddress && (
                                         <button
                                             type="button"
-                                            onClick={() => setIsCreatingAddress(true)}
+                                            onClick={() => {
+                                                handleValidateShippingAddress();
+                                                setIsCreatingAddress(true)
+                                            }}
                                             className="text-sm text-orange-600 font-medium hover:underline"
                                         >
                                             + Add New Address
@@ -202,31 +226,38 @@ export default function CheckoutPage() {
                                 </div>
 
                                 {!isCreatingAddress ? (
-                                    <div className="space-y-4">
-                                        {savedAddresses.map((addr, i) => (
-                                            <div
-                                                key={i}
-                                                onClick={() => setSelectedAddressId(addr.id)}
-                                                className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'bg-slate-100/50 border-slate-200' : 'border-gray-200'}`}
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <input
-                                                            type="radio"
-                                                            checked={selectedAddressId === addr.id}
-                                                            readOnly
-                                                            className="w-4 h-4"
-                                                        />
-                                                        <span className="font-bold text-gray-800">{addr.fullName}</span>
-                                                        <span className="text-gray-400">|</span>
-                                                        <span className="text-gray-600">{addr.phone}</span>
+                                    <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                                        {savedAddresses.map((addr: any, i) => {
+                                            const addrId = addr.addressId;
+                                            return (
+                                                <div
+                                                    key={i}
+                                                    onClick={() => setSelectedAddressId(addrId)}
+                                                    className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedAddressId === addrId && selectedAddressId !== null ? 'bg-slate-100/50 border-slate-200' : 'border-gray-200'}`}
+                                                >
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="radio"
+                                                                name="shippingAddress"
+                                                                checked={selectedAddressId === addrId && selectedAddressId !== null}
+                                                                readOnly
+                                                                className="w-4 h-4"
+                                                            />
+                                                            <span className="font-bold text-gray-800">{addr.fullName}</span>
+                                                            <span className="text-gray-400">|</span>
+                                                            <span className="text-gray-600">{addr.phone}{addr.default || addr.isDefault ? " (Default)" : ""}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className='flex justify-between items-center'>
+                                                        <p className="mt-2 text-sm text-gray-600 ml-6">
+                                                            {addr.addressLine}, {addr.city}
+                                                        </p>
+                                                        <Trash onClick={() => handleDeleteAddress(addr.addressId)} size={12} className='text-rose-500 cursor-pointer'/>
                                                     </div>
                                                 </div>
-                                                <p className="mt-2 text-sm text-gray-600 ml-6">
-                                                    {addr.addressLine}, {addr.city}
-                                                </p>
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

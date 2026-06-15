@@ -14,10 +14,10 @@ type OrderRequest = {
 class OrderService {
     private endPoint = "/orders";
 
-    async getAll(): Promise<ApiResponse<Order[]>> {
+    async getAll(status: OrderStatus): Promise<ApiResponse<Order[]>> {
         const response = await http.get(this.endPoint, {
             params: {
-                "status": OrderStatus.PENDING_PAYMENT
+                "status": status
             }
         });
         return response.data;
@@ -33,15 +33,15 @@ class OrderService {
         return response.data;
     }
 
-    async myOrder(status: OrderStatus): Promise<ApiResponse<OrderSummary[]>> {
-        const response = await http.get(`${this.endPoint}` , {
-            params: {
-                status: status
-            }
-        });
+    // async myOrder(status: OrderStatus): Promise<ApiResponse<OrderSummary[]>> {
+    //     const response = await http.get(`${this.endPoint}` , {
+    //         params: {
+    //             status: status
+    //         }
+    //     });
 
-        return response.data;
-    }
+    //     return response.data;
+    // }
 
 }
 
