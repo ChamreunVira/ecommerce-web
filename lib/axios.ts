@@ -67,7 +67,9 @@ http.interceptors.response.use(
         return http(originalRequest);
       } catch (refreshError) {
         setAccessToken(null);
-        window.location.href = "/sign-in";
+        if (typeof window !== "undefined") {
+          window.location.href = "/sign-in";
+        }
         return Promise.reject(refreshError);
       }
     }

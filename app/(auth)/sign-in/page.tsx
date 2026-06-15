@@ -2,35 +2,39 @@
 import { useAppContext } from "@/context/AppContext";
 import { clearAccessToken, setAccessToken } from "@/lib/axios";
 import { authService } from "@/services/auth-service";
-import { User } from "@/types/user";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import z from "zod";
 
-const SignInPage = () => {
-  const [authData, setAuthData] = useState<Partial<User>>({
-    email: "",
-    password: "",
+const signInSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8)
+});
+
+type SignInType = z.infer<typeof signInSchema>;
+
+const SignInPage: React.FC = () => {
+
+  const {register , handleSubmit , formState: { errors }} = useForm<SignInType>({
+    resolver: zodResolver(signInSchema),
   });
+
   const [isLoading, setIsLoading] = useState(false);
 
   const { router } = useAppContext();
 
-  const handleAuthDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAuthData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSignIn = async (data: SignInType) => {
     clearAccessToken();
     setIsLoading(true);
     try {
-      const response = await authService.signIn(authData);
+      const response = await authService.signIn(data);
       if (response.success) {
         toast.success("Welcome back!");
         setAccessToken(response.data.accessToken);
         if (response.data.roles.includes("ROLE_ADMIN")) {
-          // Re-route to dashboard assuming it's under admin
           router.push("/admin/dashboard");
         } else {
           router.push("/");
@@ -57,19 +61,18 @@ const SignInPage = () => {
             </p>
           </div>
           
-          <form onSubmit={handleSignIn} className="space-y-6">
+          <form onSubmit={handleSubmit(handleSignIn)} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
               </label>
               <input
+                {...register("email")}
                 type="email"
-                placeholder="you@example.com"
-                name="email"
-                required
-                onChange={handleAuthDataChange}
+                placeholder="virachamreun@gmail.com"
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
+              {errors.email && <p className="text-sm text-rose-500">{errors.email.message}</p>}
             </div>
 
             <div>
@@ -82,13 +85,12 @@ const SignInPage = () => {
                 </Link>
               </div>
               <input
+                {...register("password")}
                 type="password"
-                name="password"
-                required
-                onChange={handleAuthDataChange}
                 placeholder="Enter password..."
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
+              {errors.password && <p className="text-sm text-rose-500">{errors.password.message}</p>}
             </div>
 
             <button 

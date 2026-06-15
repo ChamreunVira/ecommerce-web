@@ -2,31 +2,36 @@
 import { useAppContext } from "@/context/AppContext";
 import { setAccessToken } from "@/lib/axios";
 import { authService } from "@/services/auth-service";
-import { User } from "@/types/user";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import z from "zod";
 
-const SignUpPage = () => {
-  const [authData, setAuthData] = useState<Partial<User>>({
-    fullName: "",
-    email: "",
-    password: "",
-    roles: []
+const signUpSchema = z.object({
+  fullName: z.string().min(5 , "Fullname must be at least 5 characters."),
+  email: z.email("Invalid email."),
+  password: z.string().min(8 , "Password must be at least 8 characters."),
+  roles: z.array(z.string()).optional(),
+});
+
+type SignUpType = z.infer<typeof signUpSchema>;
+
+const SignUpPage: React.FC = () => {
+
+  const { register, handleSubmit, formState: { errors } } = useForm<SignUpType>({
+    resolver: zodResolver(signUpSchema)
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const { router } = useAppContext();
 
-  const handleAuthDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAuthData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+  const handleSignUp = async (data: SignUpType) => {
+    console.log(data);
     try {
-      const response = await authService.signUp(authData);
+      setIsLoading(true);
+      const response = await authService.signUp(data);
       if (response.success) {
         toast.success("Account created successfully!");
         setAccessToken(response.data.accessToken);
@@ -45,6 +50,8 @@ const SignUpPage = () => {
   return (
     <div className="min-h-screen flex text-gray-900 bg-white">
       <div className="w-full flex items-center justify-center p-8 sm:p-12 lg:p-24 shadow-2xl relative z-10 bg-white">
+        
+        {/* container wrapper */}
         <div className="w-full max-w-md">
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign Up</h2>
@@ -53,19 +60,18 @@ const SignUpPage = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSignUp} className="space-y-6">
+          <form onSubmit={handleSubmit(handleSignUp)} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
               </label>
               <input
+                {...register("fullName")}
                 type="text"
                 placeholder="Chamreun Vira"
-                name="fullName"
-                required
-                onChange={handleAuthDataChange}
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
+              {errors.fullName && <p className="text-sm text-rose-500">{errors.fullName.message}</p>}
             </div>
 
             <div>
@@ -73,13 +79,12 @@ const SignUpPage = () => {
                 Email Address
               </label>
               <input
+                {...register("email")}
                 type="email"
                 placeholder="you@example.com"
-                name="email"
-                required
-                onChange={handleAuthDataChange}
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
+              {errors.email && <p className="text-sm text-rose-500">{errors.fullName?.message}</p>}
             </div>
 
             <div>
@@ -87,16 +92,15 @@ const SignUpPage = () => {
                 Password
               </label>
               <input
+                {...register("password")}
                 type="password"
-                name="password"
-                required
-                minLength={6}
-                onChange={handleAuthDataChange}
                 placeholder="Secure password (min 6 chars)"
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
+              {errors.password && <p className="text-sm text-rose-500">{errors.password.message}</p>}
             </div>
 
+            <input type="hidden" {...register("roles")}/>
             <button
               type="submit"
               disabled={isLoading}

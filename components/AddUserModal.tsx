@@ -105,7 +105,7 @@ export default function AddUserModal({
             id="fullName"
             type="text"
             onChange={handleUserFieldsChange}
-            placeholder="Sok Nara"
+            placeholder="Chamreun Vira"
             name="fullName"
             value={userData.fullName}
             className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"

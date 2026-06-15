@@ -30,7 +30,7 @@ interface TheadProps {
 export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => {
   return (
     <thead
-      className={cn("sticky top-0 z-[99] bg-white text-lg tracking-normal text-slate-500",className)}
+      className={cn("sticky top-0 z-99 bg-white text-lg tracking-normal text-slate-500",className)}
     >
       <tr>{children}</tr>
     </thead>
