@@ -62,24 +62,22 @@ http.interceptors.response.use(
             withCredentials: true,
           },
         );
-        
+
         if (response.status === 200) {
           const { accessToken } = response.data.data;
           setAccessToken(accessToken);
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return http(originalRequest);
         }
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        return http(originalRequest);
       } catch (refreshError) {
         setAccessToken(null);
-        if (typeof window !== "undefined" && window.location.pathname === "/sign-in") {
+        const authPages = ["/sign-in", "/sign-up"];
+        if (typeof window !== "undefined" && !authPages.some((p) => window.location.pathname.startsWith(p))) {
           window.location.href = "/sign-in";
         }
         return Promise.reject(refreshError);
       }
-    } 
+    }
 
     return Promise.reject(error);
   },
