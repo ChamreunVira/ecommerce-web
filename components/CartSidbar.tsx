@@ -19,7 +19,8 @@ type CartSidbarType = {
 };
 
 const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
-  const { handleAddProductToCart, handleMinusProductFromCart, refreshCart } = useAppContext();
+  const { handleAddProductToCart, handleMinusProductFromCart, refreshCart } =
+    useAppContext();
   const [cart, setCart] = useState<Partial<Cart>>({});
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [updatingItemId, setUpdatingItemId] = useState<number | null>(null);
@@ -46,21 +47,21 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
 
   const handleDecrementQuantity = async (item: CartItem) => {
     try {
-      const updated = cartItems.find(item => item.id === item.id);
+      const updated = cartItems.find((item) => item.id === item.id);
       let qauntity = updated?.quantity as number;
       qauntity -= 1;
       setUpdatingItemId(item.productId);
       await handleMinusProductFromCart(item.id, qauntity);
       const response = await cartService.getAll();
-      if(response.success) {
+      if (response.success) {
         syncCart(response.data);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setUpdatingItemId(null)
+      setUpdatingItemId(null);
     }
-  }
+  };
 
   const handleDeleteCartItem = async (cartItemId: number) => {
     try {
@@ -81,7 +82,6 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
   function formatCurrency(value: number) {
     return `$${Number(value || 0).toFixed(2)}`;
   }
-
 
   useEffect(() => {
     if (!open) return;
@@ -131,7 +131,8 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                         Shopping cart
                       </DialogTitle>
                       <p className="text-sm text-slate-500">
-                        {cartItems.length} item{cartItems.length === 1 ? "" : "s"}
+                        {cartItems.length} item
+                        {cartItems.length === 1 ? "" : "s"}
                       </p>
                     </div>
                   </div>
@@ -242,14 +243,14 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                 <div className="border-t border-slate-200 px-5 py-5">
                   <div className="flex items-center justify-between text-base font-semibold text-slate-950">
                     <p>Subtotal</p>
-                    <p>{cart.totalAmount}$</p>
+                    <p>{formatCurrency(cart?.totalAmount ?? 0)}</p>
                   </div>
                   <p className="mt-1 text-sm text-slate-500">
                     Shipping and taxes are calculated at checkout.
                   </p>
 
                   <Link
-                    href={cartItems.length < 0 ? "" : '/checkout'}
+                    href={cartItems.length > 0 ? "/checkout" : ""}
                     onClick={() => setOpen(false)}
                     className="mt-5 flex h-11 items-center justify-center rounded-md bg-orange-500 px-6 text-sm font-semibold text-white transition hover:bg-orange-600"
                   >

@@ -13,7 +13,6 @@ const signUpSchema = z.object({
   fullName: z.string().min(5, "Fullname must be at least 5 characters."),
   email: z.email("Invalid email."),
   password: z.string().min(8, "Password must be at least 8 characters."),
-  roles: z.array(z.string()).optional(),
 });
 
 type SignUpType = z.infer<typeof signUpSchema>;
@@ -31,10 +30,10 @@ const SignUpPage: React.FC = () => {
   const { router } = useAppContext();
 
   const handleSignUp = async (data: SignUpType) => {
-    console.log(data);
+    const newData = { ...data, roles: ['ROLE_CUSTOMER'] };
     try {
       setIsLoading(true);
-      const response = await authService.signUp(data);
+      const response = await authService.signUp(newData);
       if (response.success) {
         toast.success("Account created successfully!");
         setAccessToken(response.data.accessToken);
@@ -110,7 +109,7 @@ const SignUpPage: React.FC = () => {
               )}
             </div>
 
-            <input type="hidden" {...register("roles")} />
+            {/*<input type="hidden" {...register("roles")} />*/}
             <button
               type="submit"
               disabled={isLoading}

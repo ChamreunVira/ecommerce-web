@@ -2,13 +2,13 @@
 
 import { userService } from "@/services/user-service";
 import { CheckIcon } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, SubmitEventHandler, useState } from "react";
 import { toast } from "react-toastify";
 import AdminModal from "./AdminModal";
 
 type AddUserModalType = {
-  onCreateSuccess: () => void;
-  handleClose: () => void;
+  onCreateSuccessAction: () => void;
+  handleCloseAction: () => void;
 };
 
 type UserFormData = {
@@ -25,8 +25,8 @@ const roles = [
 ];
 
 export default function AddUserModal({
-  handleClose,
-  onCreateSuccess,
+  handleCloseAction,
+  onCreateSuccessAction,
 }: AddUserModalType) {
   const [userData, setUserData] = useState<UserFormData>({
     fullName: "",
@@ -59,7 +59,7 @@ export default function AddUserModal({
       const response = await userService.create(userData);
       if (response.success) {
         toast.success("User added successfully.");
-        onCreateSuccess();
+        onCreateSuccessAction();
       }
     } catch (error) {
       console.error(error);
@@ -73,13 +73,13 @@ export default function AddUserModal({
     <AdminModal
       title="Create user"
       description="Add a customer, seller, or admin account."
-      onClose={handleClose}
+      onClose={handleCloseAction}
       maxWidth="max-w-xl"
       footer={
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            onClick={handleClose}
+            onClick={handleCloseAction}
             className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
           >
             Cancel

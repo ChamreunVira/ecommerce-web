@@ -132,8 +132,8 @@ const UserAdminPage = () => {
       {/* modal */}
       {isModalOpen && (
         <AddUserModal
-          handleClose={() => setIsModalOpen(false)}
-          onCreateSuccess={onCreateUserSuccess}
+          handleCloseAction={() => setIsModalOpen(false)}
+          onCreateSuccessAction={onCreateUserSuccess}
         />
       )}
 

@@ -1,5 +1,6 @@
+"use client";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowDownRight,
   ArrowUpRight,
@@ -8,6 +9,7 @@ import {
   Clock3,
   CreditCard,
   PackagePlus,
+  Percent,
   ShoppingCart,
   Star,
   Truck,
@@ -15,6 +17,10 @@ import {
   Users,
   WalletCards,
 } from "lucide-react";
+import { useAppContext } from "@/context/AppContext";
+import { userService } from "@/services/user-service";
+import { orderService } from "@/services/order-service";
+import { OrderStatus } from "@/constant/constant";
 
 type StatCard = {
   label: string;
@@ -46,45 +52,6 @@ type RecentOrder = {
   status: "Paid" | "Pending" | "Shipping";
   date: string;
 };
-
-const stats: StatCard[] = [
-  {
-    label: "Total revenue",
-    value: "$128,430",
-    change: "+12.8%",
-    trend: "up",
-    caption: "vs. last month",
-    icon: <BadgeDollarSign size={22} />,
-    accent: "bg-orange-50 text-orange-600 ring-orange-100",
-  },
-  {
-    label: "Orders",
-    value: "2,846",
-    change: "+8.2%",
-    trend: "up",
-    caption: "412 ready to ship",
-    icon: <ShoppingCart size={22} />,
-    accent: "bg-sky-50 text-sky-600 ring-sky-100",
-  },
-  {
-    label: "Customers",
-    value: "18,920",
-    change: "+5.4%",
-    trend: "up",
-    caption: "new and returning",
-    icon: <Users size={22} />,
-    accent: "bg-emerald-50 text-emerald-600 ring-emerald-100",
-  },
-  {
-    label: "Low stock",
-    value: "24",
-    change: "-3.1%",
-    trend: "down",
-    caption: "items need attention",
-    icon: <Boxes size={22} />,
-    accent: "bg-rose-50 text-rose-600 ring-rose-100",
-  },
-];
 
 const revenueData: RevenuePoint[] = [
   { month: "Jan", revenue: 26000, orders: 310 },
@@ -132,10 +99,34 @@ const quickActions: QuickAction[] = [
 ];
 
 const recentOrders: RecentOrder[] = [
-  { id: "#ORD-1048", customer: "Nara Sok", total: "$482.00", status: "Paid", date: "Today" },
-  { id: "#ORD-1047", customer: "Lina Chan", total: "$129.00", status: "Shipping", date: "Today" },
-  { id: "#ORD-1046", customer: "Vireak Kim", total: "$2,240.00", status: "Pending", date: "Yesterday" },
-  { id: "#ORD-1045", customer: "Malis Yim", total: "$374.00", status: "Paid", date: "Yesterday" },
+  {
+    id: "#ORD-1048",
+    customer: "Nara Sok",
+    total: "$482.00",
+    status: "Paid",
+    date: "Today",
+  },
+  {
+    id: "#ORD-1047",
+    customer: "Lina Chan",
+    total: "$129.00",
+    status: "Shipping",
+    date: "Today",
+  },
+  {
+    id: "#ORD-1046",
+    customer: "Vireak Kim",
+    total: "$2,240.00",
+    status: "Pending",
+    date: "Yesterday",
+  },
+  {
+    id: "#ORD-1045",
+    customer: "Malis Yim",
+    total: "$374.00",
+    status: "Paid",
+    date: "Yesterday",
+  },
 ];
 
 const statusStyles: Record<RecentOrder["status"], string> = {
@@ -151,6 +142,29 @@ function formatCompactCurrency(value: number) {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(value);
+}
+
+type Statistics = {
+  revenue: {
+    value: number,
+    percentage: number,
+    trend: "up" | "down",
+  },
+  order: {
+    value: number,
+    percentage: number,
+    trend: "up" | "down",
+  },
+  customer: {
+    value: number,
+    percentage: number,
+    trend: "up" | "down",
+  },
+  product: {
+    value: number,
+    percentage: number,
+    trend: "up" | "down",
+  },
 }
 
 function buildChartPoints(data: RevenuePoint[]) {
@@ -183,11 +197,144 @@ function buildChartPoints(data: RevenuePoint[]) {
 }
 
 export default function DashboardPage() {
-  
+  const [statistics, setStatistics] = useState<Statistics>({
+    revenue: {
+      value: 0,
+      percentage: 0,
+      trend: "up",
+    },
+    order: {
+      value: 0,
+      percentage: 0,
+      trend: "up",
+    },
+    customer: {
+      value: 0,
+      percentage: 0,
+      trend: "up",
+    },
+    product: {
+      value: 0,
+      percentage: 0,
+      trend: "up",
+    },
+  });
+
   const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.reduce((best, item) =>
-    item.revenue > best.revenue ? item : best
+    item.revenue > best.revenue ? item : best,
   );
+
+  const { products } = useAppContext();
+
+  const lowStock = products.filter((product) => product.qty < 5).length;
+
+  const stats: StatCard[] = [
+    {
+      label: "Total revenue",
+      value: `$${statistics.revenue.value}`,
+      change: `+${(statistics.revenue.percentage / 100).toFixed(2)}%`,
+      trend: "up",
+      caption: "vs. last month",
+      icon: <BadgeDollarSign size={22} />,
+      accent: "bg-orange-50 text-orange-600 ring-orange-100",
+    },
+    {
+      label: "Orders",
+      value: `${statistics.order.value}`,
+      change: `${statistics.order.percentage}%`,
+      trend: statistics.order.trend,
+      caption: "412 ready to ship",
+      icon: <ShoppingCart size={22} />,
+      accent: "bg-sky-50 text-sky-600 ring-sky-100",
+    },
+    {
+      label: "Customers",
+      value: `${statistics.customer.value}`,
+      change: `${statistics.customer.percentage}%`,
+      trend: statistics.customer.trend,
+      caption: "new and returning",
+      icon: <Users size={22} />,
+      accent: "bg-emerald-50 text-emerald-600 ring-emerald-100",
+    },
+    {
+      label: "Low stock",
+      value: `${statistics.product.value}`,
+      change: `${statistics.product.percentage}%`,
+      trend: statistics.product.trend,
+      caption: "items need attention",
+      icon: <Boxes size={22} />,
+      accent: "bg-rose-50 text-rose-600 ring-rose-100",
+    },
+  ];
+
+  const calculateChange = (current: number, previous: number): { percentage: number; trend: "up" | "down" } => {
+    if (previous === 0) {
+      return {
+        percentage: 0,
+        trend: "up"
+      }
+    }
+
+    const percentage = ((current - previous) / previous) * 100;
+    const trend = percentage > 0 ? "up" : "down";
+    return {
+      percentage: Math.abs(percentage),
+      trend: trend,
+    };
+  };
+
+  useEffect(() => {
+    const handleInitStatistics = async () => {
+      const [customerResponse, orderResponse] = await Promise.all([
+        userService.getAll(),
+        orderService.getAll(OrderStatus.PENDING),
+      ]);
+      
+      const totalCustomer = customerResponse.data.filter((user) =>
+        user.roles.includes("ROLE_CUSTOMER"),
+      ).length;
+
+      const customer = calculateChange(totalCustomer, 0)
+
+      const totalOrder = orderResponse.data.length;
+
+      const order = calculateChange(totalOrder, 0)
+
+      const totalRevenue = orderResponse.data.reduce((acc, item) => {
+        return acc + item.totalAmount;
+      }, 0);
+
+      const revenue = calculateChange(totalRevenue, 0);
+
+      setStatistics({
+        customer: {
+          value: totalCustomer,
+          percentage: customer.percentage,
+          trend: customer.trend,
+        },
+        order: {
+          value: totalOrder,
+          percentage: order.percentage,
+          trend: order.trend,
+        },
+        revenue: {
+          value: totalRevenue,
+          percentage: revenue.percentage || 0,
+          trend: revenue.trend,
+        },
+        product: {
+          value: lowStock,
+          percentage: (lowStock / products.length) * 100,
+          trend: lowStock < products.length ? "up" : "down",
+        },
+      });
+    };
+    
+    handleInitStatistics();
+
+    return () => new AbortController().abort();
+  }, []);
 
   return (
     <section className="min-h-full bg-slate-50 text-slate-900">
@@ -199,7 +346,8 @@ export default function DashboardPage() {
               Ecommerce performance
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Analytics for revenue, orders, customers, inventory, and daily operations.
+              Analytics for revenue, orders, customers, inventory, and daily
+              operations.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:flex">
@@ -220,10 +368,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* stats card */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {stats.map((item) => {
-            const TrendIcon = item.trend === "up" ? ArrowUpRight : ArrowDownRight;
-            const trendClass = item.trend === "up" ? "text-emerald-600" : "text-rose-600";
+            const TrendIcon =
+              item.trend === "up" ? ArrowUpRight : ArrowDownRight;
+            const trendClass =
+              item.trend === "up" ? "text-emerald-600" : "text-rose-600";
 
             return (
               <article
@@ -231,15 +382,23 @@ export default function DashboardPage() {
                 className="rounded-lg bg-white p-5 shadow-sm   ring-1 ring-slate-200/80"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className={`rounded-lg p-2.5 ring-1 ${item.accent}`}>{item.icon}</div>
-                  <span className={`inline-flex items-center gap-1 text-sm font-semibold ${trendClass}`}>
+                  <div className={`rounded-lg p-2.5 ring-1 ${item.accent}`}>
+                    {item.icon}
+                  </div>
+                  <span
+                    className={`inline-flex items-center gap-1 text-sm font-semibold ${trendClass}`}
+                  >
                     <TrendIcon size={16} />
                     {item.change}
                   </span>
                 </div>
                 <div className="mt-5">
-                  <p className="text-sm font-medium text-slate-500">{item.label}</p>
-                  <h3 className="mt-2 text-3xl font-semibold text-slate-950">{item.value}</h3>
+                  <p className="text-sm font-medium text-slate-500">
+                    {item.label}
+                  </p>
+                  <h3 className="mt-2 text-3xl font-semibold text-slate-950">
+                    {item.value}
+                  </h3>
                   <p className="mt-1 text-sm text-slate-500">{item.caption}</p>
                 </div>
               </article>
@@ -247,19 +406,26 @@ export default function DashboardPage() {
           })}
         </div>
 
+        {/* revenue trend */}
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(340px,0.9fr)]">
           <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
-                <h3 className="text-lg font-semibold text-slate-950">Revenue trend</h3>
+                <h3 className="text-lg font-semibold text-slate-950">
+                  Revenue trend
+                </h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  Monthly revenue with order volume for the current sales period.
+                  Monthly revenue with order volume for the current sales
+                  period.
                 </p>
               </div>
               <div className="rounded-lg bg-slate-50 px-4 py-3 ring-1 ring-slate-200">
-                <p className="text-xs font-medium uppercase text-slate-500">Best month</p>
+                <p className="text-xs font-medium uppercase text-slate-500">
+                  Best month
+                </p>
                 <p className="mt-1 text-sm font-semibold text-slate-950">
-                  {highestRevenue.month} · {formatCompactCurrency(highestRevenue.revenue)}
+                  {highestRevenue.month} ·{" "}
+                  {formatCompactCurrency(highestRevenue.revenue)}
                 </p>
               </div>
             </div>
@@ -274,7 +440,11 @@ export default function DashboardPage() {
                 <defs>
                   <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
                     <stop offset="0%" stopColor="#f97316" stopOpacity="0.26" />
-                    <stop offset="100%" stopColor="#f97316" stopOpacity="0.02" />
+                    <stop
+                      offset="100%"
+                      stopColor="#f97316"
+                      stopOpacity="0.02"
+                    />
                   </linearGradient>
                 </defs>
                 {[0, 1, 2, 3].map((line) => {
@@ -303,8 +473,20 @@ export default function DashboardPage() {
                 />
                 {chart.points.map((point) => (
                   <g key={point.month}>
-                    <circle cx={point.x} cy={point.y} r="5" fill="#ffffff" stroke="#f97316" strokeWidth="3" />
-                    <text x={point.x} y="224" textAnchor="middle" className="fill-slate-500 text-[11px] font-medium">
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r="5"
+                      fill="#ffffff"
+                      stroke="#f97316"
+                      strokeWidth="3"
+                    />
+                    <text
+                      x={point.x}
+                      y="224"
+                      textAnchor="middle"
+                      className="fill-slate-500 text-[11px] font-medium"
+                    >
                       {point.month}
                     </text>
                   </g>
@@ -315,15 +497,21 @@ export default function DashboardPage() {
             <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3">
               <div>
                 <p className="text-sm text-slate-500">Average revenue</p>
-                <p className="mt-1 text-lg font-semibold text-slate-950">$43.0k</p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">
+                  $43.0k
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-500">Total orders</p>
-                <p className="mt-1 text-lg font-semibold text-slate-950">3,634</p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">
+                  3,634
+                </p>
               </div>
               <div>
                 <p className="text-sm text-slate-500">Conversion rate</p>
-                <p className="mt-1 text-lg font-semibold text-slate-950">6.8%</p>
+                <p className="mt-1 text-lg font-semibold text-slate-950">
+                  6.8%
+                </p>
               </div>
             </div>
           </article>
@@ -332,8 +520,12 @@ export default function DashboardPage() {
             <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-950">Top categories</h3>
-                  <p className="mt-1 text-sm text-slate-500">Revenue share this month</p>
+                  <h3 className="text-lg font-semibold text-slate-950">
+                    Top categories
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Revenue share this month
+                  </p>
                 </div>
                 <Star className="text-amber-500" size={22} />
               </div>
@@ -341,8 +533,12 @@ export default function DashboardPage() {
                 {topCategories.map((category) => (
                   <div key={category.name}>
                     <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-700">{category.name}</span>
-                      <span className="font-semibold text-slate-950">{category.revenue}</span>
+                      <span className="font-medium text-slate-700">
+                        {category.name}
+                      </span>
+                      <span className="font-semibold text-slate-950">
+                        {category.revenue}
+                      </span>
                     </div>
                     <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
                       <div
@@ -359,7 +555,9 @@ export default function DashboardPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold">Payment summary</h3>
-                  <p className="mt-1 text-sm text-slate-300">Ready to settle with providers</p>
+                  <p className="mt-1 text-sm text-slate-300">
+                    Ready to settle with providers
+                  </p>
                 </div>
                 <CreditCard className="text-orange-400" size={24} />
               </div>
@@ -377,10 +575,15 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* quickActions */}
         <div className="grid gap-6 xl:grid-cols-[minmax(340px,0.85fr)_minmax(0,1.15fr)]">
           <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
-            <h3 className="text-lg font-semibold text-slate-950">Quick actions</h3>
-            <p className="mt-1 text-sm text-slate-500">Common admin tasks for daily operations.</p>
+            <h3 className="text-lg font-semibold text-slate-950">
+              Quick actions
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Common admin tasks for daily operations.
+            </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
               {quickActions.map((action) => (
                 <Link
@@ -392,8 +595,12 @@ export default function DashboardPage() {
                     {action.icon}
                   </span>
                   <span className="min-w-0">
-                    <span className="block font-semibold text-slate-900">{action.label}</span>
-                    <span className="mt-0.5 block text-sm text-slate-500">{action.description}</span>
+                    <span className="block font-semibold text-slate-900">
+                      {action.label}
+                    </span>
+                    <span className="mt-0.5 block text-sm text-slate-500">
+                      {action.description}
+                    </span>
                   </span>
                 </Link>
               ))}
@@ -403,10 +610,17 @@ export default function DashboardPage() {
           <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h3 className="text-lg font-semibold text-slate-950">Recent orders</h3>
-                <p className="mt-1 text-sm text-slate-500">Latest customer purchases and payment state.</p>
+                <h3 className="text-lg font-semibold text-slate-950">
+                  Recent orders
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Latest customer purchases and payment state.
+                </p>
               </div>
-              <Link href="/admin/order" className="text-sm font-semibold text-orange-600 hover:text-orange-700">
+              <Link
+                href="/admin/order"
+                className="text-sm font-semibold text-orange-600 hover:text-orange-700"
+              >
                 View all
               </Link>
             </div>
@@ -426,7 +640,9 @@ export default function DashboardPage() {
                   <div className="flex items-start justify-between gap-3 md:block">
                     <div>
                       <p className="font-semibold text-slate-900">{order.id}</p>
-                      <p className="mt-0.5 text-xs text-slate-500">{order.date}</p>
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        {order.date}
+                      </p>
                     </div>
                     <span
                       className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:hidden ${statusStyles[order.status]}`}
@@ -436,12 +652,20 @@ export default function DashboardPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-3 md:contents">
                     <div className="min-w-0">
-                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">Customer</p>
-                      <p className="truncate font-medium text-slate-700">{order.customer}</p>
+                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
+                        Customer
+                      </p>
+                      <p className="truncate font-medium text-slate-700">
+                        {order.customer}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">Total</p>
-                      <p className="font-semibold text-slate-950">{order.total}</p>
+                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
+                        Total
+                      </p>
+                      <p className="font-semibold text-slate-950">
+                        {order.total}
+                      </p>
                     </div>
                   </div>
                   <span

@@ -66,6 +66,11 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, handleDelete, han
       render: (value) => <p className="max-w-xs truncate text-sm text-slate-500">{String(value)}</p>,
     },
     {
+      header: "Quantity",
+      key: "qty",
+      render: (value) => <p className="text-sm text-slate-500">{Number(value)}</p>,
+    },
+    {
       header: "Price",
       key: "price",
       render: (value) => (<p className="font-semibold text-lg text-emerald-600">${Number(value).toFixed(2)}</p>),

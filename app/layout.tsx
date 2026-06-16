@@ -6,7 +6,7 @@ import { Providers } from "./Providers";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-});7
+});
 
 export const metadata: Metadata = {
   title: "Ecommerce App",
@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`min-h-full antialiased text-gray-700`}>
+      <body className={`min-h-full antialiased text-gray-700 ${inter.className}`}>
         <Providers>
           {children}
         </Providers>
