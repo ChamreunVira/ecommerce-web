@@ -10,18 +10,21 @@ import { toast } from "react-toastify";
 import z from "zod";
 
 const signUpSchema = z.object({
-  fullName: z.string().min(5 , "Fullname must be at least 5 characters."),
+  fullName: z.string().min(5, "Fullname must be at least 5 characters."),
   email: z.email("Invalid email."),
-  password: z.string().min(8 , "Password must be at least 8 characters."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
   roles: z.array(z.string()).optional(),
 });
 
 type SignUpType = z.infer<typeof signUpSchema>;
 
 const SignUpPage: React.FC = () => {
-
-  const { register, handleSubmit, formState: { errors } } = useForm<SignUpType>({
-    resolver: zodResolver(signUpSchema)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpType>({
+    resolver: zodResolver(signUpSchema),
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,14 +53,11 @@ const SignUpPage: React.FC = () => {
   return (
     <div className="min-h-screen flex text-gray-900 bg-white">
       <div className="w-full flex items-center justify-center p-8 sm:p-12 lg:p-24 shadow-2xl relative z-10 bg-white">
-        
         {/* container wrapper */}
         <div className="w-full max-w-md">
           <div className="mb-10 text-center lg:text-left">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign Up</h2>
-            <p className="text-gray-500">
-              Create your new QuickCart account.
-            </p>
+            <p className="text-gray-500">Create your new QuickCart account.</p>
           </div>
 
           <form onSubmit={handleSubmit(handleSignUp)} className="space-y-6">
@@ -71,7 +71,11 @@ const SignUpPage: React.FC = () => {
                 placeholder="Chamreun Vira"
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
-              {errors.fullName && <p className="text-sm text-rose-500">{errors.fullName.message}</p>}
+              {errors.fullName && (
+                <p className="text-sm text-rose-500">
+                  {errors.fullName.message}
+                </p>
+              )}
             </div>
 
             <div>
@@ -84,7 +88,9 @@ const SignUpPage: React.FC = () => {
                 placeholder="you@example.com"
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
-              {errors.email && <p className="text-sm text-rose-500">{errors.fullName?.message}</p>}
+              {errors.email && (
+                <p className="text-sm text-rose-500">{errors.email.message}</p>
+              )}
             </div>
 
             <div>
@@ -94,13 +100,17 @@ const SignUpPage: React.FC = () => {
               <input
                 {...register("password")}
                 type="password"
-                placeholder="Secure password (min 6 chars)"
+                placeholder="Secure password (min 8 chars)"
                 className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
               />
-              {errors.password && <p className="text-sm text-rose-500">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-sm text-rose-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
-            <input type="hidden" {...register("roles")}/>
+            <input type="hidden" {...register("roles")} />
             <button
               type="submit"
               disabled={isLoading}
@@ -112,7 +122,10 @@ const SignUpPage: React.FC = () => {
 
           <p className="mt-8 text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link href="/sign-in" className="font-semibold text-orange-600 hover:text-orange-500 transition-colors">
+            <Link
+              href="/sign-in"
+              className="font-semibold text-orange-600 hover:text-orange-500 transition-colors"
+            >
               Sign In Instead
             </Link>
           </p>

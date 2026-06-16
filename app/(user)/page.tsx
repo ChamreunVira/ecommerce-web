@@ -10,7 +10,6 @@ const page = () => {
 
   return (
     <>
-
       <main className="app-container">
         <HeaderSlider />
         <HomeProduct />

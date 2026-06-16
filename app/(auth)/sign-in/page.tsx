@@ -58,7 +58,7 @@ const SignInPage: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
             <p className="text-gray-500">
               Please enter your credentials to access your account.
-            </p>
+            </p>Email Address
           </div>
           
           <form onSubmit={handleSubmit(handleSignIn)} className="space-y-6">

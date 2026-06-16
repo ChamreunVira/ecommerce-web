@@ -46,7 +46,11 @@ http.interceptors.response.use(
       _retry?: boolean;
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // skip silent refresh
+    const requestUrl = originalRequest?.url ?? "";
+    const isAuthRequest = requestUrl.includes("/auth/sign-in") || requestUrl.includes("/auth/sign-up") || requestUrl.includes("/auth/refresh");
+
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthRequest) {
       originalRequest._retry = true;
       try {
         const response = await axios.get<ApiResponse<{ accessToken: string }>>(
@@ -58,21 +62,24 @@ http.interceptors.response.use(
             withCredentials: true,
           },
         );
+        
         if (response.status === 200) {
           const { accessToken } = response.data.data;
           setAccessToken(accessToken);
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return http(originalRequest);
         }
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
         setAccessToken(null);
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && window.location.pathname === "/sign-in") {
           window.location.href = "/sign-in";
         }
         return Promise.reject(refreshError);
       }
-    }
+    } 
 
     return Promise.reject(error);
   },
