@@ -43,10 +43,10 @@ const AdminNavbar = () => {
 
         {/* profile */}
         <div className="hidden min-w-0 items-center gap-2 border-l border-slate-200 pl-4 sm:flex">
-          <Profile fullName={user.fullName as string} />
+          <Profile fullName={user?.fullName as string} />
           <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold leading-tight text-slate-800">{user.fullName || "Admin user"}</h2>
-            <p className="truncate text-xs text-slate-500">{user.roles?.[0] || "ROLE_ADMIN"}</p>
+            <h2 className="truncate text-sm font-semibold leading-tight text-slate-800">{user?.fullName || "Admin user"}</h2>
+            <p className="truncate text-xs text-slate-500">{user?.roles?.[0] || "ROLE_ADMIN"}</p>
           </div>
         </div>
       </div>

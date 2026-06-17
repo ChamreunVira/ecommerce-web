@@ -1,7 +1,7 @@
 "use client";
 
 import { ImagePlus, Save } from "lucide-react";
-import type { ChangeEvent, EventHandler, FormEvent, SubmitEvent } from "react";
+import type { ChangeEvent, SubmitEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import AdminModal from "./AdminModal";
@@ -10,7 +10,7 @@ import { productService } from "@/services/product-service";
 import { Category } from "@/types/category";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
-
+  
 type CategoryFormData = Omit<Product, "id" | "categoryName" | "username" | "createdAt" | "updatedAt">;
 
 type UpdateCategoryModalProps = {
@@ -66,7 +66,7 @@ export default function UpdateProductModal({ categories, product, onClose, onUpd
         form.append("price", String(formData.price));
         form.append("discount", String(formData.discount));
         form.append("qty", String(formData.qty));
-        form.append("userId", String(user.id));
+        form.append("userId", String(user?.id));
         if (images) {
             console.log("Image logic is working....")
             images.forEach((image) => form.append("images", image));

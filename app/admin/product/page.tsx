@@ -14,9 +14,9 @@ import { toast } from "react-toastify";
 const ProductAdminPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [editProduct , setEditProduct] = useState<Product | null>(null);
+  const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [categories, setCategoies] = useState<Category[]>([]);
-  const [categoryNames , setCategoryNames] = useState<string[]>([]);
+  const [categoryNames, setCategoryNames] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -25,7 +25,7 @@ const ProductAdminPage = () => {
       const response = await productService.getAll();
       if (response.success) {
         const existsCategory = response.data.map(
-          (product) => product.categoryName
+          (product) => product.categoryName,
         );
         setCategoryNames([...new Set(existsCategory)]);
         setProducts(response.data);
@@ -52,13 +52,15 @@ const ProductAdminPage = () => {
   };
 
   const handleFilterByCategory = (category: string) => {
-    const filtered = products.filter((product) => product.categoryName === category);
+    const filtered = products.filter(
+      (product) => product.categoryName === category,
+    );
     setFilteredProducts(filtered);
   };
 
   const handleSearchByName = (name: string) => {
     const filtered = products.filter((product) =>
-      product.name.toLowerCase().includes(name.toLowerCase())
+      product.name.toLowerCase().includes(name.toLowerCase()),
     );
     setFilteredProducts(filtered);
   };
@@ -70,7 +72,7 @@ const ProductAdminPage = () => {
         const response = await productService.getAll();
         if (response.success) {
           const existsCategory = response.data.map(
-            (product) => product.categoryName
+            (product) => product.categoryName,
           );
           setCategoryNames([...new Set(existsCategory)]);
           setProducts(response.data);
@@ -91,8 +93,12 @@ const ProductAdminPage = () => {
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Inventory</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-950">Products</h1>
-            <p className="mt-2 text-sm text-slate-500">Manage product catalog, pricing, discount, and stock levels.</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-950">
+              Products
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Manage product catalog, pricing, discount, and stock levels.
+            </p>
           </div>
 
           <button
@@ -146,14 +152,14 @@ const ProductAdminPage = () => {
         />
       )}
 
-      {editProduct && <UpdateProductModal
-        categories={categories}
-        product={editProduct}
-        onClose={() => setEditProduct(null)}
-        onUpdated={handleFetchProduct}
-      />}
-
-
+      {editProduct && (
+        <UpdateProductModal
+          categories={categories}
+          product={editProduct}
+          onClose={() => setEditProduct(null)}
+          onUpdated={handleFetchProduct}
+        />
+      )}
     </section>
   );
 };

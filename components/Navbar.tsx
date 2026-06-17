@@ -2,7 +2,7 @@
 
 import { assets } from "@/assets/assets";
 import { useAppContext } from "@/context/AppContext";
-import { clearAccessToken } from "@/lib/axios";
+import { tokenManager } from "@/utils/tokenManager";
 import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
   }, []);
 
   const handleSignOut = () => {
-    clearAccessToken();
+    tokenManager.removeToken();
     setIsUserMenuOpen(false);
     router.push("/sign-in");
   };
@@ -204,7 +204,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
             })}
 
             <li className="mt-2 border-t border-slate-100 pt-2">
-              {user.fullName ? (
+              {user?.fullName ? (
                 <div className="flex flex-col gap-1">
                   <Link
                     href="/profile"
@@ -212,7 +212,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
                     className="flex items-center gap-2 rounded-md px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
                   >
                     <User size={15} className="text-slate-400" />
-                    {user.fullName}
+                    {user?.fullName}
                   </Link>
                   <button
                     type="button"

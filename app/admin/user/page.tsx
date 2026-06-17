@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 const UserAdminPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filterUsers, setFilterUsers] = useState<User[]>([]);
-  const [editUser , setEditUser] = useState<User | null>()
+  const [editUser, setEditUser] = useState<User | null>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -39,7 +39,7 @@ const UserAdminPage = () => {
 
   const handleSearchByName = (name: string) => {
     const filtered = users.filter((user) =>
-      user.fullName.toLowerCase().includes(name.toLowerCase())
+      user.fullName.toLowerCase().includes(name.toLowerCase()),
     );
     setFilterUsers(filtered);
   };
@@ -88,8 +88,12 @@ const UserAdminPage = () => {
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Access</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-950">Users</h1>
-            <p className="mt-2 text-sm text-slate-500">Manage customer, seller, and admin accounts.</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-950">
+              Users
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Manage customer, seller, and admin accounts.
+            </p>
           </div>
 
           <button
@@ -113,7 +117,7 @@ const UserAdminPage = () => {
             {roles.map((role) => (
               <option key={role} value={role}>
                 {role.replace("ROLE_", "")}
-            </option>
+              </option>
             ))}
           </select>
         </div>
@@ -137,11 +141,13 @@ const UserAdminPage = () => {
         />
       )}
 
-      {editUser && <UpdateCustomerModal
-      user={editUser}
-      onClose={() => setEditUser(null)}
-      onUpdated={handleFetchUser}
-      />}
+      {editUser && (
+        <UpdateCustomerModal
+          user={editUser}
+          onClose={() => setEditUser(null)}
+          onUpdated={handleFetchUser}
+        />
+      )}
     </section>
   );
 };

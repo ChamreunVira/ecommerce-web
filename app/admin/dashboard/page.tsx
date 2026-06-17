@@ -9,7 +9,6 @@ import {
   Clock3,
   CreditCard,
   PackagePlus,
-  Percent,
   ShoppingCart,
   Star,
   Truck,
@@ -21,6 +20,7 @@ import { useAppContext } from "@/context/AppContext";
 import { userService } from "@/services/user-service";
 import { orderService } from "@/services/order-service";
 import { OrderStatus } from "@/constant/constant";
+import { categoryService, CategoryTrend } from "@/services/category-service";
 
 type StatCard = {
   label: string;
@@ -62,13 +62,6 @@ const revenueData: RevenuePoint[] = [
   { month: "Jun", revenue: 52100, orders: 548 },
   { month: "Jul", revenue: 48800, orders: 519 },
   { month: "Aug", revenue: 61200, orders: 636 },
-];
-
-const topCategories = [
-  { name: "Headphones", value: 68, revenue: "$32.4k", color: "bg-orange-500" },
-  { name: "Gaming", value: 56, revenue: "$24.8k", color: "bg-sky-500" },
-  { name: "Laptops", value: 49, revenue: "$21.7k", color: "bg-emerald-500" },
-  { name: "Smartphones", value: 42, revenue: "$18.6k", color: "bg-violet-500" },
 ];
 
 const quickActions: QuickAction[] = [
@@ -146,26 +139,26 @@ function formatCompactCurrency(value: number) {
 
 type Statistics = {
   revenue: {
-    value: number,
-    percentage: number,
-    trend: "up" | "down",
-  },
+    value: number;
+    percentage: number;
+    trend: "up" | "down";
+  };
   order: {
-    value: number,
-    percentage: number,
-    trend: "up" | "down",
-  },
+    value: number;
+    percentage: number;
+    trend: "up" | "down";
+  };
   customer: {
-    value: number,
-    percentage: number,
-    trend: "up" | "down",
-  },
+    value: number;
+    percentage: number;
+    trend: "up" | "down";
+  };
   product: {
-    value: number,
-    percentage: number,
-    trend: "up" | "down",
-  },
-}
+    value: number;
+    percentage: number;
+    trend: "up" | "down";
+  };
+};
 
 function buildChartPoints(data: RevenuePoint[]) {
   const width = 640;
@@ -219,6 +212,7 @@ export default function DashboardPage() {
       trend: "up",
     },
   });
+  const [categoryTrend, setCategoryTrend] = useState<CategoryTrend[]>([]);
 
   const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.reduce((best, item) =>
@@ -268,12 +262,15 @@ export default function DashboardPage() {
     },
   ];
 
-  const calculateChange = (current: number, previous: number): { percentage: number; trend: "up" | "down" } => {
+  const calculateChange = (
+    current: number,
+    previous: number,
+  ): { percentage: number; trend: "up" | "down" } => {
     if (previous === 0) {
       return {
         percentage: 0,
-        trend: "up"
-      }
+        trend: "up",
+      };
     }
 
     const percentage = ((current - previous) / previous) * 100;
@@ -285,21 +282,25 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    let isMounted = true;
+
     const handleInitStatistics = async () => {
       const [customerResponse, orderResponse] = await Promise.all([
         userService.getAll(),
         orderService.getAll(OrderStatus.PENDING),
       ]);
-      
+
+      if (!isMounted) return;
+
       const totalCustomer = customerResponse.data.filter((user) =>
         user.roles.includes("ROLE_CUSTOMER"),
       ).length;
 
-      const customer = calculateChange(totalCustomer, 0)
+      const customer = calculateChange(totalCustomer, 0);
 
       const totalOrder = orderResponse.data.length;
 
-      const order = calculateChange(totalOrder, 0)
+      const order = calculateChange(totalOrder, 0);
 
       const totalRevenue = orderResponse.data.reduce((acc, item) => {
         return acc + item.totalAmount;
@@ -330,10 +331,32 @@ export default function DashboardPage() {
         },
       });
     };
-    
+
     handleInitStatistics();
 
-    return () => new AbortController().abort();
+    return () => {
+      isMounted = false;
+    };
+  }, [lowStock, products.length]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const handleFetchCategoryTrend = async () => {
+      try {
+        const response = await categoryService.getByTrend();
+        if (response.success && isMounted) {
+          setCategoryTrend(response.data);
+        }
+      } catch (err: unknown) {
+        console.log(err);
+      }
+    };
+
+    handleFetchCategoryTrend();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -530,24 +553,39 @@ export default function DashboardPage() {
                 <Star className="text-amber-500" size={22} />
               </div>
               <div className="mt-6 space-y-5">
-                {topCategories.map((category) => (
-                  <div key={category.name}>
-                    <div className="mb-2 flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-700">
-                        {category.name}
-                      </span>
-                      <span className="font-semibold text-slate-950">
-                        {category.revenue}
-                      </span>
+                {categoryTrend.map((category, i) => {
+                  const totalTrendRevenue =
+                    categoryTrend.reduce((sum, c) => sum + c.revenue, 0) || 1;
+                  const percentage =
+                    (category.revenue / totalTrendRevenue) * 100;
+                  const colors = [
+                    "bg-orange-500",
+                    "bg-sky-500",
+                    "bg-emerald-500",
+                    "bg-violet-500",
+                    "bg-rose-500",
+                  ];
+                  const color = colors[i % colors.length];
+
+                  return (
+                    <div key={category.name}>
+                      <div className="mb-2 flex items-center justify-between text-sm">
+                        <span className="font-medium text-slate-700">
+                          {category.name}
+                        </span>
+                        <span className="font-semibold text-slate-950">
+                          {formatCompactCurrency(category.revenue)}
+                        </span>
+                      </div>
+                      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className={`h-full rounded-full ${color}`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className={`h-full rounded-full ${category.color}`}
-                        style={{ width: `${category.value}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </article>
 

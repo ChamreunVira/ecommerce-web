@@ -38,12 +38,12 @@ const Sidbar: React.FC<Sidebar> = ({ children }) => {
           <div className="w-full border-t border-slate-200 p-5">
             <div className="flex min-w-0 items-center gap-3 rounded-lg bg-slate-200/50 p-3">
               <div className="shrink-0">
-                <Profile fullName={user.fullName || "Anonymous"} />
+                <Profile fullName={user?.fullName || "Anonymous"} />
               </div>
               <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
                 <div className="min-w-0 flex-1 leading-tight">
-                  <h2 className="truncate text-sm font-semibold text-slate-900">{user.fullName || "Admin user"}</h2>
-                  <p className="truncate text-xs text-slate-500">{user.email || "admin@example.com"}</p>
+                  <h2 className="truncate text-sm font-semibold text-slate-900">{user?.fullName || "Admin user"}</h2>
+                  <p className="truncate text-xs text-slate-500">{user?.email || "admin@example.com"}</p>
                 </div>
                 <div className="flex-none text-slate-400">
                   <MoreVertical size={18} />

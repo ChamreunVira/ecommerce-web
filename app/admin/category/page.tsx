@@ -46,7 +46,7 @@ const CategoryAdminPage = () => {
 
   const handleSearchByName = (name: string) => {
     const filtered = categories.filter((category) =>
-      category.name.toLowerCase().includes(name.toLowerCase())
+      category.name.toLowerCase().includes(name.toLowerCase()),
     );
     setFilteredCategories(filtered);
   };
@@ -73,8 +73,12 @@ const CategoryAdminPage = () => {
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Catalog</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-950">Categories</h1>
-            <p className="mt-2 text-sm text-slate-500">Create, search, edit, and organize product categories.</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-950">
+              Categories
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Create, search, edit, and organize product categories.
+            </p>
           </div>
 
           <button
@@ -95,7 +99,9 @@ const CategoryAdminPage = () => {
           <Loading />
         ) : (
           <CategoryTable
-            categories={filteredCategories.length > 0 ? filteredCategories : categories}
+            categories={
+              filteredCategories.length > 0 ? filteredCategories : categories
+            }
             handleDelete={handleDeleteByCategory}
             handleEdit={setEditingCategory}
           />

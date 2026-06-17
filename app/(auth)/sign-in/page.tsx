@@ -1,7 +1,7 @@
 "use client";
 import { useAppContext } from "@/context/AppContext";
-import { clearAccessToken, setAccessToken } from "@/lib/axios";
 import { authService } from "@/services/auth-service";
+import { tokenManager } from "@/utils/tokenManager";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -27,13 +27,13 @@ const SignInPage: React.FC = () => {
   const { router } = useAppContext();
 
   const handleSignIn = async (data: SignInType) => {
-    clearAccessToken();
+    tokenManager.removeToken();
     setIsLoading(true);
     try {
       const response = await authService.signIn(data);
       if (response.success) {
         toast.success("Welcome back!");
-        setAccessToken(response.data.accessToken);
+        tokenManager.setToken(response.data.accessToken);
         if (response.data.roles.includes("ROLE_ADMIN")) {
           router.push("/admin/dashboard");
         } else {

@@ -34,19 +34,19 @@ const OrderAdminPage = () => {
 
   const handleSearchByName = (name: string) => {
     const filtered = orders.filter((order) =>
-      order.orderCode.toLowerCase().includes(name.toLowerCase())
+      order.orderCode.toLowerCase().includes(name.toLowerCase()),
     );
     setfilteredOrders(filtered);
   };
 
   const handleFilterByStatus = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const {value} = e.target;
-    if(value === '') {
+    const { value } = e.target;
+    if (value === "") {
       handleFetchOrder(value as OrderStatus);
     } else {
       handleFetchOrder(value as OrderStatus);
     }
-  }
+  };
 
   useEffect(() => {
     handleFetchOrder(OrderStatus.PENDING);
@@ -59,8 +59,12 @@ const OrderAdminPage = () => {
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-medium text-orange-600">Sales</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-950">Orders</h1>
-            <p className="mt-2 text-sm text-slate-500">Track order status, payments, items, and fulfillment progress.</p>
+            <h1 className="mt-2 text-3xl font-semibold text-slate-950">
+              Orders
+            </h1>
+            <p className="mt-2 text-sm text-slate-500">
+              Track order status, payments, items, and fulfillment progress.
+            </p>
           </div>
 
           <div className="flex gap-3">
@@ -86,11 +90,19 @@ const OrderAdminPage = () => {
             className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100 md:w-56"
           >
             <option value="">All categories</option>
-            <option value={OrderStatus.CANCELLED}>{OrderStatus.CANCELLED}</option>
-            <option value={OrderStatus.DELIVERED}>{OrderStatus.DELIVERED}</option>
+            <option value={OrderStatus.CANCELLED}>
+              {OrderStatus.CANCELLED}
+            </option>
+            <option value={OrderStatus.DELIVERED}>
+              {OrderStatus.DELIVERED}
+            </option>
             <option value={OrderStatus.PENDING}>{OrderStatus.PENDING}</option>
-            <option value={OrderStatus.PENDING_PAYMENT}>{OrderStatus.PENDING_PAYMENT}</option>
-            <option value={OrderStatus.PROCESSING}>{OrderStatus.PROCESSING}</option>
+            <option value={OrderStatus.PENDING_PAYMENT}>
+              {OrderStatus.PENDING_PAYMENT}
+            </option>
+            <option value={OrderStatus.PROCESSING}>
+              {OrderStatus.PROCESSING}
+            </option>
             <option value={OrderStatus.REFUNDED}>{OrderStatus.REFUNDED}</option>
             <option value={OrderStatus.SHIPPED}>{OrderStatus.SHIPPED}</option>
           </select>

@@ -1,154 +1,140 @@
 "use client";
-import { Product } from "@/types/product";
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
-import React, { createContext, useContext, useEffect, useState } from "react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+  
+import { Product } from "@/types/product";
 import { User } from "@/types/user";
-import { authService } from "@/services/auth-service";
-import { cartService } from "@/services/cart-service";
 import { Cart, CartItem } from "@/types/cart";
 import { Category } from "@/types/category";
+
+import { authService } from "@/services/auth-service";
+import { cartService } from "@/services/cart-service";
 import { categoryService } from "@/services/category-service";
 
 type AppContextType = {
   router: AppRouterInstance;
+  user: Partial<User> | null;
+  cart: Partial<Cart> | null;
+  cartItems: CartItem[];
   products: Product[];
   categories: Category[];
-  handleAddProductToCart: (id: number, quantity?: number) => Promise<void>;
-  handleMinusProductFromCart: (id: number , quantity: number) => Promise<void>;
-  refreshCart: () => Promise<void>;
+  isInitializing: boolean;
   getTotalCart: () => number;
-  cartItems: CartItem[];
-  user: Partial<User>;
-  cart: Partial<Cart>;
+  refreshCart: () => Promise<void>;
+  handleAddProductToCart: (productId: number, quantity?: number) => Promise<void>;
+  handleMinusProductFromCart: (cartId: number, quantity: number) => Promise<void>;
 };
 
-export const AppContext = createContext<AppContextType | null>(null);
+const AppContext = createContext<AppContextType | null>(null);
 
 export const useAppContext = (): AppContextType => {
-  const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useAppContext must be used within an AppContextProvider");
-  }
-  return context;
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useAppContext must be used within AppContextProvider");
+  return ctx;
 };
 
-type AppContextProviderType = {
-  children: React.ReactNode
-}
+export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const router     = useRouter();
+  const isMounted  = useRef(true);
 
-export const AppContextProvider: React.FC<AppContextProviderType> = ({ children }) => {
-  const router = useRouter();
+  const [user, setUser]                     = useState<Partial<User> | null>(null);
+  const [cart, setCart]                     = useState<Partial<Cart> | null>(null);
+  const [cartItems, setCartItems]           = useState<CartItem[]>([]);
+  const [categories, setCategories]         = useState<Category[]>([]);
+  const [products, setProducts]             = useState<Product[]>([]);
+  const [isInitializing, setIsInitializing] = useState(true);
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [user, setUser] = useState<Partial<User>>({});
-  const [cart, setCart] = useState<Partial<Cart>>({});
-
-  const getTotalCart = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const handleAddProductToCart = async (productId: number, quantity = 1) => {
-    try {
-      const response = await cartService.addToCart(productId, quantity);
-      if (response.success) {
-        setCart(response.data);
-        setCartItems(response.data.cartItems);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleMinusProductFromCart = async (cartId: number, quantity: number) => {
-    try {
-      const response = await cartService.updateCart(cartId, quantity);
-      if (response.success) {
-        setCart(response.data);
-        setCartItems(response.data.cartItems);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const refreshCart = async () => {
-    try {
-      const response = await cartService.getAll();
-      if (response.success) {
-        setCart(response.data);
-        setCartItems(response.data.cartItems);
-      }
-    } catch (error: any) {
-      console.log("Fials to refresh cart: " + error.message);
-    }
-  };
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    const initApp = async () => {
-      try {
-
-        const [authResponse, categoryResponse, cartResponse] = await Promise.all([
-          authService.isAuthenticated().catch(() => false),
-          categoryService.getAll().catch(() => ({ success: false, data: [] })),
-          cartService.getAll().catch(() => ({ success: false, data: { cartItems: [] } })),
-        ]);
-
-        if (!isCurrent) return;
-
-        if (authResponse) {
-          try {
-            const currentUserResponse = await authService.me();
-            if (currentUserResponse.success && isCurrent) {
-              setUser(currentUserResponse.data);
-            }
-          } catch (err: any) {
-            console.log(err.message);
-          }
-        }
-
-        if (categoryResponse && categoryResponse.success) {
-          setCategories(categoryResponse.data);
-          setProducts(categoryResponse.data.flatMap((category: Category) => category.products || []));
-        }
-
-        if (cartResponse && cartResponse.success) {
-          setCart(cartResponse.data);
-          setCartItems(cartResponse.data.cartItems || []);
-        }
-
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    };
-
-    initApp();
-
-    return () => {
-      isCurrent = false;
-    };
+  const applyCart = useCallback((data: Partial<Cart>) => {
+    setCart(data);
+    setCartItems(data.cartItems ?? []);
   }, []);
 
-  const contextValue: AppContextType = {
-    cart,
+  const getTotalCart = useCallback(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems],
+  );
+
+  const refreshCart = useCallback(async () => {
+    const res = await cartService.getAll().catch(() => null);
+    if (res?.success && res.data) applyCart(res.data);
+  }, [applyCart]);
+
+  const handleAddProductToCart = useCallback(async (productId: number, quantity = 1) => {
+    const res = await cartService.addToCart(productId, quantity).catch((e) => {
+      console.error("addToCart:", e);
+      return null;
+    });
+    if (res?.success && res.data) applyCart(res.data);
+  }, [applyCart]);
+
+  const handleMinusProductFromCart = useCallback(async (cartId: number, quantity: number) => {
+    const res = await cartService.updateCart(cartId, quantity).catch((e) => {
+      console.error("updateCart:", e);
+      return null;
+    });
+    if (res?.success && res.data) applyCart(res.data);
+  }, [applyCart]);
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    const init = async () => {
+      try {
+        const loggedIn = await authService.isAuthenticated().catch(() => false);
+
+        const [categoryRes, cartRes, meRes] = await Promise.all([
+          categoryService.getAll().catch(() => null),
+          loggedIn ? cartService.getAll().catch(() => null) : null,
+          loggedIn ? authService.me().catch(() => null)     : null,
+        ]);
+
+        if (!isMounted.current) return;
+
+        if (meRes?.success && meRes.data)           setUser(meRes.data);
+        if (cartRes?.success && cartRes.data)       applyCart(cartRes.data);
+        if (categoryRes?.success && categoryRes.data) {
+          setCategories(categoryRes.data);
+          setProducts(categoryRes.data.flatMap((c: Category) => c.products ?? []));
+        }
+      } catch (err) {
+        console.error("App init failed:", err);
+      } finally {
+        if (isMounted.current) setIsInitializing(false);
+      }
+    };
+
+    init();
+    return () => { isMounted.current = false; };
+  }, [applyCart]);
+
+  const value = useMemo(() => ({
     router,
+    user,
+    cart,
+    cartItems,
     products,
     categories,
+    isInitializing,
+    getTotalCart,
+    refreshCart,
     handleAddProductToCart,
     handleMinusProductFromCart,
-    refreshCart,
-    getTotalCart,
-    cartItems,
-    user
-  };
+  }), [
+    router, user, cart, cartItems, products, categories, isInitializing,
+    getTotalCart, refreshCart, handleAddProductToCart, handleMinusProductFromCart,
+  ]);
 
-  return (
-    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 export default AppContext;
