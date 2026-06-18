@@ -1,99 +1,98 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import "tailwindcss";
 
 :root {
-  /* Font */
-  --font-sans: "Inter", sans-serif;
+    /* Font */
+    --font-sans: "Inter", sans-serif;
 
-  /* Colors */
-  --color-primary: #fe8100;
-  --color-primary-light: #fe972e;
-  --color-primary-soft: #f3e1cc;
+    /* Colors */
+    --color-primary: #fe8100;
+    --color-primary-light: #fe972e;
+    --color-primary-soft: #f3e1cc;
 
-  --color-background: #f8f8f8;
-  --color-card: #ffffff;
+    --color-background: #f8f8f8;
+    --color-card: #ffffff;
 
-  --color-text-primary: #242321;
-  --color-text-secondary: #8a8a8a;
+    --color-text-primary: #242321;
+    --color-text-secondary: #8a8a8a;
 
-  --color-success: #2bb673;
-  --color-danger: #ff4d5a;
-  --color-border: #eaeaea;
+    --color-success: #2bb673;
+    --color-danger: #ff4d5a;
+    --color-border: #eaeaea;
 
-  /* Typography */
-  --text-sidebar: 16px;
-  --text-card-title: 14px;
-  --text-label: 12px;
-  --text-body: 16px;
-  --text-heading: 24px;
-  --text-stat: 40px;
+    /* Typography */
+    --text-sidebar: 16px;
+    --text-card-title: 14px;
+    --text-label: 12px;
+    --text-body: 16px;
+    --text-heading: 24px;
+    --text-stat: 40px;
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 * {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 @theme {
-  --font-poppins: Poppins, sans-serif;
-  --color-primary: oklch(70.5% 0.213 47.604);
-  /* --color-secondary: oklch(); */
+    --font-poppins: Poppins, sans-serif;
+    --color-primary: oklch(70.5% 0.213 47.604);
+    /* --color-secondary: oklch(); */
 }
 
 @layer base {
-  body {
-    font-family: var(--font-sans);
-  }
-  
-  .btn {
-    @apply px-3 py-1.5 rounded-md text-white;
-  }
-  
-  .btn-primary {
-    @apply bg-orange-500;
-  }
-  
-  .form-control {
-    @apply px-3 py-1.5 rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-orange-500 text-slate-800;
-  }
+    body {
+        font-family: var(--font-sans);
+    }
 
-  .app-container {
-    @apply px-6 md:px-16 lg:px-32 overflow-x-hidden;
-  }
-  
-  button {
-    @apply cursor-pointer transition-all duration-300;
-  }
-  
-  input {
-    @apply transition-all duration-300;
-  }
+    .btn {
+        @apply px-3 py-1.5 rounded-md text-white;
+    }
 
-  .form-control {
-    @apply border-0 outline-1 -outline-offset-1 outline-slate-300 hover:outline-2 hover:-outline-offset-2 hover:outline-orange-500;
-  }
+    .btn-primary {
+        @apply bg-orange-500;
+    }
+
+    .form-control {
+        @apply px-3 py-1.5 rounded-md focus:outline-2 focus:-outline-offset-2 focus:outline-orange-500 text-slate-800;
+    }
+
+    .app-container {
+        @apply px-6 md:px-16 lg:px-32 overflow-x-hidden;
+    }
+
+    button {
+        @apply cursor-pointer transition-all duration-300;
+    }
+
+    input {
+        @apply transition-all duration-300;
+    }
+
+    .form-control {
+        @apply border-0 outline-1 -outline-offset-1 outline-slate-300 hover:outline-2 hover:-outline-offset-2 hover:outline-orange-500;
+    }
 }
 
 @layer components {
-
-  #product-price-range .range-slider__thumb {
-    @apply h-4 w-4;
-  }
+    #product-price-range .range-slider__thumb {
+        @apply h-4 w-4;
+    }
 }

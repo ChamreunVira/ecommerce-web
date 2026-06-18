@@ -4,31 +4,29 @@ import CreateCategoryModal from "@/components/CreateCategoryModal";
 import Loading from "@/components/Loading";
 import SearchInput from "@/components/SearchInput";
 import UpdateCategoryModal from "@/components/UpdateCategoryModal";
+import { useAppContext } from "@/context/AppContext";
 import { categoryService } from "@/services/category-service";
 import { Category } from "@/types/category";
-import { Plus } from "lucide-react";
+import { ChevronRight, Home, Plus } from "lucide-react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const CategoryAdminPage = () => {
+  const { sessionReady } = useAppContext();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleFetchCategory = async () => {
     try {
       const response = await categoryService.getAll();
-      setCategories(response.data);
+      if (response.success) setCategories(response.data);
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const handleCallbackFromModal = () => {
-    setIsModalOpen(!isModalOpen);
-    handleFetchCategory();
   };
 
   const handleDeleteByCategory = async (id: number) => {
@@ -38,88 +36,147 @@ const CategoryAdminPage = () => {
         toast.success("Category deleted successfully.");
         handleFetchCategory();
       }
-    } catch (error) {
-      toast.error("Failare to deleted category.");
-      console.error(error);
+    } catch {
+      toast.error("Failed to delete category.");
     }
   };
 
   const handleSearchByName = (name: string) => {
-    const filtered = categories.filter((category) =>
-      category.name.toLowerCase().includes(name.toLowerCase()),
+    const q = name.toLowerCase();
+    setFilteredCategories(
+      name.trim()
+        ? categories.filter((c) => c.name.toLowerCase().includes(q))
+        : [],
     );
-    setFilteredCategories(filtered);
   };
 
   useEffect(() => {
-    const fetchInitialCategories = async () => {
+    if (!sessionReady) return;
+    const load = async () => {
       setIsLoading(true);
       try {
         const response = await categoryService.getAll();
-        setCategories(response.data);
+        if (response.success) setCategories(response.data);
       } catch (error) {
         console.error(error);
       } finally {
         setIsLoading(false);
       }
     };
+    load();
+  }, [sessionReady]);
 
-    fetchInitialCategories();
-  }, []);
+  const displayed =
+    filteredCategories.length > 0 ? filteredCategories : categories;
+
+  const totalProducts = categories.reduce(
+    (sum, c) => sum + (Array.isArray(c.products) ? c.products.length : 0),
+    0,
+  );
+
+  const statCards = [
+    {
+      label: "Total Categories",
+      value: categories.length,
+      color: "text-slate-900",
+    },
+    {
+      label: "Total Products",
+      value: totalProducts,
+      color: "text-emerald-600",
+    },
+    {
+      label: "Empty",
+      value: categories.filter((c) => !c.products?.length).length,
+      color: "text-amber-600",
+    },
+  ];
 
   return (
-    <section className="min-h-full">
-      <div className="space-y-6">
-        <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-          <div>
-            <p className="text-sm font-medium text-orange-600">Catalog</p>
-            <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-              Categories
-            </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Create, search, edit, and organize product categories.
-            </p>
-          </div>
+    <div className="flex flex-col gap-6">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-slate-500">
+        <Link
+          href="/admin/dashboard"
+          className="flex items-center gap-1 hover:text-slate-800 transition-colors"
+        >
+          <Home size={14} />
+        </Link>
+        <ChevronRight size={14} className="text-slate-300" />
+        <span className="font-medium text-slate-700">Categories List</span>
+      </nav>
 
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
-          >
-            <Plus size={18} />
-            Create category
-          </button>
+      {/* Header */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-950">
+            Categories List
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Create, search, edit, and organize product categories.
+          </p>
         </div>
-
-        {/* top search and filtering */}
-        <div className="flex flex-col gap-3 rounded-md bg-white p-4 md:flex-row md:items-center">
-          <SearchInput onInputChange={handleSearchByName} />
-        </div>
-
-        {isLoading ? (
-          <Loading />
-        ) : (
-          <CategoryTable
-            categories={
-              filteredCategories.length > 0 ? filteredCategories : categories
-            }
-            handleDelete={handleDeleteByCategory}
-            handleEdit={setEditingCategory}
-          />
-        )}
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+        >
+          <Plus size={16} />
+          Add Category
+        </button>
       </div>
 
-      {isModalOpen && (
-        <CreateCategoryModal handleClose={handleCallbackFromModal} />
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        {statCards.map((s) => (
+          <div
+            key={s.label}
+            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {s.label}
+            </p>
+            <p className={`mt-2 text-3xl font-bold ${s.color}`}>
+              {s.value.toLocaleString()}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Search bar */}
+      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
+        <div className="flex-1">
+          <SearchInput onInputChange={handleSearchByName} />
+        </div>
+      </div>
+
+      {/* Table */}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <CategoryTable
+          categories={displayed}
+          handleDelete={handleDeleteByCategory}
+          handleEdit={setEditingCategory}
+        />
       )}
 
-      {editingCategory ? (
+      {isModalOpen && (
+        <CreateCategoryModal
+          handleClose={() => {
+            setIsModalOpen(false);
+            handleFetchCategory();
+          }}
+        />
+      )}
+
+      {editingCategory && (
         <UpdateCategoryModal
           category={editingCategory}
           onClose={() => setEditingCategory(null)}
           onUpdated={handleFetchCategory}
         />
-      ) : null}
-    </section>
+      )}
+    </div>
   );
 };
 

@@ -5,14 +5,21 @@ import { categoryService } from "@/services/category-service";
 import { productService } from "@/services/product-service";
 import { Category } from "@/types/category";
 import { Product } from "@/types/product";
-import { ImagePlus, Plus } from "lucide-react";
+import { ImagePlus, Plus, X } from "lucide-react";
 import Image from "next/image";
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  DragEvent,
+  FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
 import AdminModal from "./AdminModal";
 
 type CreateProductModalType = {
-  calllbackFromCreateProductModal: () => void;
+  onCreated: () => void;
   closeModal: () => void;
 };
 
@@ -26,11 +33,12 @@ const initialProduct: Partial<Product> = {
 };
 
 export default function CreateProductModal({
-  calllbackFromCreateProductModal,
+  onCreated,
   closeModal,
 }: CreateProductModalType) {
   const [isLoading, setIsLoading] = useState(false);
-  const [productData, setProductData] = useState<Partial<Product>>(initialProduct);
+  const [productData, setProductData] =
+    useState<Partial<Product>>(initialProduct);
   const [categoryData, setCategoryData] = useState<Category[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const { user } = useAppContext();
@@ -76,14 +84,14 @@ export default function CreateProductModal({
     form.append("price", String(productData.price));
     form.append("discount", String(productData.discount));
     form.append("qty", String(productData.qty));
-    form.append("userId", String(user.id));
+    form.append("userId", String(user?.id));
     images.forEach((image) => form.append("images", image));
 
     try {
       const response = await productService.create(form);
       if (response.success) {
         toast.success("Product created successfully.");
-        calllbackFromCreateProductModal();
+        onCreated();
         closeModal();
       }
     } catch (error) {
@@ -94,8 +102,22 @@ export default function CreateProductModal({
     }
   };
 
+  const handleDropImage = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files;
+    if (file.length > 0) {
+      setImages(Array.from(file));
+    }
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+
   const handleProductFieldsChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    event: ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = event.target;
     const numericFields = ["categoryId", "price", "discount", "qty"];
@@ -104,6 +126,10 @@ export default function CreateProductModal({
       [name]: numericFields.includes(name) ? Number(value) : value,
     }));
   };
+
+  const handleRemoveImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  }
 
   const handleImagesChange = (event: ChangeEvent<HTMLInputElement>) => {
     setImages(Array.from(event.target.files || []));
@@ -136,10 +162,17 @@ export default function CreateProductModal({
         </div>
       }
     >
-      <form id="create-product-form" onSubmit={handleSubmitProduct} className="space-y-5">
+      <form
+        id="create-product-form"
+        onSubmit={handleSubmitProduct}
+        className="space-y-5"
+      >
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="categoryId">
+            <label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="categoryId"
+            >
               Category
             </label>
             <select
@@ -160,7 +193,10 @@ export default function CreateProductModal({
           </div>
 
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="name">
+            <label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="name"
+            >
               Name
             </label>
             <input
@@ -178,7 +214,10 @@ export default function CreateProductModal({
 
         <div className="grid gap-4 md:grid-cols-3">
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="price">
+            <label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="price"
+            >
               Price
             </label>
             <input
@@ -196,7 +235,10 @@ export default function CreateProductModal({
           </div>
 
           <div>
-            <label className="text-sm font-medium text-slate-700" htmlFor="discount">
+            <label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="discount"
+            >
               Discount
             </label>
             <input
@@ -231,7 +273,10 @@ export default function CreateProductModal({
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="description">
+          <label
+            className="text-sm font-medium text-slate-700"
+            htmlFor="description"
+          >
             Description
           </label>
           <textarea
@@ -246,8 +291,11 @@ export default function CreateProductModal({
           />
         </div>
 
-        <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="images">
+        <div onDrop={handleDropImage} onDragOver={handleDragOver}>
+          <label
+            className="text-sm font-medium text-slate-700"
+            htmlFor="images"
+          >
             Images
           </label>
           <label
@@ -255,8 +303,12 @@ export default function CreateProductModal({
             className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-orange-300 hover:bg-orange-50/40"
           >
             <ImagePlus className="text-slate-400" size={28} />
-            <span className="mt-2 text-sm font-medium text-slate-700">Upload product images</span>
-            <span className="mt-1 text-xs text-slate-500">PNG, JPG, or JPEG. Multiple files supported.</span>
+            <span className="mt-2 text-sm font-medium text-slate-700">
+              Upload product images
+            </span>
+            <span className="mt-1 text-xs text-slate-500">
+              PNG, JPG, or JPEG. Multiple files supported.
+            </span>
           </label>
           <input
             id="images"
@@ -269,9 +321,24 @@ export default function CreateProductModal({
 
           {previewImages.length > 0 ? (
             <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4">
-              {previewImages.map((image) => (
-                <div key={image.name} className="relative aspect-square overflow-hidden rounded-lg border border-slate-200">
-                  <Image src={image.url} alt={image.name} fill className="object-cover" unoptimized />
+              {previewImages.map((image , i) => (
+                <div
+                  key={image.name}
+                  className="relative aspect-square overflow-hidden rounded-lg border border-slate-200"
+                >
+
+                  <div className="absolute top-1 right-1">
+                    <X onClick={() => handleRemoveImage(i)} />
+                  </div>
+                  
+                  <Image
+                    src={image.url}
+                    alt={image.name}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <p>{image.name}</p>
                 </div>
               ))}
             </div>

@@ -3,7 +3,7 @@ import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
 import { Order } from "@/types/order";
 import { OrderSummary } from "@/types/order-summary";
-import { stat } from "fs";
+
 
 type OrderRequest = {
     shippingAddressId: number;
@@ -14,14 +14,20 @@ type OrderRequest = {
 class OrderService {
     private endPoint = "/orders";
 
-    async getAll(status: OrderStatus): Promise<ApiResponse<Order[]>> {
-        const response = await http.get(this.endPoint, {
+    async getAllSummary(status: OrderStatus): Promise<ApiResponse<OrderSummary[]>> {
+        const response = await http.get(`${this.endPoint}`, {
             params: {
                 "status": status
             }
         });
         return response.data;
     }
+
+    async getAll(): Promise<ApiResponse<Order[]>> {
+      const response = await http.get<ApiResponse<Order[]>>(`${this.endPoint}/`);
+      return response.data;
+    }
+
 
     async getById(orderId: number): Promise<ApiResponse<Order>> {
         const response = await http.get(`${this.endPoint}/${orderId}`);
@@ -33,15 +39,10 @@ class OrderService {
         return response.data;
     }
 
-    // async myOrder(status: OrderStatus): Promise<ApiResponse<OrderSummary[]>> {
-    //     const response = await http.get(`${this.endPoint}` , {
-    //         params: {
-    //             status: status
-    //         }
-    //     });
-
-    //     return response.data;
-    // }
+    async updateStatus(orderId: number, status: OrderStatus): Promise<ApiResponse<Order>> {
+        const response = await http.patch(`${this.endPoint}/${orderId}/status`, { status });
+        return response.data;
+    }
 
 }
 

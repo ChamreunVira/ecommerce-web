@@ -127,10 +127,10 @@ const AllProduct = () => {
 
   return (
     <>
-      <main className="bg-white md:h-[calc(100vh-12rem)]">
+      <main className="relative bg-white min-h-screen">
         <div className="app-container flex flex-col gap-7 py-7 lg:flex-row lg:items-start">
           {/* sidebar */}
-          <aside className="w-full lg:sticky lg:top-20 lg:w-100">
+          <aside className="w-full lg:sticky lg:w-100">
             {/* Mobile collapse toggle — hidden on lg+ */}
             <button
               type="button"

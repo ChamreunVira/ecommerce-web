@@ -25,9 +25,9 @@ class CartService {
         return response.data;
     }
 
-    async removeItem(cartItemId: number): Promise<ApiResponse<Cart>> {
-        const response = await http.delete(`${this.ednpoint}/items/${cartItemId}`);
-        return response.data;
+    async removeItem(cartItemId: number): Promise<ApiResponse<void>> {
+      const response = await http.delete(`${this.ednpoint}/items/${cartItemId}`);
+      return response.data;
     }
 
 

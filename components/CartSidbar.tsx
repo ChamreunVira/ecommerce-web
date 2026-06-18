@@ -19,7 +19,7 @@ type CartSidbarType = {
 };
 
 const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
-  const { handleAddProductToCart, handleMinusProductFromCart, refreshCart } =
+  const { handleAddProductToCart, handleMinusProductFromCart } =
     useAppContext();
   const [cart, setCart] = useState<Partial<Cart>>({});
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -48,7 +48,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
   const handleDecrementQuantity = async (item: CartItem) => {
     try {
       const updated = cartItems.find((item) => item.id === item.id);
-      let qauntity = updated?.quantity as number;
+      let qauntity = updated?.quantity ?? 0;
       qauntity -= 1;
       setUpdatingItemId(item.productId);
       await handleMinusProductFromCart(item.id, qauntity);
@@ -68,9 +68,12 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
       setUpdatingItemId(cartItemId);
       const response = await cartService.removeItem(cartItemId);
       if (response.success) {
-        syncCart(response.data);
-        await refreshCart();
-        toast.success("Deleted cart item from cart successfully.");
+        setCartItems(
+          cartItems.filter((cartItem) => cartItem.id !== cartItemId),
+        );
+        toast.success("Deleted cart item from cart successfully.", {
+          position: "bottom-right",
+        });
       }
     } catch (error) {
       console.log(error);

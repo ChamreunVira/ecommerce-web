@@ -53,7 +53,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
 
   return (
     <header className="sticky top-0 left-0 z-40 border-b border-slate-200 bg-white">
-      <div className="app-container flex h-16 items-center justify-between gap-4">
+      <div className="px-6 md:px-16 lg:px-32 flex h-16 items-center justify-between gap-4">
         {/* Logo */}
         <button
           type="button"

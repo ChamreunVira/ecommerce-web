@@ -4,93 +4,70 @@ function cn(...classes: Array<string | undefined | false>) {
   return classes.filter(Boolean).join(" ");
 }
 
-// Wrapper Table & Table Component
+
 interface TableProps {
   children: ReactNode;
   className?: string;
 }
+export const Table: React.FC<TableProps> = ({ children, className = "" }) => (
+  <div className={cn("overflow-x-auto", className)}>
+    <table className="w-full min-w-180 border-separate border-spacing-0 text-left">
+      {children}
+    </table>
+  </div>
+);
 
-export const Table: React.FC<TableProps> = ({ children, className = "" }) => {
-  return (
-    <div className={cn("overflow-x-auto", className)}>
-      <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
-        {children}
-      </table>
-    </div>
-  );
-};
-
-
-// Table Head Components
 interface TheadProps {
   children: ReactNode;
   className?: string;
 }
+export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => (
+  <thead className={cn("bg-gray-100/80", className)}>
+    <tr>{children}</tr>
+  </thead>
+);
 
-export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => {
-  return (
-    <thead
-      className={cn("sticky top-0 z-99 bg-white text-lg tracking-normal text-slate-500",className)}
-    >
-      <tr>{children}</tr>
-    </thead>
-  );
-};
-
-
-// Table Heading, Body, Cell Components
 interface THeadingProps {
   children: ReactNode;
   className?: string;
 }
-
 export const THeading: React.FC<THeadingProps> = ({
   children,
   className = "",
-}) => {
-  return (
-    <th
-      className={cn(
-        "font-semibold text-sm whitespace-nowrap border-b border-slate-200 bg-white px-4 py-5 text-left align-middle first:pl-5 last:pr-5",
-        className
-      )}
-    >
-      {children}
-    </th>
-  );
-};
+}) => (
+  <th
+    className={cn(
+      "whitespace-nowrap font-medium border-b border-slate-200 p-4 text-base text-slate-900 first:pl-12 last:pr-12",
+      className,
+    )}
+  >
+    {children}
+  </th>
+);
 
-
-// Table Body & Cell Components
 interface TBodyProps {
   children: ReactNode;
   className?: string;
 }
+export const TBody: React.FC<TBodyProps> = ({ children, className = "" }) => (
+  <tbody className={className}>{children}</tbody>
+);
 
-export const TBody: React.FC<TBodyProps> = ({ children, className = "" }) => {
-  return <tbody className={className}>{children}</tbody>;
-};
-
-// Table Cell Component
 interface TCellProps {
   children: ReactNode;
   className?: string;
 }
-
-export const TCell: React.FC<TCellProps> = ({ children, className = "" }) => {
-  return (
-    <td
-      className={cn(
-        "border-b border-slate-100 bg-white px-4 py-3.5 align-middle text-slate-600 first:pl-5 last:pr-5",
-        className
-      )}
+export const TCell: React.FC<TCellProps> = ({ children, className = "" }) => (
+  <td
+    className={cn(
+      "border-b border-slate-100 p-4 align-middle text-sm text-slate-700 first:pl-12 last:pr-12",
+      className,
+    )}
     >
-      {children}
-    </td>
-  );
-};
+    {children}
+  </td>
+);
 
-// Column Type for Dynamic Table
 export type Column<T> = {
   header: string;
   key: keyof T | string;
@@ -99,8 +76,6 @@ export type Column<T> = {
   cellClassName?: string;
 };
 
-
-// Main Table Component Dynamic for map data and column
 type LegacyTableProps<T> = {
   data: T[];
   columns: Column<T>[];
@@ -122,14 +97,14 @@ export default function LegacyTable<T>({
     <div
       className={cn(
         "overflow-hidden rounded-md border border-slate-200 bg-white",
-        className
+        className,
       )}
     >
-      <Table className="max-h-[calc(100vh-280px)]">
+      <Table>
         <Thead>
-          {columns.map((column) => (
-            <THeading key={String(column.key)} className={column.className}>
-              {column.header}
+          {columns.map((col) => (
+            <THeading key={String(col.key)} className={col.className}>
+              {col.header}
             </THeading>
           ))}
         </Thead>
@@ -139,16 +114,15 @@ export default function LegacyTable<T>({
             data.map((item, index) => (
               <tr
                 key={getRowKey(item, index, rowKey)}
-                className="group transition-colors"
+                className="transition-colors hover:bg-slate-50/60"
               >
-                {columns.map((column) => {
-                  const value = item[column.key as keyof T];
-
+                {columns.map((col) => {
+                  const value = item[col.key as keyof T];
                   return (
-                    <TCell
-                      key={String(column.key)}
-                      className={cn(column.cellClassName)}>
-                      {column.render ? column.render(value, item) : formatCellValue(value)}
+                    <TCell key={String(col.key)} className={col.cellClassName}>
+                      {col.render
+                        ? col.render(value, item)
+                        : formatCellValue(value)}
                     </TCell>
                   );
                 })}
@@ -156,12 +130,9 @@ export default function LegacyTable<T>({
             ))
           ) : (
             <tr>
-              <td
-                colSpan={columns.length}
-                className="bg-white px-5 py-14 text-center text-sm text-slate-500"
-              >
-                <div className="mx-auto flex max-w-sm flex-col items-center">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
+              <td colSpan={columns.length} className="px-5 py-16 text-center">
+                <div className="mx-auto flex max-w-xs flex-col items-center">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-orange-100 bg-orange-50 text-orange-500">
                     <svg
                       aria-hidden="true"
                       className="h-5 w-5"
@@ -170,23 +141,28 @@ export default function LegacyTable<T>({
                       stroke="currentColor"
                       strokeWidth="1.75"
                     >
-                      <path d="M4 7h16" />
-                      <path d="M4 12h16" />
-                      <path d="M4 17h10" />
+                      <path d="M4 7h16M4 12h16M4 17h10" />
                     </svg>
                   </div>
-                  <p className="font-semibold text-slate-800">{emptyTitle}</p>
-                  <p className="mt-1 text-slate-500">{emptyDescription}</p>
+                  <p className="text-sm font-semibold text-slate-800">
+                    {emptyTitle}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {emptyDescription}
+                  </p>
                 </div>
               </td>
             </tr>
           )}
         </TBody>
       </Table>
-      <div className="flex items-center justify-between bg-white px-5 py-3 text-sm text-slate-600">
-        <span className="font-medium">Total records</span>
-        <span className="rounded-md border border-orange-100 bg-orange-50 px-2 py-1 text-xs font-semibold text-orange-600">
-          {data.length}
+
+      {/* footer */}
+      <div className="flex items-center justify-between bg-white px-5 py-3">
+        <span className="text-xs text-slate-500">
+          Showing{" "}
+          <span className="font-semibold text-slate-700">{data.length}</span>{" "}
+          record{data.length !== 1 ? "s" : ""}
         </span>
       </div>
     </div>
@@ -196,34 +172,20 @@ export default function LegacyTable<T>({
 function getRowKey<T>(
   item: T,
   index: number,
-  rowKey?: keyof T | ((item: T, index: number) => string | number)
+  rowKey?: keyof T | ((item: T, index: number) => string | number),
 ) {
-  if (typeof rowKey === "function") {
-    return rowKey(item, index);
-  }
-
+  if (typeof rowKey === "function") return rowKey(item, index);
   if (rowKey) {
-    const value = item[rowKey];
-    if (typeof value === "string" || typeof value === "number") {
-      return value;
-    }
+    const v = item[rowKey];
+    if (typeof v === "string" || typeof v === "number") return v;
   }
-
   return index;
 }
 
 function formatCellValue(value: unknown) {
-  if (value === null || value === undefined || value === "") {
-    return <span className="text-slate-400">-</span>;
-  }
-
-  if (value instanceof Date) {
-    return value.toLocaleDateString();
-  }
-
-  if (Array.isArray(value)) {
-    return value.join(", ");
-  }
-
+  if (value === null || value === undefined || value === "")
+    return <span className="text-slate-400">—</span>;
+  if (value instanceof Date) return value.toLocaleDateString();
+  if (Array.isArray(value)) return value.join(", ");
   return String(value);
 }
