@@ -141,14 +141,7 @@ const CategoryAdminPage = () => {
           </div>
         ))}
       </div>
-
-      {/* Search bar */}
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <SearchInput onInputChange={handleSearchByName} />
-        </div>
-      </div>
-
+      
       {/* Table */}
       {isLoading ? (
         <Loading />

@@ -1,7 +1,7 @@
 "use client";
 import { useAppContext } from "@/context/AppContext";
-import { setAccessToken } from "@/lib/axios";
 import { authService } from "@/services/auth-service";
+import { tokenManager } from "@/utils/tokenManager";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -36,7 +36,7 @@ const SignUpPage: React.FC = () => {
       const response = await authService.signUp(newData);
       if (response.success) {
         toast.success("Account created successfully!");
-        setAccessToken(response.data.accessToken);
+        tokenManager.setToken(response.data.accessToken);
         router.push("/");
       } else {
         toast.error(response.message || "Sign up failed");

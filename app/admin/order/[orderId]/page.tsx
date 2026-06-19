@@ -24,7 +24,6 @@ import { OrderStatus } from "@/constant/constant";
 
 const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 
-// ─── Status badge ──────────────────────────────────────────────────────────────
 const STATUS_MAP: Record<
   string,
   { dot: string; pill: string; label: string }
@@ -92,7 +91,6 @@ function formatDate(value: string | null | undefined) {
   });
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function AdminOrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const router = useRouter();
@@ -127,7 +125,7 @@ export default function AdminOrderDetailPage() {
       setStatusUpdating(true);
       const res = await orderService.updateStatus(
         order.orderId,
-        selectedStatus as OrderStatus
+        selectedStatus as OrderStatus,
       );
       if (res.success) {
         setOrder(res.data);
@@ -224,7 +222,7 @@ export default function AdminOrderDetailPage() {
         {/* ── Left column ── */}
         <div className="flex flex-col gap-6 lg:col-span-2">
           {/* Order Items */}
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
               <h2 className="text-base font-semibold text-slate-800">
                 Order Items
@@ -290,7 +288,7 @@ export default function AdminOrderDetailPage() {
           </section>
 
           {/* Shipping Info */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
               <h2 className="text-base font-semibold text-slate-800">
                 Shipping Information
@@ -337,7 +335,7 @@ export default function AdminOrderDetailPage() {
         {/* ── Right column ── */}
         <div className="flex flex-col gap-6">
           {/* Status Management */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
               <h2 className="text-base font-semibold text-slate-800">
                 Order Status
@@ -364,7 +362,7 @@ export default function AdminOrderDetailPage() {
                     Pending Payment
                   </option>
                   <option value={OrderStatus.PENDING}>Pending</option>
-                  <option value="PRESESSING">Processing</option>
+                  <option value={OrderStatus.PROCESSING}>Processing</option>
                   <option value={OrderStatus.SHIPPED}>Shipped</option>
                   <option value={OrderStatus.DELIVERED}>Delivered</option>
                   <option value={OrderStatus.CANCELLED}>Cancelled</option>
@@ -397,7 +395,7 @@ export default function AdminOrderDetailPage() {
           </section>
 
           {/* Payment Summary */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-semibold text-slate-800">
@@ -436,7 +434,6 @@ export default function AdminOrderDetailPage() {
   );
 }
 
-// ── Utility ─────────────────────────────────────────────────────────────────
 function Row({
   icon,
   children,

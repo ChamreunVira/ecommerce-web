@@ -2,9 +2,10 @@ import React from 'react'
 
 type ProfileType = {
   fullName: string;
+  className?: string;
 }
 
-const Profile: React.FC<ProfileType> = ({ fullName }) => {
+const Profile: React.FC<ProfileType> = ({ fullName , className }) => {
 
   const handleGetSortCutName = (name: string) => {
     const names = name.split(" ");
@@ -15,7 +16,7 @@ const Profile: React.FC<ProfileType> = ({ fullName }) => {
   }
 
   return (
-    <div className="min-w-10 min-h-10 h-10 w-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500 font-medium">
+    <div className={`min-w-10 min-h-10 h-10 w-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-500 font-medium ${className}`}>
       {handleGetSortCutName(fullName || "")}
     </div>
   )

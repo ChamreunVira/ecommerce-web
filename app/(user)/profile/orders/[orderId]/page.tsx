@@ -16,7 +16,6 @@ import {
 
 import { orderService } from "@/services/order-service";
 import { Order } from "@/types/order";
-import { OrderStatus } from "@/constant/constant";
 
 const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 
@@ -95,7 +94,7 @@ export default function ViewOrderPage() {
 
   useEffect(() => {
     if (!orderId) return;
-    fetchOrderDetails(Number(orderId)); // ← fixed: was Number(order)
+    fetchOrderDetails(Number(orderId));
   }, [orderId]);
 
   const fetchOrderDetails = async (id: number) => {

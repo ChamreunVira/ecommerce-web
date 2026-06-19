@@ -287,7 +287,7 @@ export default function DashboardPage() {
     const handleInitStatistics = async () => {
       const [customerResponse, orderResponse] = await Promise.all([
         userService.getAll(),
-        orderService.getAll(OrderStatus.PENDING),
+        orderService.getAllSummary(OrderStatus.PENDING),
       ]);
 
       if (!isMounted) return;

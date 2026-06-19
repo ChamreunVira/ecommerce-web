@@ -107,9 +107,9 @@ const OrderAdminPage = () => {
         {statCards.map((s) => (
           <div
             key={s.label}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-md border border-slate-200 bg-white p-5"
           >
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <p className="text-xs font-semibold text-slate-400">
               {s.label}
             </p>
             <p className={`mt-2 text-3xl font-bold ${s.color}`}>
@@ -119,33 +119,11 @@ const OrderAdminPage = () => {
         ))}
       </div>
 
-      {/* Search + filter */}
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <SearchInput onInputChange={handleSearchByName} />
-        </div>
-        <div className="flex shrink-0 items-center gap-3">
-          <select
-            value={statusFilter}
-            onChange={handleFilterByStatus}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500"
-          >
-            <option value="">All Status</option>
-            <option value={OrderStatus.PENDING}>Pending</option>
-            <option value={OrderStatus.PENDING_PAYMENT}>Pending Payment</option>
-            <option value={OrderStatus.DELIVERED}>Delivered</option>
-            <option value={OrderStatus.SHIPPED}>Shipped</option>
-            <option value={OrderStatus.CANCELLED}>Cancelled</option>
-            <option value={OrderStatus.REFUNDED}>Refunded</option>
-          </select>
-        </div>
-      </div>
-
       {/* Table */}
       {isLoading ? (
         <Loading />
       ) : (
-        <OrderTable order={displayed} handleDelete={() => {}} />
+        <OrderTable order={displayed} handleDelete={() => { }} />
       )}
     </div>
   );

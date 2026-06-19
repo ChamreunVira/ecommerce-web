@@ -40,7 +40,9 @@ class OrderService {
     }
 
     async updateStatus(orderId: number, status: OrderStatus): Promise<ApiResponse<Order>> {
-        const response = await http.patch(`${this.endPoint}/${orderId}/status`, { status });
+        const response = await http.put(`${this.endPoint}/${orderId}/status`, {
+            status,
+        });
         return response.data;
     }
 

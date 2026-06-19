@@ -26,7 +26,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
         const img = product.images?.[0];
         return (
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-sm">
               {img ? (
                 <Image
                   src={`${BASE_IMG}/${img}`}
@@ -141,7 +141,31 @@ const ProductTable: React.FC<ProductTableProps> = ({
     },
   ];
 
-  return <Table data={products} columns={columns} rowKey="id" />;
+  return (
+    <Table data={products} columns={columns} rowKey="id" option={<Option />} />
+  );
 };
 
 export default ProductTable;
+
+const Option: React.FC = () => {
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <div>
+          <input
+            className="px-3 py-2 border border-slate-200 rounded-md"
+            type="text"
+            placeholder="Search"
+          />
+        </div>
+
+        <div>
+          <select className="px-3 py-2 border border-slate-200 rounded-md">
+            All
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+};

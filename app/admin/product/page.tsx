@@ -125,39 +125,18 @@ const ProductAdminPage = () => {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {statCards.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-          >
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              {s.label}
+      <div className="w-full grid grid-cols-4 space-x-4 py-4">
+        {statCards.map((stats) => (
+          <div key={stats.label}  className="px-12 border-l border-slate-400">
+            <p className="text-xl font-medium text-slate-800 leading-8">
+              {stats.label}
             </p>
-            <p className={`mt-2 text-3xl font-bold ${s.color}`}>
-              {s.value.toLocaleString()}
+            <p className="text-2xl text-slate-900 font-medium">
+              {stats.value.toLocaleString()}
             </p>
+            <p className="text-lg text-slate-400">vs last month</p>
           </div>
         ))}
-      </div>
-
-      {/* Search + filter */}
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <SearchInput onInputChange={handleSearchByName} />
-        </div>
-        <select
-          value={categoryFilter}
-          onChange={(e) => handleFilterByCategory(e.target.value)}
-          className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-500"
-        >
-          <option value="">All Categories</option>
-          {categoryNames.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
       </div>
 
       {/* Table */}

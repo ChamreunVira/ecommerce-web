@@ -76,11 +76,10 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
               <Link
                 key={`${item.path}-${item.label}`}
                 href={item.path}
-                className={`relative rounded-md px-3 py-2 text-sm font-medium transition ${
-                  isActive
-                    ? "text-orange-600"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
-                }`}
+                className={`relative rounded-md px-3 py-2 text-sm font-medium transition ${isActive
+                  ? "text-orange-600"
+                  : "text-slate-900 hover:bg-slate-50 hover:text-slate-950"
+                  }`}
               >
                 {item.label}
                 {isActive && (
@@ -188,11 +187,10 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
                   <Link
                     href={item.path}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition ${
-                      isActive
-                        ? "bg-orange-50 text-orange-600"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
-                    }`}
+                    className={`flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition ${isActive
+                      ? "bg-orange-50 text-orange-600"
+                      : "text-slate-900 hover:bg-slate-50 hover:text-slate-950"
+                      }`}
                   >
                     {isActive && (
                       <span className="mr-2 h-4 w-0.5 rounded-full bg-orange-500" />

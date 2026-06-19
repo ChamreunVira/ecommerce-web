@@ -57,7 +57,6 @@ export default function CreateProductPage() {
     fetchCategories();
   }, [sessionReady]);
 
-  // Revoke object URLs on unmount to avoid memory leaks
   useEffect(() => {
     return () => {
       previewImages.forEach((img) => URL.revokeObjectURL(img.url));
@@ -262,7 +261,6 @@ export default function CreateProductPage() {
             </div>
           </div>
 
-          {/* ── Right column ──────────────────────────────────────────── */}
           <div className="flex flex-col gap-6">
             {/* Product Pricing */}
             <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">

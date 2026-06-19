@@ -63,7 +63,7 @@ export const TCell: React.FC<TCellProps> = ({ children, className = "" }) => (
       "border-b border-slate-100 p-4 align-middle text-sm text-slate-700 first:pl-12 last:pr-12",
       className,
     )}
-    >
+  >
     {children}
   </td>
 );
@@ -77,6 +77,7 @@ export type Column<T> = {
 };
 
 type LegacyTableProps<T> = {
+  option?: ReactNode;
   data: T[];
   columns: Column<T>[];
   className?: string;
@@ -86,6 +87,7 @@ type LegacyTableProps<T> = {
 };
 
 export default function LegacyTable<T>({
+  option,
   data,
   columns,
   className,
@@ -100,6 +102,15 @@ export default function LegacyTable<T>({
         className,
       )}
     >
+
+      {/* top search & filtering */}
+      {option && (<div>
+        <div className="flex justify-between items-center py-4 px-8">
+          {option}
+        </div>
+      </div>)}
+
+      {/* table */}
       <Table>
         <Thead>
           {columns.map((col) => (
@@ -109,6 +120,8 @@ export default function LegacyTable<T>({
           ))}
         </Thead>
 
+
+        {/* dynamic data pasted from parent */}
         <TBody>
           {data.length > 0 ? (
             data.map((item, index) => (
@@ -116,6 +129,8 @@ export default function LegacyTable<T>({
                 key={getRowKey(item, index, rowKey)}
                 className="transition-colors hover:bg-slate-50/60"
               >
+
+                {/* map data from parent */}
                 {columns.map((col) => {
                   const value = item[col.key as keyof T];
                   return (
@@ -126,9 +141,11 @@ export default function LegacyTable<T>({
                     </TCell>
                   );
                 })}
+
               </tr>
             ))
           ) : (
+            // if no data it's will show this content
             <tr>
               <td colSpan={columns.length} className="px-5 py-16 text-center">
                 <div className="mx-auto flex max-w-xs flex-col items-center">
@@ -157,7 +174,9 @@ export default function LegacyTable<T>({
         </TBody>
       </Table>
 
-      {/* footer */}
+      <h1></h1>
+      h1` 
+     {/* footer */}
       <div className="flex items-center justify-between bg-white px-5 py-3">
         <span className="text-xs text-slate-500">
           Showing{" "}
@@ -182,6 +201,7 @@ function getRowKey<T>(
   return index;
 }
 
+// like empty field show like this '-'
 function formatCellValue(value: unknown) {
   if (value === null || value === undefined || value === "")
     return <span className="text-slate-400">—</span>;
