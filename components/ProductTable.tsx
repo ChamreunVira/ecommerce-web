@@ -9,6 +9,7 @@ interface ProductTableProps {
   products: Product[];
   handleDelete: (id: number) => void;
   handleUpdate?: (product: Product) => void;
+  option?: React.ReactNode
 }
 
 const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
@@ -17,6 +18,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   products,
   handleDelete,
   handleUpdate,
+  option
 }) => {
   const columns: Column<Product>[] = [
     {
@@ -142,30 +144,8 @@ const ProductTable: React.FC<ProductTableProps> = ({
   ];
 
   return (
-    <Table data={products} columns={columns} rowKey="id" option={<Option />} />
+    <Table data={products} columns={columns} rowKey="id" option={option} />
   );
 };
 
 export default ProductTable;
-
-const Option: React.FC = () => {
-  return (
-    <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <input
-            className="px-3 py-2 border border-slate-200 rounded-md"
-            type="text"
-            placeholder="Search"
-          />
-        </div>
-
-        <div>
-          <select className="px-3 py-2 border border-slate-200 rounded-md">
-            All
-          </select>
-        </div>
-      </div>
-    </div>
-  );
-};

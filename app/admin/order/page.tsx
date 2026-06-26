@@ -2,11 +2,12 @@
 import Loading from "@/components/Loading";
 import OrderTable from "@/components/OrderTable";
 import SearchInput from "@/components/SearchInput";
+import StatsCard from "@/components/StatsCard";
 import { OrderStatus } from "@/constant/constant";
 import { useAppContext } from "@/context/AppContext";
 import { orderService } from "@/services/order-service";
 import { Order } from "@/types/order";
-import { ChevronRight, Home, RefreshCw, ShoppingBag } from "lucide-react";
+import { ChevronRight, Clock, Home, RefreshCw, ShoppingBag, Truck, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -53,21 +54,29 @@ const OrderAdminPage = () => {
     filteredOrders.length > 0 || statusFilter ? filteredOrders : orders;
 
   const statCards = [
-    { label: "Total Orders", value: orders.length, color: "text-slate-900" },
     {
+      icon: <ShoppingBag className="text-slate-900" />,
+      label: "Total Orders",
+      value: orders.length,
+      trend: +1,
+    },
+    {
+      icon: <Clock className="text-amber-600" />,
       label: "Pending",
       value: orders.filter((o) => o.status === "PENDING").length,
-      color: "text-amber-600",
+      trend: +3
     },
     {
+      icon: <Truck className="text-emerald-600" />,
       label: "Delivered",
       value: orders.filter((o) => o.status === "DELIVERED").length,
-      color: "text-emerald-600",
+      trend: +10
     },
     {
+      icon: <X className="text-rose-500" />,
       label: "Cancelled",
       value: orders.filter((o) => o.status === "CANCELLED").length,
-      color: "text-rose-600",
+      trend: -1
     },
   ];
 
@@ -104,18 +113,8 @@ const OrderAdminPage = () => {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {statCards.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-md border border-slate-200 bg-white p-5"
-          >
-            <p className="text-xs font-semibold text-slate-400">
-              {s.label}
-            </p>
-            <p className={`mt-2 text-3xl font-bold ${s.color}`}>
-              {s.value.toLocaleString()}
-            </p>
-          </div>
+        {statCards.map((stat) => (
+          <StatsCard icon={stat.icon} label={stat.label} value={stat.value} trend={stat.trend}/>
         ))}
       </div>
 

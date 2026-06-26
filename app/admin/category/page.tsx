@@ -3,11 +3,12 @@ import CategoryTable from "@/components/CategoryTable";
 import CreateCategoryModal from "@/components/CreateCategoryModal";
 import Loading from "@/components/Loading";
 import SearchInput from "@/components/SearchInput";
+import StatsCard from "@/components/StatsCard";
 import UpdateCategoryModal from "@/components/UpdateCategoryModal";
 import { useAppContext } from "@/context/AppContext";
 import { categoryService } from "@/services/category-service";
 import { Category } from "@/types/category";
-import { ChevronRight, Home, Plus } from "lucide-react";
+import { AlertCircle, ChevronRight, Home, Package, PackageOpen, Plus, Tag } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -126,22 +127,14 @@ const CategoryAdminPage = () => {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {statCards.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
-          >
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              {s.label}
-            </p>
-            <p className={`mt-2 text-3xl font-bold ${s.color}`}>
-              {s.value.toLocaleString()}
-            </p>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 gap-8 lg:grid-cols-3">
+        <StatsCard icon={<Tag className="text-indigo-500" />} label="Categories" value={categories.length} trend={+3} />
+        <StatsCard icon={<Package className="text-emerald-500" />} label="Products" value={totalProducts} trend={+10} />
+        <StatsCard icon={<PackageOpen className="text-rose-500" />} label="Empty" value={categories.filter((c) => !c.products?.length).length} trend={-1} />
+        {/* show activate */}
+        {/* <StatsCard */}
       </div>
-      
+
       {/* Table */}
       {isLoading ? (
         <Loading />

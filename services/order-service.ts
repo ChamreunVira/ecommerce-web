@@ -1,7 +1,7 @@
 import { OrderStatus } from "@/constant/constant";
 import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
-import { Order } from "@/types/order";
+import { Order, RecentOrder } from "@/types/order";
 import { OrderSummary } from "@/types/order-summary";
 
 
@@ -43,6 +43,11 @@ class OrderService {
         const response = await http.put(`${this.endPoint}/${orderId}/status`, {
             status,
         });
+        return response.data;
+    }
+
+    async recent(): Promise<ApiResponse<RecentOrder[]>> {
+        const response = await http.get(`${this.endPoint}/recent`);
         return response.data;
     }
 

@@ -74,17 +74,19 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (cartItems.length === 0) {
-      toast.warning("កន្ត្រកទំនិញរបស់អ្នកទទេរ!");
+      toast.warning("Your cart is empty!" , {
+        position: "bottom-right",
+      });
       return;
     }
 
-    // Resolve address synchronously — don't rely on async setState
+  
     let resolvedAddressId = selectedAddressId;
     if (!resolvedAddressId) {
       const defaultAddr = savedAddresses.find((a) => a.default === true);
       if (defaultAddr) {
         resolvedAddressId = defaultAddr.addressId;
-        setSelectedAddressId(resolvedAddressId); // keep UI in sync
+        setSelectedAddressId(resolvedAddressId);
       }
     }
 

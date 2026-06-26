@@ -174,8 +174,6 @@ export default function LegacyTable<T>({
         </TBody>
       </Table>
 
-      <h1></h1>
-      h1` 
      {/* footer */}
       <div className="flex items-center justify-between bg-white px-5 py-3">
         <span className="text-xs text-slate-500">

@@ -21,3 +21,5 @@ export interface Order {
     updatedAt: string;
     cancelledAt: string;
 }
+
+export type RecentOrder = Pick<Order, "orderId" | "orderCode" | "status" | "totalAmount"> & {userId: number, fullName: string, createdDate: string};

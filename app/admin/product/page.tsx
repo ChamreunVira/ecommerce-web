@@ -1,15 +1,15 @@
 "use client";
 import Loading from "@/components/Loading";
 import ProductTable from "@/components/ProductTable";
-import SearchInput from "@/components/SearchInput";
+import StatsCard from "@/components/StatsCard";
 import UpdateProductModal from "@/components/UpdateProductModal";
 import { useAppContext } from "@/context/AppContext";
 import { productService } from "@/services/product-service";
 import { Category } from "@/types/category";
 import { Product } from "@/types/product";
-import { ChevronRight, Home, Plus } from "lucide-react";
+import { AlertCircle, Ban, ChevronRight, Home, Package, PackageOpen, Plus, Tag, Type } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 const ProductAdminPage = () => {
@@ -52,29 +52,12 @@ const ProductAdminPage = () => {
     }
   };
 
-  const handleSearchByName = (name: string) => {
-    const q = name.toLowerCase();
-    setFilteredProducts(
-      name.trim()
-        ? products.filter((p) => p.name.toLowerCase().includes(q))
-        : [],
-    );
-  };
-
-  const handleFilterByCategory = (cat: string) => {
-    setCategoryFilter(cat);
-    setFilteredProducts(
-      cat ? products.filter((p) => p.categoryName === cat) : [],
-    );
-  };
-
   useEffect(() => {
     if (!sessionReady) return;
     handleFetchProduct();
   }, [sessionReady]);
 
-  const displayed =
-    filteredProducts.length > 0 || categoryFilter ? filteredProducts : products;
+  const displayed = filteredProducts.length > 0 || categoryFilter ? filteredProducts : products;
 
   const inStock = products.filter((p) => p.qty > 0).length;
   const lowStock = products.filter((p) => p.qty > 0 && p.qty < 10).length;
@@ -123,20 +106,12 @@ const ProductAdminPage = () => {
           Add Product
         </Link>
       </div>
-
       {/* Stat cards */}
       <div className="w-full grid grid-cols-4 space-x-4 py-4">
-        {statCards.map((stats) => (
-          <div key={stats.label}  className="px-12 border-l border-slate-400">
-            <p className="text-xl font-medium text-slate-800 leading-8">
-              {stats.label}
-            </p>
-            <p className="text-2xl text-slate-900 font-medium">
-              {stats.value.toLocaleString()}
-            </p>
-            <p className="text-lg text-slate-400">vs last month</p>
-          </div>
-        ))}
+        <StatsCard icon={<Package className="text-emerald-500" />} label="Products" value={products.length} trend={+1} />
+        <StatsCard icon={<Tag className="text-indigo-500" />} label="Categories" value={categoryNames.length} trend={+10} />
+        <StatsCard icon={<AlertCircle className="text-amber-500" />} label="Low Stocks" value={lowStock} trend={-1} />
+        <StatsCard icon={<PackageOpen className="text-rose-500" />} label="Out of Stock" value={outOfStock} trend={+2} />
       </div>
 
       {/* Table */}
@@ -147,6 +122,13 @@ const ProductAdminPage = () => {
           products={displayed}
           handleDelete={handleDelete}
           handleUpdate={setEditProduct}
+          option={
+            <Option
+              products={products}
+              uniqueCategory={categoryNames}
+              setFilteredProducts={setFilteredProducts}
+              setCategoryFilter={setCategoryFilter} />
+          }
         />
       )}
 
@@ -163,3 +145,53 @@ const ProductAdminPage = () => {
 };
 
 export default ProductAdminPage;
+
+type OptionType = {
+  products: Product[];
+  uniqueCategory: string[];
+  setFilteredProducts: (products: Product[]) => void;
+  setCategoryFilter: (category: string) => void;
+}
+
+const Option: React.FC<OptionType> = ({ products, uniqueCategory, setFilteredProducts, setCategoryFilter }) => {
+
+  const handleSearchByName = (name: string) => {
+    const q = name.toLowerCase();
+    setFilteredProducts(
+      name.trim()
+        ? products.filter((p) => p.name.toLowerCase().includes(q))
+        : [],
+    );
+  };
+
+  const handleFilterByCategory = (cat: string) => {
+    setCategoryFilter(cat);
+    setFilteredProducts(cat ? products.filter((p) => p.categoryName === cat) : []);
+  };
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between">
+        <div>
+          <input
+            onChange={e => handleSearchByName(e.target.value)}
+            className="px-3 py-2 border border-slate-200 rounded-md"
+            type="text"
+            placeholder="Search"
+          />
+        </div>
+
+        <div>
+          <select
+            onChange={(e) => handleFilterByCategory(e.target.value)}
+            className="px-3 py-2 border border-slate-200 rounded-md">
+            <option value="all">All Product</option>
+            {uniqueCategory.map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  )
+}

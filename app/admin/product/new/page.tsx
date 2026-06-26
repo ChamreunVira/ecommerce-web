@@ -160,7 +160,7 @@ export default function CreateProductPage() {
         <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
           <div className="flex flex-col gap-6">
             {/* Name & Description */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-md border border-slate-200 bg-white p-6">
               <h2 className="mb-5 text-base font-semibold text-slate-900">
                 Name and Description
               </h2>
@@ -205,7 +205,7 @@ export default function CreateProductPage() {
             </div>
 
             {/* Category */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-md border border-slate-200 bg-white p-6">
               <h2 className="mb-5 text-base font-semibold text-slate-900">
                 Category
               </h2>
@@ -235,7 +235,7 @@ export default function CreateProductPage() {
             </div>
 
             {/* Manage Stock */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-md border border-slate-200 bg-white p-6">
               <h2 className="mb-5 text-base font-semibold text-slate-900">
                 Manage Stock
               </h2>
@@ -263,7 +263,7 @@ export default function CreateProductPage() {
 
           <div className="flex flex-col gap-6">
             {/* Product Pricing */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-md border border-slate-200 bg-white p-6">
               <h2 className="mb-5 text-base font-semibold text-slate-900">
                 Product Pricing
               </h2>
@@ -321,7 +321,7 @@ export default function CreateProductPage() {
             </div>
 
             {/* Product Image */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="rounded-md border border-slate-200 bg-white p-6">
               <h2 className="mb-5 text-base font-semibold text-slate-900">
                 Product Image
               </h2>
@@ -334,7 +334,7 @@ export default function CreateProductPage() {
               >
                 <label
                   htmlFor="images"
-                  className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-orange-300 hover:bg-orange-50/40"
+                  className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-orange-300 hover:bg-orange-50/40"
                 >
                   <ImagePlus className="text-slate-400" size={26} />
                   <span className="mt-2 text-sm font-medium text-slate-700">

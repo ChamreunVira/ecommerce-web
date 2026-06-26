@@ -2,8 +2,6 @@
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
   BadgeDollarSign,
   Boxes,
   Clock3,
@@ -21,16 +19,8 @@ import { userService } from "@/services/user-service";
 import { orderService } from "@/services/order-service";
 import { OrderStatus } from "@/constant/constant";
 import { categoryService, CategoryTrend } from "@/services/category-service";
-
-type StatCard = {
-  label: string;
-  value: string;
-  change: string;
-  trend: "up" | "down";
-  caption: string;
-  icon: ReactNode;
-  accent: string;
-};
+import AdminStatsCard, { StatCard } from "@/components/AdminStatsCard";
+import { RecentOrder } from "@/types/order";
 
 type RevenuePoint = {
   month: string;
@@ -45,13 +35,13 @@ type QuickAction = {
   icon: ReactNode;
 };
 
-type RecentOrder = {
-  id: string;
-  customer: string;
-  total: string;
-  status: "Paid" | "Pending" | "Shipping";
-  date: string;
-};
+// type RecentOrder = {
+//   id: string;
+//   customer: string;
+//   total: string;
+//   status: "Paid" | "Pending" | "Shipping";
+//   date: string;
+// };
 
 const revenueData: RevenuePoint[] = [
   { month: "Jan", revenue: 26000, orders: 310 },
@@ -91,41 +81,45 @@ const quickActions: QuickAction[] = [
   },
 ];
 
-const recentOrders: RecentOrder[] = [
-  {
-    id: "#ORD-1048",
-    customer: "Nara Sok",
-    total: "$482.00",
-    status: "Paid",
-    date: "Today",
-  },
-  {
-    id: "#ORD-1047",
-    customer: "Lina Chan",
-    total: "$129.00",
-    status: "Shipping",
-    date: "Today",
-  },
-  {
-    id: "#ORD-1046",
-    customer: "Vireak Kim",
-    total: "$2,240.00",
-    status: "Pending",
-    date: "Yesterday",
-  },
-  {
-    id: "#ORD-1045",
-    customer: "Malis Yim",
-    total: "$374.00",
-    status: "Paid",
-    date: "Yesterday",
-  },
-];
+// const recentOrders: RecentOrder[] = [
+//   {
+//     id: "#ORD-1048",
+//     customer: "Nara Sok",
+//     total: "$482.00",
+//     status: "Paid",
+//     date: "Today",
+//   },
+//   {
+//     id: "#ORD-1047",
+//     customer: "Lina Chan",
+//     total: "$129.00",
+//     status: "Shipping",
+//     date: "Today",
+//   },
+//   {
+//     id: "#ORD-1046",
+//     customer: "Vireak Kim",
+//     total: "$2,240.00",
+//     status: "Pending",
+//     date: "Yesterday",
+//   },
+//   {
+//     id: "#ORD-1045",
+//     customer: "Malis Yim",
+//     total: "$374.00",
+//     status: "Paid",
+//     date: "Yesterday",
+//   },
+// ];
 
 const statusStyles: Record<RecentOrder["status"], string> = {
-  Paid: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  Pending: "bg-amber-50 text-amber-700 ring-amber-100",
-  Shipping: "bg-sky-50 text-sky-700 ring-sky-100",
+  PENDING_PAYMENT: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  PENDING: "bg-amber-50 text-amber-700 ring-amber-100",
+  SHIPPED: "bg-sky-50 text-sky-700 ring-sky-100",
+  CANCELLED: "bg-rose-50 text-rose-700 ring-rose-100",
+  DELIVERED: "bg-indigo-50 text-indigo-700 ring-indigo-100",
+  PROCESSING: "bg-sky-50 text-sky-700 ring-sky-100",
+  REFUNDED: "bg-red-50 text-red-700 ring-red-100"
 };
 
 function formatCompactCurrency(value: number) {
@@ -190,6 +184,7 @@ function buildChartPoints(data: RevenuePoint[]) {
 }
 
 export default function DashboardPage() {
+
   const [statistics, setStatistics] = useState<Statistics>({
     revenue: {
       value: 0,
@@ -213,6 +208,7 @@ export default function DashboardPage() {
     },
   });
   const [categoryTrend, setCategoryTrend] = useState<CategoryTrend[]>([]);
+  const [recentOrders , setRecentOrders] = useState<RecentOrder[]>([]);
 
   const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.reduce((best, item) =>
@@ -226,8 +222,8 @@ export default function DashboardPage() {
   const stats: StatCard[] = [
     {
       label: "Total revenue",
-      value: `$${statistics.revenue.value}`,
-      change: `+${(statistics.revenue.percentage / 100).toFixed(2)}%`,
+      value: `$${statistics.revenue.value.toFixed(2)}`,
+      change: `${statistics.revenue.percentage.toFixed(2)}`,
       trend: "up",
       caption: "vs. last month",
       icon: <BadgeDollarSign size={22} />,
@@ -236,7 +232,7 @@ export default function DashboardPage() {
     {
       label: "Orders",
       value: `${statistics.order.value}`,
-      change: `${statistics.order.percentage}%`,
+      change: `${statistics.order.percentage.toFixed(2)}%`,
       trend: statistics.order.trend,
       caption: "412 ready to ship",
       icon: <ShoppingCart size={22} />,
@@ -245,7 +241,7 @@ export default function DashboardPage() {
     {
       label: "Customers",
       value: `${statistics.customer.value}`,
-      change: `${statistics.customer.percentage}%`,
+      change: `${statistics.customer.percentage.toFixed(2)}%`,
       trend: statistics.customer.trend,
       caption: "new and returning",
       icon: <Users size={22} />,
@@ -254,7 +250,7 @@ export default function DashboardPage() {
     {
       label: "Low stock",
       value: `${statistics.product.value}`,
-      change: `${statistics.product.percentage}%`,
+      change: `${statistics.product.percentage.toFixed(2)}%`,
       trend: statistics.product.trend,
       caption: "items need attention",
       icon: <Boxes size={22} />,
@@ -280,6 +276,18 @@ export default function DashboardPage() {
       trend: trend,
     };
   };
+
+  const handleFetchRecentOrder = async () => {
+    try {
+      const response = await orderService.recent();
+      if(response.success) {
+        console.log("Recent order from api: ", response.data);
+        setRecentOrders(response.data); 
+      }
+    }catch(err: any) {
+      console.log("Failed to load recent order: ", err);
+    }
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -353,6 +361,7 @@ export default function DashboardPage() {
     };
 
     handleFetchCategoryTrend();
+    handleFetchRecentOrder();
 
     return () => {
       isMounted = false;
@@ -393,40 +402,7 @@ export default function DashboardPage() {
 
         {/* stats card */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((item) => {
-            const TrendIcon =
-              item.trend === "up" ? ArrowUpRight : ArrowDownRight;
-            const trendClass =
-              item.trend === "up" ? "text-emerald-600" : "text-rose-600";
-
-            return (
-              <article
-                key={item.label}
-                className="rounded-lg bg-white p-5 shadow-sm   ring-1 ring-slate-200/80"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className={`rounded-lg p-2.5 ring-1 ${item.accent}`}>
-                    {item.icon}
-                  </div>
-                  <span
-                    className={`inline-flex items-center gap-1 text-sm font-semibold ${trendClass}`}
-                  >
-                    <TrendIcon size={16} />
-                    {item.change}
-                  </span>
-                </div>
-                <div className="mt-5">
-                  <p className="text-sm font-medium text-slate-500">
-                    {item.label}
-                  </p>
-                  <h3 className="mt-2 text-3xl font-semibold text-slate-950">
-                    {item.value}
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">{item.caption}</p>
-                </div>
-              </article>
-            );
-          })}
+          {stats.map((item , i) => (<AdminStatsCard key={i} item={item}/>))}
         </div>
 
         {/* revenue trend */}
@@ -672,14 +648,14 @@ export default function DashboardPage() {
               </div>
               {recentOrders.map((order) => (
                 <div
-                  key={order.id}
+                  key={order.orderId}
                   className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
                 >
                   <div className="flex items-start justify-between gap-3 md:block">
                     <div>
-                      <p className="font-semibold text-slate-900">{order.id}</p>
+                      <p className="font-semibold text-slate-900">{order.orderCode}</p>
                       <p className="mt-0.5 text-xs text-slate-500">
-                        {order.date}
+                        {order.createdDate}
                       </p>
                     </div>
                     <span
@@ -694,7 +670,7 @@ export default function DashboardPage() {
                         Customer
                       </p>
                       <p className="truncate font-medium text-slate-700">
-                        {order.customer}
+                        {order.fullName}
                       </p>
                     </div>
                     <div>
@@ -702,7 +678,7 @@ export default function DashboardPage() {
                         Total
                       </p>
                       <p className="font-semibold text-slate-950">
-                        {order.total}
+                        {order.totalAmount}
                       </p>
                     </div>
                   </div>

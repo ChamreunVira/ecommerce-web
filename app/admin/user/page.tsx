@@ -1,7 +1,6 @@
 "use client";
 import AddUserModal from "@/components/AddUserModal";
 import Loading from "@/components/Loading";
-import SearchInput from "@/components/SearchInput";
 import UpdateCustomerModal from "@/components/UpdateCustomerModal";
 import UserTable from "@/components/UserTable";
 import { useAppContext } from "@/context/AppContext";
@@ -118,20 +117,10 @@ const UserAdminPage = () => {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {statCards.map((s) => (
-          <div
-            key={s.label}
-            className="rounded-md border border-slate-200 bg-white p-5"
-          >
-            <p className="text-base font-semibold text-slate-400">
-              {s.label}
-            </p>
-            <p className={`mt-2 text-3xl font-bold ${s.color}`}>
-              {s.value.toLocaleString()}
-            </p>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 gap-12 lg:grid-cols-3">
+        {/* {statCards.map((s) => (
+          <StatsCard icon={<User size={30} />} label={s.label} value={s.value} trend={s.trend}/>
+        ))} */}
       </div>
 
       {/* Table */}
