@@ -17,162 +17,45 @@ import {
 import { useAppContext } from "@/context/AppContext";
 import { userService } from "@/services/user-service";
 import { orderService } from "@/services/order-service";
-import { OrderStatus } from "@/constant/constant";
-import { categoryService, CategoryTrend } from "@/services/category-service";
+import { MONTHS, OrderStatus } from "@/constant/constant";
 import AdminStatsCard, { StatCard } from "@/components/AdminStatsCard";
 import { RecentOrder } from "@/types/order";
 import { DashboardStats, RevenueByMonth } from "@/types/stats";
 import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
 
-type QuickAction = {
+export type QuickAction = {
   label: string;
   description: string;
   href: string;
   icon: ReactNode;
 };
 
-// const revenueData: RevenuePoint[] = [
-//   { month: "Jan", revenue: 26000, orders: 310 },
-//   { month: "Feb", revenue: 31500, orders: 358 },
-//   { month: "Mar", revenue: 28400, orders: 331 },
-//   { month: "Apr", revenue: 40200, orders: 442 },
-//   { month: "May", revenue: 45600, orders: 490 },
-//   { month: "Jun", revenue: 52100, orders: 548 },
-//   { month: "Jul", revenue: 48800, orders: 519 },
-//   { month: "Aug", revenue: 61200, orders: 636 },
-// ];
-
-const quickActions: QuickAction[] = [
-  {
-    label: "Add product",
-    description: "Create inventory item",
-    href: "/admin/product",
-    icon: <PackagePlus size={20} />,
-  },
-  {
-    label: "Review orders",
-    description: "Open pending sales",
-    href: "/admin/order",
-    icon: <Truck size={20} />,
-  },
-  {
-    label: "Add customer",
-    description: "Create user account",
-    href: "/admin/user",
-    icon: <UserPlus size={20} />,
-  },
-  {
-    label: "Store settings",
-    description: "Payment and profile",
-    href: "/admin/setting",
-    icon: <WalletCards size={20} />,
-  },
-];
-
-const statusStyles: Record<RecentOrder["status"], string> = {
-  PENDING_PAYMENT: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  PENDING: "bg-amber-50 text-amber-700 ring-amber-100",
-  SHIPPED: "bg-sky-50 text-sky-700 ring-sky-100",
-  CANCELLED: "bg-rose-50 text-rose-700 ring-rose-100",
-  DELIVERED: "bg-indigo-50 text-indigo-700 ring-indigo-100",
-  PROCESSING: "bg-sky-50 text-sky-700 ring-sky-100",
-  REFUNDED: "bg-red-50 text-red-700 ring-red-100"
-};
-
-function formatCompactCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
+interface CardStats {
+  value: number;
+  percentage: number;
+  trend: "up" | "down";
 }
 
 type Statistics = {
-  revenue: {
-    value: number;
-    percentage: number;
-    trend: "up" | "down";
-  };
-  order: {
-    value: number;
-    percentage: number;
-    trend: "up" | "down";
-  };
-  customer: {
-    value: number;
-    percentage: number;
-    trend: "up" | "down";
-  };
-  product: {
-    value: number;
-    percentage: number;
-    trend: "up" | "down";
-  };
+  revenue: CardStats;
+  order: CardStats;
+  customer: CardStats;
+  product: CardStats;
 };
-
-function buildChartPoints(data: RevenueByMonth[]) {
-  const width = 640;
-  const height = 230;
-  const padding = 18;
-  const values = data.map((item) => item.revenue);
-  const min = Math.min(...values) * 0.86;
-  const max = Math.max(...values) * 1.08;
-  const stepX = (width - padding * 2) / (data.length - 1);
-
-  const points = data.map((item, index) => {
-    const x = padding + index * stepX;
-    const y =
-      height -
-      padding -
-      ((item.revenue - min) / (max - min)) * (height - padding * 2);
-    return { ...item, x, y };
-  });
-
-  return {
-    width,
-    height,
-    points,
-    linePath: points.map((point) => `${point.x},${point.y}`).join(" "),
-    areaPath: `${padding},${height - padding} ${points
-      .map((point) => `${point.x},${point.y}`)
-      .join(" ")} ${width - padding},${height - padding}`,
-  };
-}
 
 export default function DashboardPage() {
 
-  const [statistics, setStatistics] = useState<Statistics>({
-    revenue: {
-      value: 0,
-      percentage: 0,
-      trend: "up",
-    },
-    order: {
-      value: 0,
-      percentage: 0,
-      trend: "up",
-    },
-    customer: {
-      value: 0,
-      percentage: 0,
-      trend: "up",
-    },
-    product: {
-      value: 0,
-      percentage: 0,
-      trend: "up",
-    },
-  });
-  const [categoryTrend, setCategoryTrend] = useState<CategoryTrend[]>([]);
-  const [dashboardStats , setDashboardStats] = useState<DashboardStats | null>(null);
+  const [statistics, setStatistics] = useState<Statistics>(initStats);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
 
   const revenueData = dashboardStats?.revenueByMonths ?? [];
   const chart = buildChartPoints(revenueData);
-  const highestRevenue = revenueData.reduce((best, item) =>
-    item.revenue > best.revenue ? item : best,
-  );
+  const highestRevenue = revenueData.length > 0
+    ? revenueData.reduce((best, item) =>
+      item.revenue > best.revenue ? item : best
+    )
+    : { month: 0, revenue: 0, orders: 0 };
 
   const { products } = useAppContext();
 
@@ -217,31 +100,21 @@ export default function DashboardPage() {
     },
   ];
 
-  const calculateChange = (current: number, previous: number): { percentage: number; trend: "up" | "down" } => {
-    if (previous === 0) {
-      return {
-        percentage: 0,
-        trend: "up",
-      };
-    }
-
-    const percentage = ((current - previous) / previous) * 100;
-    const trend = percentage > 0 ? "up" : "down";
-    return {
-      percentage: Math.abs(percentage),
-      trend: trend,
-    };
-  };
+  const refunds = dashboardStats?.recentOrders.filter((order) => order.status === "REFUNDED");
+  const totalRefunds = refunds?.reduce((acc, item) => acc + item.totalAmount, 0);
+  const collects = dashboardStats?.recentOrders.filter((order) => order.status === "PENDING");
+  const totalCollects = collects?.reduce((acc , item) => acc + item.totalAmount, 0);
+  
 
   const handleFetchDashboardStats = async () => {
     try {
       const response = await http.get<ApiResponse<DashboardStats>>("/stats");
-      if(response.status === 200) {
+      if (response.status === 200) {
         console.log(response.data.data);
         setDashboardStats(response.data.data);
       }
-    }catch(err: any) {
-      console.log("Failded to load stats: " , err);
+    } catch (err: any) {
+      console.log("Failded to load stats: ", err);
     }
   }
 
@@ -305,21 +178,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let isMounted = true;
-    const handleFetchCategoryTrend = async () => {
-      try {
-        const response = await categoryService.getByTrend();
-        if (response.success && isMounted) {
-          console.log(response.data);
-          setCategoryTrend(response.data);
-        }
-      } catch (err: unknown) {
-        console.log(err);
-      }
-    };
-
-    handleFetchCategoryTrend();
     handleFetchDashboardStats();
-
     return () => {
       isMounted = false;
     };
@@ -359,7 +218,7 @@ export default function DashboardPage() {
 
         {/* stats card */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((item , i) => (<AdminStatsCard key={i} item={item}/>))}
+          {stats.map((item, i) => (<AdminStatsCard key={i} item={item} />))}
         </div>
 
         {/* revenue trend */}
@@ -380,7 +239,7 @@ export default function DashboardPage() {
                   Best month
                 </p>
                 <p className="mt-1 text-sm font-semibold text-slate-950">
-                  {highestRevenue.month} ·{" "}
+                  {MONTHS[highestRevenue.month]} ·{" "}
                   {formatCompactCurrency(highestRevenue.revenue)}
                 </p>
               </div>
@@ -443,7 +302,7 @@ export default function DashboardPage() {
                       textAnchor="middle"
                       className="fill-slate-500 text-[11px] font-medium"
                     >
-                      {point.month}
+                      {MONTHS[point.month]}
                     </text>
                   </g>
                 ))}
@@ -454,7 +313,7 @@ export default function DashboardPage() {
               <div>
                 <p className="text-sm text-slate-500">Average revenue</p>
                 <p className="mt-1 text-lg font-semibold text-slate-950">
-                  $43.0k
+                  $ 0.06
                 </p>
               </div>
               <div>
@@ -487,6 +346,7 @@ export default function DashboardPage() {
               </div>
               <div className="mt-6 space-y-5">
                 {dashboardStats?.trendCategories.map((category, i) => {
+                  const categoryTrend = dashboardStats?.trendCategories ?? [];
                   const totalTrendRevenue =
                     categoryTrend.reduce((sum, c) => sum + c.revenue, 0) || 1;
                   const percentage =
@@ -535,11 +395,11 @@ export default function DashboardPage() {
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="rounded-lg bg-white/10 p-4">
                   <p className="text-sm text-slate-300">Collected</p>
-                  <p className="mt-2 text-2xl font-semibold">$42.8k</p>
+                  <p className="mt-2 text-2xl font-semibold">${totalCollects?.toFixed(2)}</p>
                 </div>
                 <div className="rounded-lg bg-white/10 p-4">
                   <p className="text-sm text-slate-300">Refunds</p>
-                  <p className="mt-2 text-2xl font-semibold">$1.2k</p>
+                  <p className="mt-2 text-2xl font-semibold">${totalRefunds?.toFixed(2)}</p>
                 </div>
               </div>
             </article>
@@ -548,108 +408,234 @@ export default function DashboardPage() {
 
         {/* quickActions */}
         <div className="grid gap-6 xl:grid-cols-[minmax(340px,0.85fr)_minmax(0,1.15fr)]">
-          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
-            <h3 className="text-lg font-semibold text-slate-950">
-              Quick actions
-            </h3>
-            <p className="mt-1 text-sm text-slate-500">
-              Common admin tasks for daily operations.
-            </p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-              {quickActions.map((action) => (
+            <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+              <h3 className="text-lg font-semibold text-slate-950">
+                Quick actions
+              </h3>
+              <p className="mt-1 text-sm text-slate-500">
+                Common admin tasks for daily operations.
+              </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+                {quickActions.map((action) => (
+                  <Link
+                    key={action.label}
+                    href={action.href}
+                    className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/60"
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-orange-500 group-hover:text-white">
+                      {action.icon}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-semibold text-slate-900">
+                        {action.label}
+                      </span>
+                      <span className="mt-0.5 block text-sm text-slate-500">
+                        {action.description}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </article>
+
+            <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-950">
+                    Recent orders
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Latest customer purchases and payment state.
+                  </p>
+                </div>
                 <Link
-                  key={action.label}
-                  href={action.href}
-                  className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/60"
+                  href="/admin/order"
+                  className="text-sm font-semibold text-orange-600 hover:text-orange-700"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-orange-500 group-hover:text-white">
-                    {action.icon}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block font-semibold text-slate-900">
-                      {action.label}
-                    </span>
-                    <span className="mt-0.5 block text-sm text-slate-500">
-                      {action.description}
-                    </span>
-                  </span>
+                  View all
                 </Link>
-              ))}
-            </div>
-          </article>
-
-          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-950">
-                  Recent orders
-                </h3>
-                <p className="mt-1 text-sm text-slate-500">
-                  Latest customer purchases and payment state.
-                </p>
               </div>
-              <Link
-                href="/admin/order"
-                className="text-sm font-semibold text-orange-600 hover:text-orange-700"
-              >
-                View all
-              </Link>
-            </div>
 
-            <div className="mt-5 overflow-hidden rounded-lg border border-slate-200">
-              <div className="hidden grid-cols-[1fr_1fr_0.8fr_0.8fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500 md:grid">
-                <span>Order</span>
-                <span>Customer</span>
-                <span>Total</span>
-                <span>Status</span>
-              </div>
-              {dashboardStats?.recentOrders.map((order) => (
-                <div
-                  key={order.orderId}
-                  className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
-                >
-                  <div className="flex items-start justify-between gap-3 md:block">
-                    <div>
-                      <p className="font-semibold text-slate-900">{order.orderCode}</p>
-                      <p className="mt-0.5 text-xs text-slate-500">
-                        {order.createdDate === new Date().toLocaleDateString() ? "Today" : order.createdDate}
-                      </p>
+              <div className="mt-5 overflow-hidden rounded-lg border border-slate-200">
+                <div className="hidden grid-cols-[1fr_1fr_0.8fr_0.8fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500 md:grid">
+                  <span>Order</span>
+                  <span>Customer</span>
+                  <span>Total</span>
+                  <span>Status</span>
+                </div>
+                {dashboardStats?.recentOrders.map((order) => (
+                  <div
+                    key={order.orderId}
+                    className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
+                  >
+                    <div className="flex items-start justify-between gap-3 md:block">
+                      <div>
+                        <p className="font-semibold text-slate-900">{order.orderCode}</p>
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {order.createdDate === new Date().toLocaleDateString() ? "Today" : order.createdDate}
+                        </p>
+                      </div>
+                      <span
+                        className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:hidden ${statusStyles[order.status]}`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 md:contents">
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
+                          Customer
+                        </p>
+                        <p className="truncate font-medium text-slate-700">
+                          {order.fullName}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
+                          Total
+                        </p>
+                        <p className="font-semibold text-slate-950">
+                          {order.totalAmount}
+                        </p>
+                      </div>
                     </div>
                     <span
-                      className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:hidden ${statusStyles[order.status]}`}
+                      className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:inline-flex ${statusStyles[order.status]}`}
                     >
                       {order.status}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 md:contents">
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
-                        Customer
-                      </p>
-                      <p className="truncate font-medium text-slate-700">
-                        {order.fullName}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
-                        Total
-                      </p>
-                      <p className="font-semibold text-slate-950">
-                        {order.totalAmount}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:inline-flex ${statusStyles[order.status]}`}
-                  >
-                    {order.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </article>
+                ))}
+              </div>
+            </article>
         </div>
       </div>
     </section>
   );
 }
+
+function buildChartPoints(data: RevenueByMonth[]) {
+  const width = 640;
+  const height = 230;
+  const padding = 18;
+
+  if (data.length === 0) {
+    return {
+      width,
+      height,
+      points: [],
+      linePath: "",
+      areaPath: "",
+    };
+  }
+
+  const values = data.map((item) => item.revenue);
+  const min = Math.min(...values) * 0.86;
+  const max = Math.max(...values) * 1.08;
+  const stepX = data.length > 1 ? (width - padding * 2) / (data.length - 1) : 0;
+  const rangeY = max - min === 0 ? 1 : max - min;
+
+  const points = data.map((item, index) => {
+    const x = data.length > 1 ? padding + index * stepX : width / 2;
+    const y =
+      height -
+      padding -
+      ((item.revenue - min) / rangeY) * (height - padding * 2);
+    return { ...item, x, y };
+  });
+
+  return {
+    width,
+    height,
+    points,
+    linePath: points.map((point) => `${point.x},${point.y}`).join(" "),
+    areaPath: `${padding},${height - padding} ${points
+      .map((point) => `${point.x},${point.y}`)
+      .join(" ")} ${width - padding},${height - padding}`,
+  };
+}
+
+const initStats: Statistics = {
+  revenue: {
+    value: 0,
+    percentage: 0,
+    trend: "up",
+  },
+  order: {
+    value: 0,
+    percentage: 0,
+    trend: "up",
+  },
+  customer: {
+    value: 0,
+    percentage: 0,
+    trend: "up",
+  },
+  product: {
+    value: 0,
+    percentage: 0,
+    trend: "up",
+  },
+};
+
+const quickActions: QuickAction[] = [
+  {
+    label: "Add product",
+    description: "Create inventory item",
+    href: "/admin/product",
+    icon: <PackagePlus size={20} />,
+  },
+  {
+    label: "Review orders",
+    description: "Open pending sales",
+    href: "/admin/order",
+    icon: <Truck size={20} />,
+  },
+  {
+    label: "Add customer",
+    description: "Create user account",
+    href: "/admin/user",
+    icon: <UserPlus size={20} />,
+  },
+  {
+    label: "Store settings",
+    description: "Payment and profile",
+    href: "/admin/setting",
+    icon: <WalletCards size={20} />,
+  },
+];
+
+const statusStyles: Record<RecentOrder["status"], string> = {
+  PENDING_PAYMENT: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+  PENDING: "bg-amber-50 text-amber-700 ring-amber-100",
+  SHIPPED: "bg-sky-50 text-sky-700 ring-sky-100",
+  CANCELLED: "bg-rose-50 text-rose-700 ring-rose-100",
+  DELIVERED: "bg-indigo-50 text-indigo-700 ring-indigo-100",
+  PROCESSING: "bg-sky-50 text-sky-700 ring-sky-100",
+  REFUNDED: "bg-red-50 text-red-700 ring-red-100"
+};
+
+function formatCompactCurrency(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+const calculateChange = (current: number, previous: number): { percentage: number; trend: "up" | "down" } => {
+  if (previous === 0) {
+    return {
+      percentage: 0,
+      trend: "up",
+    };
+  }
+
+  const percentage = ((current - previous) / previous) * 100;
+  const trend = percentage > 0 ? "up" : "down";
+  return {
+    percentage: Math.abs(percentage),
+    trend: trend,
+  };
+};

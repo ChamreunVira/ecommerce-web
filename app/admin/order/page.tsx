@@ -1,13 +1,11 @@
 "use client";
 import Loading from "@/components/Loading";
 import OrderTable from "@/components/OrderTable";
-import SearchInput from "@/components/SearchInput";
 import StatsCard from "@/components/StatsCard";
-import { OrderStatus } from "@/constant/constant";
 import { useAppContext } from "@/context/AppContext";
 import { orderService } from "@/services/order-service";
 import { Order } from "@/types/order";
-import { ChevronRight, Clock, Home, RefreshCw, ShoppingBag, Truck, X } from "lucide-react";
+import { ChevronRight, Clock, Home, PackageIcon, PackageMinusIcon, RefreshCw, ShoppingBag, Truck, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -55,7 +53,7 @@ const OrderAdminPage = () => {
 
   const statCards = [
     {
-      icon: <ShoppingBag className="text-slate-900" />,
+      icon: <ShoppingBag className="text-indigo-600" />,
       label: "Total Orders",
       value: orders.length,
       trend: +1,
@@ -73,7 +71,7 @@ const OrderAdminPage = () => {
       trend: +10
     },
     {
-      icon: <X className="text-rose-500" />,
+      icon: <PackageMinusIcon className="text-rose-500" />,
       label: "Cancelled",
       value: orders.filter((o) => o.status === "CANCELLED").length,
       trend: -1
