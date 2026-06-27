@@ -21,15 +21,9 @@ import { OrderStatus } from "@/constant/constant";
 import { categoryService, CategoryTrend } from "@/services/category-service";
 import AdminStatsCard, { StatCard } from "@/components/AdminStatsCard";
 import { RecentOrder } from "@/types/order";
-import { DashboardStats } from "@/types/stats";
+import { DashboardStats, RevenueByMonth } from "@/types/stats";
 import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
-
-type RevenuePoint = {
-  month: string;
-  revenue: number;
-  orders: number;
-};
 
 type QuickAction = {
   label: string;
@@ -38,24 +32,16 @@ type QuickAction = {
   icon: ReactNode;
 };
 
-// type RecentOrder = {
-//   id: string;
-//   customer: string;
-//   total: string;
-//   status: "Paid" | "Pending" | "Shipping";
-//   date: string;
-// };
-
-const revenueData: RevenuePoint[] = [
-  { month: "Jan", revenue: 26000, orders: 310 },
-  { month: "Feb", revenue: 31500, orders: 358 },
-  { month: "Mar", revenue: 28400, orders: 331 },
-  { month: "Apr", revenue: 40200, orders: 442 },
-  { month: "May", revenue: 45600, orders: 490 },
-  { month: "Jun", revenue: 52100, orders: 548 },
-  { month: "Jul", revenue: 48800, orders: 519 },
-  { month: "Aug", revenue: 61200, orders: 636 },
-];
+// const revenueData: RevenuePoint[] = [
+//   { month: "Jan", revenue: 26000, orders: 310 },
+//   { month: "Feb", revenue: 31500, orders: 358 },
+//   { month: "Mar", revenue: 28400, orders: 331 },
+//   { month: "Apr", revenue: 40200, orders: 442 },
+//   { month: "May", revenue: 45600, orders: 490 },
+//   { month: "Jun", revenue: 52100, orders: 548 },
+//   { month: "Jul", revenue: 48800, orders: 519 },
+//   { month: "Aug", revenue: 61200, orders: 636 },
+// ];
 
 const quickActions: QuickAction[] = [
   {
@@ -126,7 +112,7 @@ type Statistics = {
   };
 };
 
-function buildChartPoints(data: RevenuePoint[]) {
+function buildChartPoints(data: RevenueByMonth[]) {
   const width = 640;
   const height = 230;
   const padding = 18;
@@ -180,9 +166,9 @@ export default function DashboardPage() {
     },
   });
   const [categoryTrend, setCategoryTrend] = useState<CategoryTrend[]>([]);
-  const [recentOrders , setRecentOrders] = useState<RecentOrder[]>([]);
-  const [dashboardStats , setDashboardStats] = useState<DashboardStats[]>([]);
+  const [dashboardStats , setDashboardStats] = useState<DashboardStats | null>(null);
 
+  const revenueData = dashboardStats?.revenueByMonths ?? [];
   const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.reduce((best, item) =>
     item.revenue > best.revenue ? item : best,
@@ -247,22 +233,12 @@ export default function DashboardPage() {
     };
   };
 
-  const handleFetchRecentOrder = async () => {
-    try {
-      const response = await orderService.recent();
-      if(response.success) {
-        setRecentOrders(response.data); 
-      }
-    }catch(err: any) {
-      console.log("Failed to load recent order: ", err);
-    }
-  }
-
   const handleFetchDashboardStats = async () => {
     try {
-      const response = await http.get<ApiResponse<DashboardStats[]>>("/stats");
+      const response = await http.get<ApiResponse<DashboardStats>>("/stats");
       if(response.status === 200) {
         console.log(response.data.data);
+        setDashboardStats(response.data.data);
       }
     }catch(err: any) {
       console.log("Failded to load stats: " , err);
@@ -342,7 +318,6 @@ export default function DashboardPage() {
     };
 
     handleFetchCategoryTrend();
-    handleFetchRecentOrder();
     handleFetchDashboardStats();
 
     return () => {
@@ -511,7 +486,7 @@ export default function DashboardPage() {
                 <Star className="text-amber-500" size={22} />
               </div>
               <div className="mt-6 space-y-5">
-                {categoryTrend.map((category, i) => {
+                {dashboardStats?.trendCategories.map((category, i) => {
                   const totalTrendRevenue =
                     categoryTrend.reduce((sum, c) => sum + c.revenue, 0) || 1;
                   const percentage =
@@ -628,7 +603,7 @@ export default function DashboardPage() {
                 <span>Total</span>
                 <span>Status</span>
               </div>
-              {recentOrders.map((order) => (
+              {dashboardStats?.recentOrders.map((order) => (
                 <div
                   key={order.orderId}
                   className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
