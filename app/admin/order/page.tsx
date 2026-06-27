@@ -54,24 +54,28 @@ const OrderAdminPage = () => {
   const statCards = [
     {
       icon: <ShoppingBag className="text-indigo-600" />,
+      accent: "bg-indigo-50",
       label: "Total Orders",
       value: orders.length,
       trend: +1,
     },
     {
       icon: <Clock className="text-amber-600" />,
+      accent: "bg-amber-50",
       label: "Pending",
       value: orders.filter((o) => o.status === "PENDING").length,
       trend: +3
     },
     {
       icon: <Truck className="text-emerald-600" />,
+      accent: "bg-emerald-50",
       label: "Delivered",
       value: orders.filter((o) => o.status === "DELIVERED").length,
       trend: +10
     },
     {
       icon: <PackageMinusIcon className="text-rose-500" />,
+      accent: "bg-rose-50",
       label: "Cancelled",
       value: orders.filter((o) => o.status === "CANCELLED").length,
       trend: -1
@@ -112,7 +116,7 @@ const OrderAdminPage = () => {
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {statCards.map((stat) => (
-          <StatsCard icon={stat.icon} label={stat.label} value={stat.value} trend={stat.trend}/>
+          <StatsCard icon={stat.icon} accent={stat.accent} label={stat.label} value={stat.value} trend={stat.trend}/>
         ))}
       </div>
 

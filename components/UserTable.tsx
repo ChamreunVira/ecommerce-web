@@ -8,12 +8,14 @@ type UserTableType = {
   users: User[];
   handleDelete: (id: number) => void;
   handleUpdate?: (user: User) => void;
+  option: React.ReactNode;
 };
 
 const UserTable: React.FC<UserTableType> = ({
   users,
   handleDelete,
   handleUpdate,
+  option
 }) => {
   const columns: Column<User>[] = [
     {
@@ -92,7 +94,7 @@ const UserTable: React.FC<UserTableType> = ({
     },
   ];
 
-  return <Table data={users} columns={columns} />;
+  return <Table data={users} columns={columns} option={option} />;
 };
 
 export default UserTable;

@@ -128,9 +128,9 @@ const CategoryAdminPage = () => {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-8 lg:grid-cols-3">
-        <StatsCard icon={<Tag className="text-indigo-500" />} label="Categories" value={categories.length} trend={+3} />
-        <StatsCard icon={<Package className="text-emerald-500" />} label="Products" value={totalProducts} trend={+10} />
-        <StatsCard icon={<PackageOpen className="text-rose-500" />} label="Empty" value={categories.filter((c) => !c.products?.length).length} trend={-1} />
+        <StatsCard icon={<Tag className="text-indigo-500" />} accent="bg-indigo-50" label="Categories" value={categories.length} trend={+3} />
+        <StatsCard icon={<Package className="text-emerald-500" />} accent="bg-emerald-50" label="Products" value={totalProducts} trend={+10} />
+        <StatsCard icon={<PackageOpen className="text-rose-500" />} accent="bg-rose-50" label="Empty" value={categories.filter((c) => !c.products?.length).length} trend={-1} />
         {/* show activate */}
         {/* <StatsCard */}
       </div>

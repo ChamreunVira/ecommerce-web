@@ -6,6 +6,7 @@ type StatsCardProps = {
   label: string;
   value: number;
   trend: number;
+  accent: string;
 };
 
 const StatsCard: React.FC<StatsCardProps> = ({
@@ -13,14 +14,15 @@ const StatsCard: React.FC<StatsCardProps> = ({
   label,
   value,
   trend,
+  accent,
 }) => {
   const isPositive = trend >= 0;
 
   return (
     <div className="group flex items-center justify-between px-5 py-5 bg-white border border-slate-200 rounded-md transition-all duration-200">
-      
+
       {/* Icon */}
-      <div className="p-3 bg-slate-100 rounded-full text-slate-700 group-hover:bg-slate-200 transition">
+      <div className={`p-3 rounded-full transition ${accent}`}>
         {icon}
       </div>
 
@@ -35,11 +37,10 @@ const StatsCard: React.FC<StatsCardProps> = ({
       {/* Trend */}
       <div
         className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium
-        ${
-          isPositive
+        ${isPositive
             ? "text-green-600 bg-green-50"
             : "text-red-600 bg-red-50"
-        }`}
+          }`}
       >
         {isPositive ? (
           <TrendingUp size={16} />

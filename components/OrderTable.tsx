@@ -138,7 +138,6 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
 
 export default OrderTable;
 
-// ─── Status badge ──────────────────────────────────────────────────────────────
 
 function OrderStatusBadge({ status }: { status: string }) {
   const map: Record<string, { dot: string; pill: string; label: string }> = {

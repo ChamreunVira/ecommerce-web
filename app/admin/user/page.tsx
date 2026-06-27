@@ -1,12 +1,13 @@
 "use client";
 import AddUserModal from "@/components/AddUserModal";
 import Loading from "@/components/Loading";
+import StatsCard from "@/components/StatsCard";
 import UpdateCustomerModal from "@/components/UpdateCustomerModal";
 import UserTable from "@/components/UserTable";
 import { useAppContext } from "@/context/AppContext";
 import { userService } from "@/services/user-service";
 import { User } from "@/types/user";
-import { ChevronRight, Home, Plus } from "lucide-react";
+import { ChevronRight, Home, Plus, UserCheck, UserKey, Users, UserStarIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -118,9 +119,9 @@ const UserAdminPage = () => {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-12 lg:grid-cols-3">
-        {/* {statCards.map((s) => (
-          <StatsCard icon={<User size={30} />} label={s.label} value={s.value} trend={s.trend}/>
-        ))} */}
+        <StatsCard icon={<Users className="text-indigo-500" size={30} />} accent="bg-indigo-50" label="Total Users" value={users.length} trend={+2} />
+        <StatsCard icon={<UserStarIcon className="text-emerald-500" size={30} />} accent="bg-emerald-50" label="Customers" value={customers} trend={+2} />
+        <StatsCard icon={<UserKey className="text-orange-500" size={30} />} accent="bg-orange-50" label="Admins" value={admins} trend={+2} />
       </div>
 
       {/* Table */}
@@ -131,6 +132,13 @@ const UserAdminPage = () => {
           users={displayed}
           handleDelete={handleDeleteByUserId}
           handleUpdate={setEditUser}
+          option={
+            <Option
+              roles={roles}
+              handleSearchByName={handleSearchByName}
+              handleFilterByRole={handleFilterByRole}
+            />
+          }
         />
       )}
 
@@ -156,3 +164,37 @@ const UserAdminPage = () => {
 };
 
 export default UserAdminPage;
+
+type OptionType = {
+  roles: string[];
+  handleSearchByName: (name: string) => void;
+  handleFilterByRole: (role: string) => void;
+}
+
+export const Option: React.FC<OptionType> = ({ roles, handleSearchByName, handleFilterByRole }) => {
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between">
+        <div>
+          <input
+            onChange={e => handleSearchByName(e.target.value)}
+            className="px-3 py-2 border border-slate-200 rounded-md"
+            type="text"
+            placeholder="Search"
+          />
+        </div>
+
+        <div>
+          <select
+            onChange={(e) => handleFilterByRole(e.target.value)}
+            className="px-3 py-2 border border-slate-200 rounded-md">
+            <option value="all">All Product</option>
+            {roles.map((role) => (
+              <option key={role} value={role}>{role}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+}

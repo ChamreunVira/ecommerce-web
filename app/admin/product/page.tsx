@@ -59,20 +59,8 @@ const ProductAdminPage = () => {
 
   const displayed = filteredProducts.length > 0 || categoryFilter ? filteredProducts : products;
 
-  const inStock = products.filter((p) => p.qty > 0).length;
   const lowStock = products.filter((p) => p.qty > 0 && p.qty < 5).length;
   const outOfStock = products.filter((p) => p.qty <= 0).length;
-
-  const statCards = [
-    {
-      label: "Total Products",
-      value: products.length,
-      color: "text-slate-900",
-    },
-    { label: "In Stock", value: inStock, color: "text-emerald-600" },
-    { label: "Low Stock", value: lowStock, color: "text-amber-600" },
-    { label: "Out of Stock", value: outOfStock, color: "text-rose-600" },
-  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -108,10 +96,10 @@ const ProductAdminPage = () => {
       </div>
       {/* Stat cards */}
       <div className="w-full grid grid-cols-4 space-x-4 py-4">
-        <StatsCard icon={<Package className="text-emerald-500" />} label="Products" value={products.length} trend={+1} />
-        <StatsCard icon={<Tag className="text-indigo-500" />} label="Categories" value={categoryNames.length} trend={+10} />
-        <StatsCard icon={<AlertCircle className="text-amber-500" />} label="Low Stocks" value={lowStock} trend={-1} />
-        <StatsCard icon={<PackageOpen className="text-rose-500" />} label="Out of Stock" value={outOfStock} trend={+2} />
+        <StatsCard icon={<Package className="text-emerald-500" />} accent="bg-emerald-50" label="Products" value={products.length} trend={+1} />
+        <StatsCard icon={<Tag className="text-indigo-500" />} accent="bg-indigo-50" label="Categories" value={categoryNames.length} trend={+10} />
+        <StatsCard icon={<AlertCircle className="text-amber-500" />} accent="bg-amber-50" label="Low Stocks" value={lowStock} trend={-1} />
+        <StatsCard icon={<PackageOpen className="text-rose-500" />} accent="bg-rose-50" label="Out of Stock" value={outOfStock} trend={+2} />
       </div>
 
       {/* Table */}
