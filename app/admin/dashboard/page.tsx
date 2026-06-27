@@ -21,6 +21,9 @@ import { OrderStatus } from "@/constant/constant";
 import { categoryService, CategoryTrend } from "@/services/category-service";
 import AdminStatsCard, { StatCard } from "@/components/AdminStatsCard";
 import { RecentOrder } from "@/types/order";
+import { DashboardStats } from "@/types/stats";
+import { http } from "@/lib/axios";
+import { ApiResponse } from "@/types/api-response";
 
 type RevenuePoint = {
   month: string;
@@ -80,37 +83,6 @@ const quickActions: QuickAction[] = [
     icon: <WalletCards size={20} />,
   },
 ];
-
-// const recentOrders: RecentOrder[] = [
-//   {
-//     id: "#ORD-1048",
-//     customer: "Nara Sok",
-//     total: "$482.00",
-//     status: "Paid",
-//     date: "Today",
-//   },
-//   {
-//     id: "#ORD-1047",
-//     customer: "Lina Chan",
-//     total: "$129.00",
-//     status: "Shipping",
-//     date: "Today",
-//   },
-//   {
-//     id: "#ORD-1046",
-//     customer: "Vireak Kim",
-//     total: "$2,240.00",
-//     status: "Pending",
-//     date: "Yesterday",
-//   },
-//   {
-//     id: "#ORD-1045",
-//     customer: "Malis Yim",
-//     total: "$374.00",
-//     status: "Paid",
-//     date: "Yesterday",
-//   },
-// ];
 
 const statusStyles: Record<RecentOrder["status"], string> = {
   PENDING_PAYMENT: "bg-emerald-50 text-emerald-700 ring-emerald-100",
@@ -209,6 +181,7 @@ export default function DashboardPage() {
   });
   const [categoryTrend, setCategoryTrend] = useState<CategoryTrend[]>([]);
   const [recentOrders , setRecentOrders] = useState<RecentOrder[]>([]);
+  const [dashboardStats , setDashboardStats] = useState<DashboardStats[]>([]);
 
   const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.reduce((best, item) =>
@@ -258,10 +231,7 @@ export default function DashboardPage() {
     },
   ];
 
-  const calculateChange = (
-    current: number,
-    previous: number,
-  ): { percentage: number; trend: "up" | "down" } => {
+  const calculateChange = (current: number, previous: number): { percentage: number; trend: "up" | "down" } => {
     if (previous === 0) {
       return {
         percentage: 0,
@@ -281,11 +251,21 @@ export default function DashboardPage() {
     try {
       const response = await orderService.recent();
       if(response.success) {
-        console.log("Recent order from api: ", response.data);
         setRecentOrders(response.data); 
       }
     }catch(err: any) {
       console.log("Failed to load recent order: ", err);
+    }
+  }
+
+  const handleFetchDashboardStats = async () => {
+    try {
+      const response = await http.get<ApiResponse<DashboardStats[]>>("/stats");
+      if(response.status === 200) {
+        console.log(response.data.data);
+      }
+    }catch(err: any) {
+      console.log("Failded to load stats: " , err);
     }
   }
 
@@ -353,6 +333,7 @@ export default function DashboardPage() {
       try {
         const response = await categoryService.getByTrend();
         if (response.success && isMounted) {
+          console.log(response.data);
           setCategoryTrend(response.data);
         }
       } catch (err: unknown) {
@@ -362,6 +343,7 @@ export default function DashboardPage() {
 
     handleFetchCategoryTrend();
     handleFetchRecentOrder();
+    handleFetchDashboardStats();
 
     return () => {
       isMounted = false;
@@ -550,7 +532,7 @@ export default function DashboardPage() {
                           {category.name}
                         </span>
                         <span className="font-semibold text-slate-950">
-                          {formatCompactCurrency(category.revenue)}
+                          ${category.revenue.toFixed(2)}
                         </span>
                       </div>
                       <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
@@ -655,7 +637,7 @@ export default function DashboardPage() {
                     <div>
                       <p className="font-semibold text-slate-900">{order.orderCode}</p>
                       <p className="mt-0.5 text-xs text-slate-500">
-                        {order.createdDate}
+                        {order.createdDate === new Date().toLocaleDateString() ? "Today" : order.createdDate}
                       </p>
                     </div>
                     <span

@@ -60,7 +60,7 @@ const ProductAdminPage = () => {
   const displayed = filteredProducts.length > 0 || categoryFilter ? filteredProducts : products;
 
   const inStock = products.filter((p) => p.qty > 0).length;
-  const lowStock = products.filter((p) => p.qty > 0 && p.qty < 10).length;
+  const lowStock = products.filter((p) => p.qty > 0 && p.qty < 5).length;
   const outOfStock = products.filter((p) => p.qty <= 0).length;
 
   const statCards = [
