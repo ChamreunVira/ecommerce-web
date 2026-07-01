@@ -41,6 +41,16 @@ class AuthService {
         return response.data;
     }
 
+    async forgotPassword(req: { email: string }): Promise<ApiResponse<any>> {
+        const response = await http.post<ApiResponse<any>>(`${this.endPoint}/forgot-password`, req);
+        return response.data;
+    }
+
+    async resetPassword(req: { otp: string, newPassword: string }): Promise<ApiResponse<any>> {
+        const response = await http.post<ApiResponse<any>>(`${this.endPoint}/reset-password`, req);
+        return response.data;
+    }
+
     logout(): void {
         tokenManager.removeToken();
     }

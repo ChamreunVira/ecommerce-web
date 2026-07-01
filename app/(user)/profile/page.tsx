@@ -7,10 +7,12 @@ import { Mail, Calendar, Settings, ShoppingBag, ShieldCheck } from "lucide-react
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import ChangePasswordModal from "@/components/ChangePasswordModal";
 
 const ProfilePage = () => {
   const { user, sessionReady, isInitializing } = useAppContext();
   const router = useRouter();
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     if (sessionReady && !user) {
@@ -33,6 +35,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
+        
         {/* Profile Header */}
         <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
           <div className="h-32 sm:h-40 bg-linear-to-r from-orange-400 to-rose-500"></div>
@@ -57,6 +60,7 @@ const ProfilePage = () => {
 
         {/* Profile Details & Actions */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+         
           {/* Main Info */}
           <div className="md:col-span-2 space-y-6">
             <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
@@ -105,6 +109,7 @@ const ProfilePage = () => {
                 </Link>
                 <button
                   type="button"
+                  onClick={() => setIsPasswordModalOpen(true)}
                   className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition font-medium border border-transparent hover:border-slate-100 text-left w-full"
                 >
                   <Settings size={18} className="text-slate-400" />
@@ -115,6 +120,11 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen} 
+        onClose={() => setIsPasswordModalOpen(false)} 
+      />
     </div>
   );
 };

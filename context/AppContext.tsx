@@ -29,7 +29,6 @@ type AppContextType = {
   products: Product[];
   categories: Category[];
   isInitializing: boolean;
-  /** True once the bootstrap session init has resolved (success or failure). */
   sessionReady: boolean;
   getTotalCart: () => number;
   refreshCart: () => Promise<void>;

@@ -10,11 +10,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
-        port: '8080',
+        port: '8081',
       },
       {
         protocol: 'https',
-        hostname: 'bakong.nbc.gov.kh/en/images/qr/BKRTKHPPXXX.png',
+        hostname: 'bakong.nbc.gov.kh',
       }
     ],
   },

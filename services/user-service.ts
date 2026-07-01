@@ -30,6 +30,11 @@ class UserService {
         const response = await http.delete<ApiResponse<null>>(`${this.endPoint}/${id}`);
         return response.data;
     }
+
+    async changePassword(req: { currentPassword: string; newPassword: string }): Promise<ApiResponse<any>> {
+        const response = await http.put<ApiResponse<any>>(`${this.endPoint}/change-password`, req);
+        return response.data;
+    }
 }
 
 export const userService = new UserService();

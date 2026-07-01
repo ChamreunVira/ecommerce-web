@@ -24,6 +24,7 @@ export default function UpdateCategoryModal({
   const [formData, setFormData] = useState<CategoryFormData>({
     name: category.name,
     description: category.description,
+    status: category.status,
     products: category.products || [],
   });
   const [isSaving, setIsSaving] = useState(false);

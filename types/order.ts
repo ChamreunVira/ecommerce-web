@@ -1,6 +1,5 @@
 import { OrderStatus, PaymentMethod } from "@/constant/constant";
 import { ShippingAddress } from "./shipping-address";
-import { defaultOverrides } from "next/dist/server/require-hook";
 import { OrderItem } from "./order-item";
 import { PaymentSummary } from "./payment-sumary";
 

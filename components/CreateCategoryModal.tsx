@@ -16,6 +16,7 @@ type CategoryFormData = Omit<Category, "id" | "createdAt" | "updatedAt">;
 const initialCategory: CategoryFormData = {
   name: "",
   description: "",
+  status: true,
   products: [],
 };
 

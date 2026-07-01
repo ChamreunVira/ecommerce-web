@@ -1,7 +1,7 @@
 import { tokenManager } from "@/utils/tokenManager";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const BASE_URL = "http://localhost:8080/api/v1";
+const BASE_URL = "http://localhost:8081/api/v1";
 
 export const http = axios.create({
   baseURL: BASE_URL,
@@ -47,7 +47,7 @@ http.interceptors.response.use(
 
         const { accessToken } = response.data.data;
         console.log("The access token is: ", accessToken)
-        
+
         tokenManager.setToken(accessToken);
 
         // Retry original request with new token

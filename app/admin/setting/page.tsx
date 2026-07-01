@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
+import ChangePasswordModal from "@/components/ChangePasswordModal";
 
 const mockSettings = {
   storeName: "ViraDev Store",
@@ -38,6 +39,7 @@ type StoreSettings = typeof mockSettings;
 
 export default function SettingAdminPage() {
   const [settings, setSettings] = useState<StoreSettings>(mockSettings);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const updateField = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = event.target;
@@ -82,13 +84,22 @@ export default function SettingAdminPage() {
             </p>
           </div>
 
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
-          >
-            <Save size={18} />
-            Save settings
-          </button>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setIsPasswordModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Change Password
+            </button>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+            >
+              <Save size={18} />
+              Save settings
+            </button>
+          </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.75fr)]">
@@ -142,6 +153,11 @@ export default function SettingAdminPage() {
           </div>
         </div>
       </form>
+
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen} 
+        onClose={() => setIsPasswordModalOpen(false)} 
+      />
     </section>
   );
 }

@@ -80,7 +80,7 @@ const SignInPage: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <Link href="#" className="text-sm font-medium text-orange-600 hover:text-orange-500 transition-colors">
+                <Link href="/forgot-password" className="text-sm font-medium text-orange-600 hover:text-orange-500 transition-colors">
                   Forgot password?
                 </Link>
               </div>
