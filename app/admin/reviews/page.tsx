@@ -1,0 +1,99 @@
+"use client";
+import Link from "next/link";
+import { ChevronRight, Home, Star, ThumbsUp, ThumbsDown, AlertOctagon, MessageSquare } from "lucide-react";
+import StatsCard from "@/components/StatsCard";
+
+type Review = {
+  id: string;
+  customer: string;
+  product: string;
+  rating: number;
+  comment: string;
+  status: "Published" | "Pending" | "Hidden";
+  date: string;
+};
+
+const mockReviews: Review[] = [
+  { id: "REV-501", customer: "Virak Chamreun", product: "Wireless Headphones Pro", rating: 5, comment: "Exceptional sound quality and very comfortable. Highly recommended!", status: "Published", date: "2026-07-02" },
+  { id: "REV-502", customer: "Socheata Lim", product: "Running Shoes X500", rating: 2, comment: "Sizing is way off. Expected a 40 but received something closer to a 38.", status: "Pending", date: "2026-07-02" },
+  { id: "REV-503", customer: "Dara Pich", product: "Mechanical Keyboard RGB", rating: 4, comment: "Great keyboard, the RGB lighting is gorgeous. Slightly loud for offices.", status: "Published", date: "2026-07-01" },
+  { id: "REV-504", customer: "Bopha Keo", product: "Slim Fit Jeans", rating: 1, comment: "Terrible quality, fabric is very thin and tore on first wear.", status: "Hidden", date: "2026-06-30" },
+  { id: "REV-505", customer: "Rathana Mao", product: "USB-C Hub 7-in-1", rating: 5, comment: "Works perfectly with my MacBook Pro. All ports function as expected.", status: "Published", date: "2026-06-29" },
+  { id: "REV-506", customer: "Piseth Nhem", product: "Yoga Mat Pro", rating: 3, comment: "Decent mat, but gets slippery when sweating a lot during hot yoga.", status: "Pending", date: "2026-06-28" },
+];
+
+const statusStyle: Record<Review["status"], string> = {
+  Published: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  Pending: "bg-amber-50 text-amber-700 ring-amber-200",
+  Hidden: "bg-rose-50 text-rose-700 ring-rose-200",
+};
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map(s => (
+        <Star key={s} size={13} className={s <= rating ? "fill-amber-400 text-amber-400" : "text-slate-200 fill-slate-200"} />
+      ))}
+    </div>
+  );
+}
+
+export default function ReviewsPage() {
+  const published = mockReviews.filter(r => r.status === "Published").length;
+  const pending = mockReviews.filter(r => r.status === "Pending").length;
+  const hidden = mockReviews.filter(r => r.status === "Hidden").length;
+  const avgRating = mockReviews.reduce((s, r) => s + r.rating, 0) / mockReviews.length;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <nav className="flex items-center gap-1.5 text-sm text-slate-500">
+        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-slate-800 transition-colors"><Home size={14} /></Link>
+        <ChevronRight size={14} className="text-slate-300" />
+        <span className="font-medium text-slate-700">Reviews</span>
+      </nav>
+
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
+          <Star className="text-amber-400 fill-amber-400" size={24} /> Customer Reviews
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">Manage product reviews, approve or hide customer feedback.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatsCard icon={<Star className="text-amber-500" />} accent="bg-amber-50" label="Avg Rating" value={`${avgRating.toFixed(1)} ★`} trend={+1} />
+        <StatsCard icon={<ThumbsUp className="text-emerald-500" />} accent="bg-emerald-50" label="Published" value={published} trend={+2} />
+        <StatsCard icon={<MessageSquare className="text-orange-500" />} accent="bg-orange-50" label="Pending" value={pending} trend={0} />
+        <StatsCard icon={<ThumbsDown className="text-rose-500" />} accent="bg-rose-50" label="Hidden" value={hidden} trend={0} />
+      </div>
+
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-x-auto">
+        <table className="w-full text-left text-sm text-slate-600">
+          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <tr>
+              <th className="px-5 py-4 font-semibold">Customer</th>
+              <th className="px-5 py-4 font-semibold">Product</th>
+              <th className="px-5 py-4 font-semibold">Rating</th>
+              <th className="px-5 py-4 font-semibold">Comment</th>
+              <th className="px-5 py-4 font-semibold">Status</th>
+              <th className="px-5 py-4 font-semibold">Date</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {mockReviews.map(r => (
+              <tr key={r.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="px-5 py-4 font-semibold text-slate-900">{r.customer}</td>
+                <td className="px-5 py-4 text-slate-600 max-w-[160px] truncate">{r.product}</td>
+                <td className="px-5 py-4"><StarRating rating={r.rating} /></td>
+                <td className="px-5 py-4 text-slate-500 italic max-w-[260px] truncate">"{r.comment}"</td>
+                <td className="px-5 py-4">
+                  <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[r.status]}`}>{r.status}</span>
+                </td>
+                <td className="px-5 py-4 text-slate-500">{r.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

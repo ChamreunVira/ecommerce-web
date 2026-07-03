@@ -4,6 +4,7 @@ import { Order } from "@/types/order";
 import Image from "next/image";
 import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
+import { PrintInvoiceButton } from "./PrintInvoiceButton";
 
 type OrderTableType = {
   order: Order[];
@@ -125,9 +126,7 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
           >
             Details
           </Link>
-          <button className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-600">
-            <MoreHorizontal size={15} />
-          </button>
+          <PrintInvoiceButton order={item} />
         </div>
       ),
     },

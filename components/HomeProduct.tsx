@@ -4,6 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import { useAppContext } from "@/context/AppContext";
 import { Product } from "@/types/product";
 import {
+  ArrowRight,
   Filter,
   LayoutGrid,
   LayoutList,
@@ -160,11 +161,10 @@ const HomeProduct = () => {
           <button
             type="button"
             onClick={() => setSelectedCategory("")}
-            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
-              selectedCategory === ""
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${selectedCategory === ""
                 ? "bg-orange-500 text-white shadow-sm"
                 : "bg-gray-100 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-600"
-            }`}
+              }`}
           >
             All Products
             <span className="ml-1.5 opacity-70 text-xs">({products.length})</span>
@@ -175,11 +175,10 @@ const HomeProduct = () => {
               key={cat.id}
               type="button"
               onClick={() => setSelectedCategory(cat.name)}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${
-                selectedCategory === cat.name
+              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${selectedCategory === cat.name
                   ? "bg-orange-500 text-white shadow-sm"
                   : "bg-gray-100 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-600"
-              }`}
+                }`}
             >
               {cat.name}
               <span className="ml-1.5 opacity-70 text-xs">
@@ -191,9 +190,12 @@ const HomeProduct = () => {
           <button
             type="button"
             onClick={() => { setSelectedCategory(""); router.push("/products"); }}
-            className="ml-auto px-4 py-1.5 rounded-full text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:border-orange-400 hover:text-orange-600 transition-all"
+            className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:border-orange-400 hover:text-orange-600 transition-all"
           >
-            See all →
+            See all
+            <span>
+              <ArrowRight size={14}/>
+            </span>
           </button>
         </div>
 
@@ -207,11 +209,10 @@ const HomeProduct = () => {
                 type="button"
                 aria-label={label}
                 onClick={() => setViewCols(cols)}
-                className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${
-                  viewCols === cols
+                className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${viewCols === cols
                     ? "bg-orange-500 text-white shadow-sm"
                     : "border border-gray-200 bg-white text-gray-500 hover:border-orange-300 hover:text-orange-500"
-                }`}
+                  }`}
               >
                 {icon}
               </button>
@@ -224,11 +225,10 @@ const HomeProduct = () => {
           <button
             type="button"
             onClick={() => setFiltersOpen((p) => !p)}
-            className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-all ${
-              filtersOpen
+            className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-all ${filtersOpen
                 ? "bg-orange-500 text-white shadow-sm"
                 : "border border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-600"
-            }`}
+              }`}
           >
             <Filter className="h-4 w-4" />
             Filters

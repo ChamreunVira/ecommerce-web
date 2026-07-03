@@ -71,8 +71,8 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
         setCartItems(
           cartItems.filter((cartItem) => cartItem.id !== cartItemId),
         );
-        toast.success("Deleted cart item from cart successfully.", {
-          position: "bottom-right",
+        toast.success("Deleted cart item.", {
+          position: "bottom-center",
         });
       }
     } catch (error) {
@@ -162,7 +162,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                           >
                             <Image
                               className="h-full w-full object-cover"
-                              src={`http://localhost:8080/api/v1/uploads/${item.productImage}`}
+                              src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.productImage}`}
                               alt={item.productName}
                               width={100}
                               height={100}

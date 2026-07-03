@@ -96,10 +96,10 @@ const ProductAdminPage = () => {
       </div>
       {/* Stat cards */}
       <div className="w-full grid grid-cols-4 space-x-4 py-4">
-        <StatsCard icon={<Package className="text-emerald-500" />} accent="bg-emerald-50" label="Products" value={products.length} trend={+1} />
-        <StatsCard icon={<Tag className="text-indigo-500" />} accent="bg-indigo-50" label="Categories" value={categoryNames.length} trend={+10} />
-        <StatsCard icon={<AlertCircle className="text-amber-500" />} accent="bg-amber-50" label="Low Stocks" value={lowStock} trend={-1} />
-        <StatsCard icon={<PackageOpen className="text-rose-500" />} accent="bg-rose-50" label="Out of Stock" value={outOfStock} trend={+2} />
+        <StatsCard icon={<Package className="text-orange-500" />} accent="bg-orange-50" label="Products" value={products.length} trend={+1} />
+        <StatsCard icon={<Tag className="text-orange-500" />} accent="bg-orange-50" label="Categories" value={categoryNames.length} trend={+10} />
+        <StatsCard icon={<AlertCircle className="text-orange-500" />} accent="bg-orange-50" label="Low Stocks" value={lowStock} trend={-1} />
+        <StatsCard icon={<PackageOpen className="text-orange-500" />} accent="bg-orange-50" label="Out of Stock" value={outOfStock} trend={+2} />
       </div>
 
       {/* Table */}

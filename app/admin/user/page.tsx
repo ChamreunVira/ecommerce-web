@@ -7,7 +7,7 @@ import UserTable from "@/components/UserTable";
 import { useAppContext } from "@/context/AppContext";
 import { userService } from "@/services/user-service";
 import { User } from "@/types/user";
-import { ChevronRight, Home, Plus, UserCheck, UserKey, Users, UserStarIcon } from "lucide-react";
+import { ChevronRight, Home, Plus, UserKey, Users, UserStarIcon } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -119,8 +119,8 @@ const UserAdminPage = () => {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-12 lg:grid-cols-3">
-        <StatsCard icon={<Users className="text-indigo-500" size={30} />} accent="bg-indigo-50" label="Total Users" value={users.length} trend={+2} />
-        <StatsCard icon={<UserStarIcon className="text-emerald-500" size={30} />} accent="bg-emerald-50" label="Customers" value={customers} trend={+2} />
+        <StatsCard icon={<Users className="text-orange-500" size={30} />} accent="bg-orange-50" label="Total Users" value={users.length} trend={+2} />
+        <StatsCard icon={<UserStarIcon className="text-orange-500" size={30} />} accent="bg-orange-50" label="Customers" value={customers} trend={+2} />
         <StatsCard icon={<UserKey className="text-orange-500" size={30} />} accent="bg-orange-50" label="Admins" value={admins} trend={+2} />
       </div>
 

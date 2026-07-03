@@ -46,7 +46,12 @@ class AuthService {
         return response.data;
     }
 
-    async resetPassword(req: { otp: string, newPassword: string }): Promise<ApiResponse<any>> {
+    async verifyOtp(req: { email: string; otp: string }): Promise<ApiResponse<any>> {
+        const response = await http.post<ApiResponse<any>>(`${this.endPoint}/verify-otp`, req);
+        return response.data;
+    }
+
+    async resetPassword(req: { email: string; otp: string; newPassword: string }): Promise<ApiResponse<any>> {
         const response = await http.post<ApiResponse<any>>(`${this.endPoint}/reset-password`, req);
         return response.data;
     }

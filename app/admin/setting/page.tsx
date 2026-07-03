@@ -8,66 +8,94 @@ import {
   Settings,
   Store,
   Truck,
+  UserCircle,
+  Calendar,
 } from "lucide-react";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ChangePasswordModal from "@/components/ChangePasswordModal";
+import { http } from "@/lib/axios";
 
-const mockSettings = {
-  storeName: "ViraDev Store",
-  supportEmail: "support@viradev.store",
-  phone: "+855 12 345 678",
-  address: "Phnom Penh, Cambodia",
-  currency: "USD",
-  timezone: "Asia/Phnom_Penh",
-  lowStockAlert: 12,
-  freeShippingMinimum: 99,
-  taxRate: 10,
-  notifications: {
-    newOrders: true,
-    lowStock: true,
-    weeklyReport: false,
-  },
-  payments: {
-    cashOnDelivery: true,
-    khqrBakong: true,
-    cardPayment: false,
-  },
+type StoreSettings = {
+  id: number,
+  name: string,
+  supportEmail: string,
+  phone: string,
+  address: string,
+  currency: string,
+  timeZone: string,
+  lowStockAlert: number,
+  freeShippingMinimum: number,
+  taxRate: number,
+  notificationNewOrders: boolean,
+  notificationLowStock: boolean,
+  notificationWeeklyReport: boolean,
+  paymentCod: boolean,
+  paymentKhqr: boolean,
+  paymentCard: boolean
 };
 
-type StoreSettings = typeof mockSettings;
+type PersonalProfile = {
+  fullName: string;
+  personalEmail: string;
+  phoneNumber: string;
+  bio: string;
+  dateOfBirth: string;
+};
+
+const defaultProfile: PersonalProfile = {
+  fullName: "Admin Virak",
+  personalEmail: "virak@vst4rekh.com",
+  phoneNumber: "+855 12 345 678",
+  bio: "Store administrator responsible for managing products, orders, and customers.",
+  dateOfBirth: "1995-06-15",
+};
 
 export default function SettingAdminPage() {
-  const [settings, setSettings] = useState<StoreSettings>(mockSettings);
+  const [settings, setSettings] = useState<StoreSettings | null>(null);
+  const [profile, setProfile] = useState<PersonalProfile>(defaultProfile);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  const updateProfile = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setProfile((prev) => ({ ...prev, [name]: value }));
+  };
 
   const updateField = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = event.target;
-    setSettings((current) => ({
-      ...current,
-      [name]: type === "number" ? Number(value) : value,
-    }));
+    setSettings((prev) => prev ? {...prev, [name]: type === "checkbox" ? (event.target as HTMLInputElement).checked : value } : null);
   };
 
-  const updateNestedToggle = (
-    group: "notifications" | "payments",
-    field: string,
-    checked: boolean,
-  ) => {
-    setSettings((current) => ({
-      ...current,
-      [group]: {
-        ...current[group],
-        [field]: checked,
-      },
-    }));
-  };
+  const handleFetchSettings = async () => {
+    try {
+      const response = await http.get(process.env.NEXT_PUBLIC_BASE_URL + "/settings");
+      if (response) {
+        setSettings(response.data.data[0]);
+      }
+    } catch (err: any) {
+      console.log("Failed to fetch settings", err);
+      toast.error("Failed to fetch settings.");
+    }
+  }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Mock settings payload:", settings);
-    toast.success("Settings saved with mock data.");
+    try {
+      const response = await http.get(process.env.NEXT_PUBLIC_BASE_URL + "/settings");
+      if (response) {
+        setSettings(response.data.data[0]);
+        toast.success("Settings saved successfully!");
+      }
+    } catch (err: any) {
+      console.log("Failed to save settings", err);
+      toast.error("Failed to save settings.");
+    }
   };
+
+  useEffect(() => {
+    handleFetchSettings();
+    return () => new AbortController().abort();
+  }, []);
 
   return (
     <section className="min-h-full">
@@ -104,30 +132,70 @@ export default function SettingAdminPage() {
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.75fr)]">
           <div className="space-y-6">
+
+            {/* Personal Profile */}
+            <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
+              <SectionTitle icon={<UserCircle size={20} />} title="Personal Profile" description="Your personal account details and public-facing info." />
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <Input label="Full Name" name="fullName" value={profile.fullName} onChange={updateProfile} />
+                <Input label="Email" name="personalEmail" type="email" value={profile.personalEmail} onChange={updateProfile} />
+                <Input label="Phone Number" name="phoneNumber" value={profile.phoneNumber} onChange={updateProfile} />
+                {/* Date of Birth with styled date picker */}
+                <label className="block">
+                  <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
+                    <Calendar size={14} className="text-orange-500" />
+                    Date of Birth
+                  </span>
+                  <div className="relative mt-2">
+                    <input
+                      name="dateOfBirth"
+                      type="date"
+                      value={profile.dateOfBirth}
+                      onChange={updateProfile}
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition appearance-none cursor-pointer focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                    />
+                  </div>
+                </label>
+                <div className="md:col-span-2">
+                  <label className="block">
+                    <span className="text-sm font-medium text-slate-700">Bio</span>
+                    <textarea
+                      name="bio"
+                      rows={3}
+                      value={profile.bio}
+                      onChange={updateProfile}
+                      placeholder="Write a short bio about yourself..."
+                      className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                    />
+                  </label>
+                </div>
+              </div>
+            </section>
+
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Store size={20} />} title="Store profile" description="Public business information." />
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <Input label="Store name" name="storeName" value={settings.storeName} onChange={updateField} />
-                <Input label="Support email" name="supportEmail" type="email" value={settings.supportEmail} onChange={updateField} />
-                <Input label="Phone" name="phone" value={settings.phone} onChange={updateField} />
-                <Input label="Address" name="address" value={settings.address} onChange={updateField} />
+                <Input label="Store name" name="storeName" value={settings?.name || ""} onChange={updateField} />
+                <Input label="Support email" name="supportEmail" type="email" value={settings?.supportEmail || ""} onChange={updateField} />
+                <Input label="Phone" name="phone" value={settings?.phone || ""} onChange={updateField} />
+                <Input label="Address" name="address" value={settings?.address || ""} onChange={updateField} />
               </div>
             </section>
 
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Globe2 size={20} />} title="Localization" description="Currency, tax, and reporting defaults." />
               <div className="mt-5 grid gap-4 md:grid-cols-3">
-                <Select label="Currency" name="currency" value={settings.currency} onChange={updateField} options={["USD", "KHR"]} />
-                <Select label="Timezone" name="timezone" value={settings.timezone} onChange={updateField} options={["Asia/Phnom_Penh", "UTC"]} />
-                <Input label="Tax rate (%)" name="taxRate" type="number" value={settings.taxRate} onChange={updateField} />
+                <Select label="Currency" name="currency" value={settings?.currency || "USD"} onChange={updateField} options={["USD", "KHR"]} />
+                <Select label="Timezone" name="timeZone" value={settings?.timeZone || "UTC"} onChange={updateField} options={["Asia/Phnom_Penh", "UTC"]} />
+                <Input label="Tax rate (%)" name="taxRate" type="number" value={settings?.taxRate || ""} onChange={updateField} />
               </div>
             </section>
 
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Truck size={20} />} title="Shipping and stock" description="Operational thresholds for fulfillment." />
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <Input label="Low stock alert" name="lowStockAlert" type="number" value={settings.lowStockAlert} onChange={updateField} />
-                <Input label="Free shipping minimum" name="freeShippingMinimum" type="number" value={settings.freeShippingMinimum} onChange={updateField} />
+                <Input label="Low stock alert" name="lowStockAlert" type="number" value={settings?.lowStockAlert || ""} onChange={updateField} />
+                <Input label="Free shipping minimum" name="freeShippingMinimum" type="number" value={settings?.freeShippingMinimum || ""} onChange={updateField} />
               </div>
             </section>
           </div>
@@ -136,27 +204,27 @@ export default function SettingAdminPage() {
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<CreditCard size={20} />} title="Payments" description="Enabled payment methods." />
               <div className="mt-5 space-y-3">
-                <Toggle label="Cash on delivery" checked={settings.payments.cashOnDelivery} onChange={(checked) => updateNestedToggle("payments", "cashOnDelivery", checked)} />
-                <Toggle label="KHQR Bakong" checked={settings.payments.khqrBakong} onChange={(checked) => updateNestedToggle("payments", "khqrBakong", checked)} />
-                <Toggle label="Card payment" checked={settings.payments.cardPayment} onChange={(checked) => updateNestedToggle("payments", "cardPayment", checked)} />
+                <Toggle label="Cash on delivery" checked={settings?.paymentCod || true} onChange={(checked) => setSettings(settings ? {...settings, paymentCod: checked} : null)} />
+                <Toggle label="KHQR Bakong" checked={settings?.paymentKhqr || true} onChange={(checked) => setSettings(settings ? {...settings, paymentKhqr: checked} : null)} />
+                <Toggle label="Card payment" checked={settings?.paymentCard || true} onChange={(checked) => setSettings(settings ? {...settings, paymentCard: checked} : null)} />
               </div>
             </section>
 
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Bell size={20} />} title="Notifications" description="Admin alert preferences." />
               <div className="mt-5 space-y-3">
-                <Toggle label="New order alerts" checked={settings.notifications.newOrders} onChange={(checked) => updateNestedToggle("notifications", "newOrders", checked)} />
-                <Toggle label="Low stock alerts" checked={settings.notifications.lowStock} onChange={(checked) => updateNestedToggle("notifications", "lowStock", checked)} />
-                <Toggle label="Weekly report" checked={settings.notifications.weeklyReport} onChange={(checked) => updateNestedToggle("notifications", "weeklyReport", checked)} />
+                <Toggle label="New order alerts" checked={settings?.notificationNewOrders || true} onChange={() => setSettings(settings ? {...settings, notificationNewOrders: !settings?.notificationNewOrders} : null)} />
+                <Toggle label="Low stock alerts" checked={settings?.notificationLowStock || true} onChange={(checked) => setSettings(settings ? {...settings, notificationLowStock: checked} : null)} />
+                <Toggle label="Weekly report" checked={settings?.notificationWeeklyReport || true} onChange={(checked) => setSettings(settings ? {...settings, notificationWeeklyReport: checked} : null)} />
               </div>
             </section>
           </div>
         </div>
       </form>
 
-      <ChangePasswordModal 
-        isOpen={isPasswordModalOpen} 
-        onClose={() => setIsPasswordModalOpen(false)} 
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
       />
     </section>
   );

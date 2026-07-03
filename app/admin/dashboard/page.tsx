@@ -23,6 +23,8 @@ import { RecentOrder } from "@/types/order";
 import { DashboardStats, RevenueByMonth } from "@/types/stats";
 import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
+import RevenueChart from "@/components/RevenueChart";
+import OrderStatusChart from "@/components/OrderStatusChart";
 
 export type QuickAction = {
   label: string;
@@ -50,12 +52,18 @@ export default function DashboardPage() {
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
 
   const revenueData = dashboardStats?.revenueByMonths ?? [];
-  const chart = buildChartPoints(revenueData);
   const highestRevenue = revenueData.length > 0
     ? revenueData.reduce((best, item) =>
       item.revenue > best.revenue ? item : best
     )
     : { month: 0, revenue: 0, orders: 0 };
+
+  const orderStatusCounts = {
+    pending: dashboardStats?.recentOrders.filter(o => o.status === "PENDING").length ?? 0,
+    delivered: dashboardStats?.recentOrders.filter(o => o.status === "DELIVERED").length ?? 0,
+    cancelled: dashboardStats?.recentOrders.filter(o => o.status === "CANCELLED").length ?? 0,
+    processing: dashboardStats?.recentOrders.filter(o => o.status === "PROCESSING").length ?? 0,
+  };
 
   const { products } = useAppContext();
 
@@ -103,8 +111,8 @@ export default function DashboardPage() {
   const refunds = dashboardStats?.recentOrders.filter((order) => order.status === "REFUNDED");
   const totalRefunds = refunds?.reduce((acc, item) => acc + item.totalAmount, 0);
   const collects = dashboardStats?.recentOrders.filter((order) => order.status === "PENDING");
-  const totalCollects = collects?.reduce((acc , item) => acc + item.totalAmount, 0);
-  
+  const totalCollects = collects?.reduce((acc, item) => acc + item.totalAmount, 0);
+
 
   const handleFetchDashboardStats = async () => {
     try {
@@ -245,87 +253,29 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="mt-6 overflow-hidden">
-              <svg
-                viewBox={`0 0 ${chart.width} ${chart.height}`}
-                className="h-72 w-full"
-                role="img"
-                aria-label="Revenue chart by month"
-              >
-                <defs>
-                  <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#f97316" stopOpacity="0.26" />
-                    <stop
-                      offset="100%"
-                      stopColor="#f97316"
-                      stopOpacity="0.02"
-                    />
-                  </linearGradient>
-                </defs>
-                {[0, 1, 2, 3].map((line) => {
-                  const y = 26 + line * 48;
-                  return (
-                    <line
-                      key={line}
-                      x1="18"
-                      x2="622"
-                      y1={y}
-                      y2={y}
-                      stroke="#e2e8f0"
-                      strokeDasharray="5 5"
-                      strokeWidth="1"
-                    />
-                  );
-                })}
-                <polygon points={chart.areaPath} fill="url(#revenueFill)" />
-                <polyline
-                  points={chart.linePath}
-                  fill="none"
-                  stroke="#f97316"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="4"
-                />
-                {chart.points.map((point) => (
-                  <g key={point.month}>
-                    <circle
-                      cx={point.x}
-                      cy={point.y}
-                      r="5"
-                      fill="#ffffff"
-                      stroke="#f97316"
-                      strokeWidth="3"
-                    />
-                    <text
-                      x={point.x}
-                      y="224"
-                      textAnchor="middle"
-                      className="fill-slate-500 text-[11px] font-medium"
-                    >
-                      {MONTHS[point.month]}
-                    </text>
-                  </g>
-                ))}
-              </svg>
+            <div className="mt-6">
+              <RevenueChart data={revenueData} />
             </div>
 
             <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3">
               <div>
                 <p className="text-sm text-slate-500">Average revenue</p>
                 <p className="mt-1 text-lg font-semibold text-slate-950">
-                  $ 0.06
+                  {revenueData.length > 0
+                    ? formatCompactCurrency(revenueData.reduce((s, d) => s + d.revenue, 0) / revenueData.length)
+                    : "—"}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-slate-500">Total orders</p>
                 <p className="mt-1 text-lg font-semibold text-slate-950">
-                  3,634
+                  {revenueData.reduce((s, d) => s + d.orders, 0).toLocaleString()}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-slate-500">Conversion rate</p>
+                <p className="text-sm text-slate-500">Best month</p>
                 <p className="mt-1 text-lg font-semibold text-slate-950">
-                  6.8%
+                  {MONTHS[highestRevenue.month] || "—"}
                 </p>
               </div>
             </div>
@@ -336,49 +286,21 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">
-                    Top categories
+                    Order status
                   </h3>
                   <p className="mt-1 text-sm text-slate-500">
-                    Revenue share this month
+                    Distribution this period
                   </p>
                 </div>
                 <Star className="text-amber-500" size={22} />
               </div>
-              <div className="mt-6 space-y-5">
-                {dashboardStats?.trendCategories.map((category, i) => {
-                  const categoryTrend = dashboardStats?.trendCategories ?? [];
-                  const totalTrendRevenue =
-                    categoryTrend.reduce((sum, c) => sum + c.revenue, 0) || 1;
-                  const percentage =
-                    (category.revenue / totalTrendRevenue) * 100;
-                  const colors = [
-                    "bg-orange-500",
-                    "bg-sky-500",
-                    "bg-emerald-500",
-                    "bg-violet-500",
-                    "bg-rose-500",
-                  ];
-                  const color = colors[i % colors.length];
-
-                  return (
-                    <div key={category.name}>
-                      <div className="mb-2 flex items-center justify-between text-sm">
-                        <span className="font-medium text-slate-700">
-                          {category.name}
-                        </span>
-                        <span className="font-semibold text-slate-950">
-                          ${category.revenue.toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                        <div
-                          className={`h-full rounded-full ${color}`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="mt-4">
+                <OrderStatusChart
+                  pending={orderStatusCounts.pending}
+                  delivered={orderStatusCounts.delivered}
+                  cancelled={orderStatusCounts.cancelled}
+                  processing={orderStatusCounts.processing}
+                />
               </div>
             </article>
 
@@ -403,112 +325,112 @@ export default function DashboardPage() {
                 </div>
               </div>
             </article>
-            
+
           </div>
         </div>
 
         {/* quickActions */}
         <div className="grid gap-6 xl:grid-cols-[minmax(340px,0.85fr)_minmax(0,1.15fr)]">
-            <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
-              <h3 className="text-lg font-semibold text-slate-950">
-                Quick actions
-              </h3>
-              <p className="mt-1 text-sm text-slate-500">
-                Common admin tasks for daily operations.
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                {quickActions.map((action) => (
-                  <Link
-                    key={action.label}
-                    href={action.href}
-                    className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/60"
-                  >
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-orange-500 group-hover:text-white">
-                      {action.icon}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block font-semibold text-slate-900">
-                        {action.label}
-                      </span>
-                      <span className="mt-0.5 block text-sm text-slate-500">
-                        {action.description}
-                      </span>
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </article>
-
-            <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-950">
-                    Recent orders
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-500">
-                    Latest customer purchases and payment state.
-                  </p>
-                </div>
+          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+            <h3 className="text-lg font-semibold text-slate-950">
+              Quick actions
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Common admin tasks for daily operations.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+              {quickActions.map((action) => (
                 <Link
-                  href="/admin/order"
-                  className="text-sm font-semibold text-orange-600 hover:text-orange-700"
+                  key={action.label}
+                  href={action.href}
+                  className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/60"
                 >
-                  View all
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-orange-500 group-hover:text-white">
+                    {action.icon}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-semibold text-slate-900">
+                      {action.label}
+                    </span>
+                    <span className="mt-0.5 block text-sm text-slate-500">
+                      {action.description}
+                    </span>
+                  </span>
                 </Link>
-              </div>
+              ))}
+            </div>
+          </article>
 
-              <div className="mt-5 overflow-hidden rounded-lg border border-slate-200">
-                <div className="hidden grid-cols-[1fr_1fr_0.8fr_0.8fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500 md:grid">
-                  <span>Order</span>
-                  <span>Customer</span>
-                  <span>Total</span>
-                  <span>Status</span>
-                </div>
-                {dashboardStats?.recentOrders.map((order) => (
-                  <div
-                    key={order.orderId}
-                    className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
-                  >
-                    <div className="flex items-start justify-between gap-3 md:block">
-                      <div>
-                        <p className="font-semibold text-slate-900">{order.orderCode}</p>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          {order.createdDate === new Date().toLocaleDateString() ? "Today" : order.createdDate}
-                        </p>
-                      </div>
-                      <span
-                        className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:hidden ${statusStyles[order.status]}`}
-                      >
-                        {order.status}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3 md:contents">
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
-                          Customer
-                        </p>
-                        <p className="truncate font-medium text-slate-700">
-                          {order.fullName}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
-                          Total
-                        </p>
-                        <p className="font-semibold text-slate-950">
-                          {order.totalAmount}
-                        </p>
-                      </div>
+          <article className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200/80">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-950">
+                  Recent orders
+                </h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  Latest customer purchases and payment state.
+                </p>
+              </div>
+              <Link
+                href="/admin/order"
+                className="text-sm font-semibold text-orange-600 hover:text-orange-700"
+              >
+                View all
+              </Link>
+            </div>
+
+            <div className="mt-5 overflow-hidden rounded-lg border border-slate-200">
+              <div className="hidden grid-cols-[1fr_1fr_0.8fr_0.8fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500 md:grid">
+                <span>Order</span>
+                <span>Customer</span>
+                <span>Total</span>
+                <span>Status</span>
+              </div>
+              {dashboardStats?.recentOrders.map((order) => (
+                <div
+                  key={order.orderId}
+                  className="grid gap-3 border-t border-slate-100 px-4 py-4 text-sm first:border-t-0 md:grid-cols-[1fr_1fr_0.8fr_0.8fr] md:items-center md:first:border-t"
+                >
+                  <div className="flex items-start justify-between gap-3 md:block">
+                    <div>
+                      <p className="font-semibold text-slate-900">{order.orderCode}</p>
+                      <p className="mt-0.5 text-xs text-slate-500">
+                        {order.createdDate === new Date().toLocaleDateString() ? "Today" : order.createdDate}
+                      </p>
                     </div>
                     <span
-                      className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:inline-flex ${statusStyles[order.status]}`}
+                      className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:hidden ${statusStyles[order.status]}`}
                     >
                       {order.status}
                     </span>
                   </div>
-                ))}
-              </div>
-            </article>
+                  <div className="grid grid-cols-2 gap-3 md:contents">
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
+                        Customer
+                      </p>
+                      <p className="truncate font-medium text-slate-700">
+                        {order.fullName}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium uppercase text-slate-400 md:hidden">
+                        Total
+                      </p>
+                      <p className="font-semibold text-slate-950">
+                        {order.totalAmount}
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    className={`hidden w-fit rounded-full px-2.5 py-1 text-xs font-semibold ring-1 md:inline-flex ${statusStyles[order.status]}`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
         </div>
       </div>
     </section>

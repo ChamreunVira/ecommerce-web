@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 type StatsCardProps = {
   icon: React.ReactNode;
   label: string;
-  value: number;
+  value: number | string;
   trend: number;
   accent: string;
 };
@@ -30,7 +30,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
       <div className="flex-1 ml-4">
         <p className="text-[1rem] text-slate-500 font-medium">{label}</p>
         <h1 className="text-2xl font-semibold text-slate-800">
-          {value.toLocaleString()}
+          {typeof value === "number" ? value.toLocaleString() : value}
         </h1>
       </div>
 

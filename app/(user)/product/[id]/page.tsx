@@ -80,7 +80,7 @@ const ProductDetail = () => {
                 {primaryImg ? (
                   <Image
                     className="aspect-4/3 w-full object-contain p-5 mix-blend-multiply"
-                    src={`http://localhost:8080/api/v1/uploads/${primaryImg}`}
+                    src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${primaryImg}`}
                     alt={productData.name}
                     width={720}
                     height={540}
@@ -102,15 +102,14 @@ const ProductDetail = () => {
                       key={`${img}-${index}`}
                       type="button"
                       onClick={() => handleSwitchImage(index)}
-                      className={`overflow-hidden rounded-md border bg-slate-50 transition ${
-                        isSelected
-                          ? "border-orange-500"
-                          : "border-slate-200 hover:border-orange-200"
-                      }`}
+                      className={`overflow-hidden rounded-md border bg-slate-50 transition ${isSelected
+                        ? "border-orange-500"
+                        : "border-slate-200 hover:border-orange-200"
+                        }`}
                     >
                       <Image
                         className="aspect-square w-full object-contain p-2 mix-blend-multiply"
-                        src={`http://localhost:8080/api/v1/uploads/${img}`}
+                        src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${img}`}
                         alt={`${productData.name} ${index + 1}`}
                         width={220}
                         height={220}
