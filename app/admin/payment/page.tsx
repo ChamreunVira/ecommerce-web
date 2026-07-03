@@ -2,39 +2,53 @@
 import Link from "next/link";
 import { ChevronRight, Home, CreditCard, CheckCircle2, Clock, XCircle, DollarSign } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
+import { PaymentStatus } from "@/constant/constant";
+import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { paymentService } from "@/services/payment-service";
+import { Payment } from "@/types/payment";
 
-type Payment = {
-  id: string;
-  orderCode: string;
-  customer: string;
-  amount: number;
-  method: string;
-  status: "Completed" | "Pending" | "Failed" | "Refunded";
-  date: string;
-};
+// const mockPayments: Payment[] = [
+//   { paymentId: "PAY-9001", orderCode: "ORD-10041", customer: "Virak Chamreun", amount: 149.99, method: "KHQR", status: "PAID", date: "2026-07-03" },
+//   { paymentId: "PAY-9002", orderCode: "ORD-10040", customer: "Socheata Lim", amount: 59.50, method: "Credit Card", status: "PAID", date: "2026-07-03" },
+//   { paymentId: "PAY-9003", orderCode: "ORD-10039", customer: "Dara Pich", amount: 220.00, method: "COD", status: "PENDING", date: "2026-07-02" },
+//   { paymentId: "PAY-9004", orderCode: "ORD-10038", customer: "Bopha Keo", amount: 88.75, method: "Credit Card", status: "FAILED", date: "2026-07-02" },
+//   { paymentId: "PAY-9005", orderCode: "ORD-10037", customer: "Rathana Mao", amount: 310.00, method: "KHQR", status: "PAID", date: "2026-07-01" },
+//   { paymentId: "PAY-9006", orderCode: "ORD-10036", customer: "Kunthea Chhun", amount: 45.20, method: "COD", status: "EXPIRED", date: "2026-...
+//   { paymentId: "PAY-9007", orderCode: "ORD-10035", customer: "Piseth Nhem", amount: 175.₀₀, method: "Credit Card", status: "PAID", date: "2026-...
 
-const mockPayments: Payment[] = [
-  { id: "PAY-9001", orderCode: "ORD-10041", customer: "Virak Chamreun", amount: 149.99, method: "KHQR", status: "Completed", date: "2026-07-03" },
-  { id: "PAY-9002", orderCode: "ORD-10040", customer: "Socheata Lim", amount: 59.50, method: "Credit Card", status: "Completed", date: "2026-07-03" },
-  { id: "PAY-9003", orderCode: "ORD-10039", customer: "Dara Pich", amount: 220.00, method: "COD", status: "Pending", date: "2026-07-02" },
-  { id: "PAY-9004", orderCode: "ORD-10038", customer: "Bopha Keo", amount: 88.75, method: "Credit Card", status: "Failed", date: "2026-07-02" },
-  { id: "PAY-9005", orderCode: "ORD-10037", customer: "Rathana Mao", amount: 310.00, method: "KHQR", status: "Completed", date: "2026-07-01" },
-  { id: "PAY-9006", orderCode: "ORD-10036", customer: "Kunthea Chhun", amount: 45.20, method: "COD", status: "Refunded", date: "2026-06-30" },
-  { id: "PAY-9007", orderCode: "ORD-10035", customer: "Piseth Nhem", amount: 175.00, method: "Credit Card", status: "Completed", date: "2026-06-30" },
-];
+// ];
 
 const statusStyle: Record<Payment["status"], string> = {
-  Completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  Pending: "bg-amber-50 text-amber-700 ring-amber-200",
-  Failed: "bg-rose-50 text-rose-700 ring-rose-200",
-  Refunded: "bg-slate-100 text-slate-600 ring-slate-200",
+  PAID: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  PENDING: "bg-amber-50 text-amber-700 ring-amber-200",
+  FAILED: "bg-rose-50 text-rose-700 ring-rose-200",
+  EXPIRED: "bg-slate-100 text-slate-600 ring-slate-200",
 };
 
 export default function PaymentPage() {
-  const totalRevenue = mockPayments.filter(p => p.status === "Completed").reduce((a, p) => a + p.amount, 0);
-  const pending = mockPayments.filter(p => p.status === "Pending").length;
-  const failed = mockPayments.filter(p => p.status === "Failed").length;
-  const completed = mockPayments.filter(p => p.status === "Completed").length;
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const totalRevenue = payments.filter(p => p.status === "PAID").reduce((a, p) => a + p.amount, 0);
+  const pending = payments.filter(p => p.status === "PENDING").length;
+  const failed = payments.filter(p => p.status === "FAILED").length;
+  const completed = payments.filter(p => p.status === "PAID").length;
+
+  const handleFetchPayments = async () => {
+    try {
+      const response = await paymentService.getAll();
+      if (response.success) {
+        setPayments(response.data);
+      }
+    }catch(err: any) {
+      toast.error("Failed to fetch payments. Please try again later.");
+      console.log("Failed to fetch payments: ", err.message);
+    }
+  }
+
+  useEffect(() => {
+    handleFetchPayments();
+    return () => new AbortController().abort();
+  } , []); 
 
   return (
     <div className="flex flex-col gap-6">
@@ -72,17 +86,17 @@ export default function PaymentPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {mockPayments.map(p => (
-              <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-mono text-xs text-slate-500">{p.id}</td>
-                <td className="px-5 py-4 font-semibold text-slate-800">{p.orderCode}</td>
+            {payments.map(p => (
+              <tr key={p.paymentId} className="hover:bg-slate-50/50 transition-colors">
+                <td className="px-5 py-4 font-mono text-xs text-slate-500">{p.paymentId}</td>
+                <td className="px-5 py-4 font-semibold text-slate-800">{p.orderId}</td>
                 <td className="px-5 py-4 text-slate-700">{p.customer}</td>
                 <td className="px-5 py-4 text-slate-500">{p.method}</td>
                 <td className="px-5 py-4 text-right font-bold text-slate-900">${p.amount.toFixed(2)}</td>
                 <td className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[p.status]}`}>{p.status}</span>
                 </td>
-                <td className="px-5 py-4 text-slate-500">{p.date}</td>
+                <td className="px-5 py-4 text-slate-500">{p.updatedAt}</td>
               </tr>
             ))}
           </tbody>

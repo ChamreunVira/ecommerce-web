@@ -8,6 +8,11 @@ export type PaymentStatusResponse = Omit<Payment , "paymentId" | "qrString" | "d
 class PaymentService {
     private endPoint: string = "/payment";
 
+    async getAll(): Promise<ApiResponse<Payment[]>> {
+        const response = await http.get(`${this.endPoint}/khqr`);
+        return response.data;
+    }
+
     async create(orderId: number): Promise<ApiResponse<Payment>> {
         const response = await http.post(`${this.endPoint}/khqr/generate` , {
             orderId

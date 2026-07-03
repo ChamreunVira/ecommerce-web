@@ -126,7 +126,7 @@ const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white text-center">
+        <div className="bg-linear-to-r from-orange-500 to-orange-600 p-6 text-white text-center">
           <div className="flex justify-center mb-3">
             <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
               <ShieldCheck size={28} />
@@ -195,7 +195,7 @@ const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
             <button
               type="submit"
               disabled={!otpFull || isLoading}
-              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-orange-200"
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-orange-200"
             >
               {isLoading ? (
                 <>
