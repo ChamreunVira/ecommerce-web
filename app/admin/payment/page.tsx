@@ -88,8 +88,8 @@ export default function PaymentPage() {
           <tbody className="divide-y divide-slate-100">
             {payments.map(p => (
               <tr key={p.paymentId} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-mono text-xs text-slate-500">{p.paymentId}</td>
-                <td className="px-5 py-4 font-semibold text-slate-800">{p.orderId}</td>
+                <td className="px-5 py-4 font-mono text-xs text-slate-500">{"PAY-" + p.paymentId.toString().padStart(4, '0')}</td>
+                <td className="px-5 py-4 font-semibold text-slate-800">{p.orderCode}</td>
                 <td className="px-5 py-4 text-slate-700">{p.customer}</td>
                 <td className="px-5 py-4 text-slate-500">{p.method}</td>
                 <td className="px-5 py-4 text-right font-bold text-slate-900">${p.amount.toFixed(2)}</td>

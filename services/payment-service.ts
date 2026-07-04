@@ -9,7 +9,7 @@ class PaymentService {
     private endPoint: string = "/payment";
 
     async getAll(): Promise<ApiResponse<Payment[]>> {
-        const response = await http.get(`${this.endPoint}/khqr`);
+        const response = await http.get(this.endPoint);
         return response.data;
     }
 

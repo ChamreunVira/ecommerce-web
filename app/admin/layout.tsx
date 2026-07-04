@@ -4,7 +4,7 @@ import Sidbar, { SidebarGroup, SidebarItem } from "@/components/Sidbar";
 import {
   LayoutDashboard, ClipboardList, Package, Settings,
   ShoppingCart, Tags, Users, Warehouse, CreditCard, Truck,
-  RotateCcw, Tag, BarChart2, Star,
+  RotateCcw, Tag, BarChart2, Star, BookOpen, Briefcase, TrendingUp, Monitor
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -22,6 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Catalog group */}
         <SidebarGroup
           label="Catalog"
+          icon={<BookOpen size={18} />}
           defaultOpen={["/admin/user", "/admin/product", "/admin/inventory", "/admin/category"].includes(pathName)}
         >
           <SidebarItem icon={<Users />} label="Customers" active={is("/admin/user")} path="/admin/user" />
@@ -33,6 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Operations group */}
         <SidebarGroup
           label="Operations"
+          icon={<Briefcase size={18} />}
           defaultOpen={["/admin/order", "/admin/payment", "/admin/shipping", "/admin/returns"].includes(pathName)}
         >
           <SidebarItem icon={<ShoppingCart />} label="Orders" active={is("/admin/order")} path="/admin/order" />
@@ -44,6 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Growth group */}
         <SidebarGroup
           label="Growth"
+          icon={<TrendingUp size={18} />}
           defaultOpen={["/admin/promotions", "/admin/reports", "/admin/reviews"].includes(pathName)}
         >
           <SidebarItem icon={<Tag />} label="Promotions" active={is("/admin/promotions")} path="/admin/promotions" />
@@ -54,6 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* System */}
         <SidebarGroup
           label="System"
+          icon={<Monitor size={18} />}
           defaultOpen={["/admin/audit-log", "/admin/setting"].includes(pathName)}
         >
           <SidebarItem icon={<ClipboardList />} label="Audit Log" active={is("/admin/audit-log")} path="/admin/audit-log" />
