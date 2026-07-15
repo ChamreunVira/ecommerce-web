@@ -19,10 +19,10 @@ export default function AboutPage() {
                             </p>
                         </div>
                         <div className="relative h-80 rounded-md overflow-hidden">
-                            <img 
-                                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop" 
+                            <img
+                                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=2070&auto=format&fit=crop"
                                 alt="Storefront"
-                                className="absolute inset-0 w-full h-full object-cover" 
+                                className="absolute inset-0 w-full h-full object-cover"
                             />
                         </div>
                     </div>

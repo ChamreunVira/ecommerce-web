@@ -75,8 +75,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const refreshCart = useCallback(async () => {
-    const res = await cartService.getAll().catch(() => null);
-    if (res?.success && res.data) applyCart(res.data);
+    const response = await cartService.getAll().catch(() => null);
+    if (response?.success && response.data) applyCart(response.data);
   }, [applyCart]);
 
   const handleAddProductToCart = useCallback(

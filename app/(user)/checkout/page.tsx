@@ -40,14 +40,14 @@ export default function CheckoutPage() {
   const shippingFee = 0.0;
 
   const subtotal = cartItems.reduce((total, item) => {
-    const finalPrice = item.unitPrice * (1 - item.discountRate);
+    const finalPrice = item.unitPrice * (1 - item.discountRate/100);
     return total + finalPrice * item.quantity;
   }, 0);
 
   const totalAmount = subtotal + shippingFee;
 
   const orderItems = cartItems.map((item) => {
-    const finalPrice = item.unitPrice * (1 - item.discountRate);
+    const finalPrice = item.unitPrice * (1 - item.discountRate/100);
     return {
       productId: item.productId,
       productName: item.productName,
