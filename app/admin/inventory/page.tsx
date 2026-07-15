@@ -2,40 +2,60 @@
 import Link from "next/link";
 import { ChevronRight, Home, Warehouse, AlertTriangle, PackageX, TrendingDown, Package } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
+import { StockItem } from "@/types/stock-item";
+import { useEffect, useState } from "react";
+import { inventoryService } from "@/services/inventory-service";
 
-type StockItem = {
-  id: number;
-  sku: string;
-  name: string;
-  category: string;
-  qty: number;
-  reserved: number;
-  reorderPoint: number;
-  status: "In Stock" | "Low Stock" | "Out of Stock";
-};
+// type StockItem = {
+//   id: number;
+//   sku: string;
+//   name: string;
+//   category: string;
+//   qty: number;
+//   reserved: number;
+//   reorderPoint: number;
+//   status: "In Stock" | "Low Stock" | "Out of Stock";
+// };
 
-const mockInventory: StockItem[] = [
-  { id: 1, sku: "SKU-001", name: "Wireless Headphones Pro", category: "Electronics", qty: 142, reserved: 12, reorderPoint: 20, status: "In Stock" },
-  { id: 2, sku: "SKU-002", name: "Running Shoes X500", category: "Footwear", qty: 3, reserved: 1, reorderPoint: 10, status: "Low Stock" },
-  { id: 3, sku: "SKU-003", name: "Slim Fit Jeans", category: "Clothing", qty: 0, reserved: 0, reorderPoint: 15, status: "Out of Stock" },
-  { id: 4, sku: "SKU-004", name: "Mechanical Keyboard RGB", category: "Electronics", qty: 58, reserved: 5, reorderPoint: 10, status: "In Stock" },
-  { id: 5, sku: "SKU-005", name: "Yoga Mat Pro", category: "Sports", qty: 4, reserved: 2, reorderPoint: 10, status: "Low Stock" },
-  { id: 6, sku: "SKU-006", name: "leather Wallet Slim", category: "Accessories", qty: 0, reserved: 0, reorderPoint: 5, status: "Out of Stock" },
-  { id: 7, sku: "SKU-007", name: "USB-C Hub 7-in-1", category: "Electronics", qty: 89, reserved: 14, reorderPoint: 20, status: "In Stock" },
-  { id: 8, sku: "SKU-008", name: "Cotton Polo Shirt", category: "Clothing", qty: 2, reserved: 0, reorderPoint: 15, status: "Low Stock" },
-];
+// const mockInventory: StockItem[] = [
+//   { id: 1, sku: "SKU-001", name: "Wireless Headphones Pro", category: "Electronics", qty: 142, reserved: 12, reorderPoint: 20, status: "In Stock" },
+//   { id: 2, sku: "SKU-002", name: "Running Shoes X500", category: "Footwear", qty: 3, reserved: 1, reorderPoint: 10, status: "Low Stock" },
+//   { id: 3, sku: "SKU-003", name: "Slim Fit Jeans", category: "Clothing", qty: 0, reserved: 0, reorderPoint: 15, status: "Out of Stock" },
+//   { id: 4, sku: "SKU-004", name: "Mechanical Keyboard RGB", category: "Electronics", qty: 58, reserved: 5, reorderPoint: 10, status: "In Stock" },
+//   { id: 5, sku: "SKU-005", name: "Yoga Mat Pro", category: "Sports", qty: 4, reserved: 2, reorderPoint: 10, status: "Low Stock" },
+//   { id: 6, sku: "SKU-006", name: "leather Wallet Slim", category: "Accessories", qty: 0, reserved: 0, reorderPoint: 5, status: "Out of Stock" },
+//   { id: 7, sku: "SKU-007", name: "USB-C Hub 7-in-1", category: "Electronics", qty: 89, reserved: 14, reorderPoint: 20, status: "In Stock" },
+//   { id: 8, sku: "SKU-008", name: "Cotton Polo Shirt", category: "Clothing", qty: 2, reserved: 0, reorderPoint: 15, status: "Low Stock" },
+// ];
 
 const statusStyle: Record<StockItem["status"], string> = {
-  "In Stock": "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  "Low Stock": "bg-amber-50 text-amber-700 ring-amber-200",
-  "Out of Stock": "bg-rose-50 text-rose-700 ring-rose-200",
+  "IN_STOCK": "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  "LOW_STOCK": "bg-amber-50 text-amber-700 ring-amber-200",
+  "OUT_OF_STOCK": "bg-rose-50 text-rose-700 ring-rose-200",
 };
 
 export default function InventoryPage() {
-  const total = mockInventory.length;
-  const inStock = mockInventory.filter(i => i.status === "In Stock").length;
-  const lowStock = mockInventory.filter(i => i.status === "Low Stock").length;
-  const outOfStock = mockInventory.filter(i => i.status === "Out of Stock").length;
+  const [inventories, setInventories] = useState<StockItem[]>([]);
+  const total = inventories.length;
+  const inStock = inventories.filter(i => i.status === "IN_STOCK").length;
+  const lowStock = inventories.filter(i => i.status === "LOW_STOCK").length;
+  const outOfStock = inventories.filter(i => i.status === "OUT_OF_STOCK").length;
+
+  const handleFetchInventories = async () => {
+    try {
+      const response = await inventoryService.getAll();
+      if(response.success) {
+        setInventories(response.data);
+      }
+    }catch(e: any) {
+      console.log("Error fetching inventories: ", e.message);
+    }
+  }
+
+  useEffect(() => {
+    handleFetchInventories();
+    return () => new AbortController().abort();
+  } , []);
 
   return (
     <div className="flex flex-col gap-6">
@@ -65,23 +85,23 @@ export default function InventoryPage() {
         <table className="w-full text-left text-sm text-slate-600">
           <thead className="bg-slate-50 text-xs uppercase text-slate-500">
             <tr>
-              <th className="px-5 py-4 font-semibold">SKU</th>
+              <th className="px-5 py-4 font-semibold">#</th>
               <th className="px-5 py-4 font-semibold">Product</th>
               <th className="px-5 py-4 font-semibold">Category</th>
               <th className="px-5 py-4 font-semibold text-center">Qty</th>
-              <th className="px-5 py-4 font-semibold text-center">Reserved</th>
+              {/* <th className="px-5 py-4 font-semibold text-center">Reserved</th> */}
               <th className="px-5 py-4 font-semibold text-center">Reorder At</th>
               <th className="px-5 py-4 font-semibold">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {mockInventory.map(item => (
+            {inventories.map(item => (
               <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-mono text-xs text-slate-500">{item.sku}</td>
+                <td className="px-5 py-4 font-semibold text-slate-900">{"INV" + "-" + item.id.toString().padStart(4, "0")}</td>
                 <td className="px-5 py-4 font-semibold text-slate-900">{item.name}</td>
                 <td className="px-5 py-4 text-slate-500">{item.category}</td>
                 <td className="px-5 py-4 text-center font-bold text-slate-800">{item.qty}</td>
-                <td className="px-5 py-4 text-center text-slate-500">{item.reserved}</td>
+                {/* <td className="px-5 py-4 text-center text-slate-500">{item.reserved}</td> */}
                 <td className="px-5 py-4 text-center text-slate-500">{item.reorderPoint}</td>
                 <td className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[item.status]}`}>

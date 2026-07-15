@@ -1,40 +1,71 @@
 "use client";
 import Link from "next/link";
-import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2 } from "lucide-react";
+import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus, Pencil } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
-
-type Promotion = {
-  id: string;
-  code: string;
-  type: "Percentage" | "Fixed" | "Free Shipping";
-  value: number;
-  minOrder: number;
-  used: number;
-  limit: number;
-  status: "Active" | "Expired" | "Scheduled";
-  expiry: string;
-};
-
-const mockPromotions: Promotion[] = [
-  { id: "PRO-001", code: "SUMMER20", type: "Percentage", value: 20, minOrder: 50, used: 142, limit: 500, status: "Active", expiry: "2026-08-31" },
-  { id: "PRO-002", code: "FLAT10", type: "Fixed", value: 10, minOrder: 30, used: 89, limit: 200, status: "Active", expiry: "2026-07-15" },
-  { id: "PRO-003", code: "FREESHIP", type: "Free Shipping", value: 0, minOrder: 20, used: 305, limit: 1000, status: "Active", expiry: "2026-12-31" },
-  { id: "PRO-004", code: "FLASH50", type: "Percentage", value: 50, minOrder: 100, used: 500, limit: 500, status: "Expired", expiry: "2026-06-01" },
-  { id: "PRO-005", code: "NEWUSER15", type: "Percentage", value: 15, minOrder: 0, used: 0, limit: 300, status: "Scheduled", expiry: "2026-08-01" },
-  { id: "PRO-006", code: "WELCOME5", type: "Fixed", value: 5, minOrder: 10, used: 211, limit: 999, status: "Active", expiry: "2026-09-30" },
-];
+import PromotionModal from "@/components/PromotionModal";
+import { useEffect, useState } from "react";
+import { promotionService } from "@/services/promotion-service";
+import { Promotion } from "@/types/promotion";
 
 const statusStyle: Record<Promotion["status"], string> = {
-  Active: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  Expired: "bg-rose-50 text-rose-700 ring-rose-200",
-  Scheduled: "bg-sky-50 text-sky-700 ring-sky-200",
+  ACTIVE: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  EXPIRED: "bg-rose-50 text-rose-700 ring-rose-200",
+  SCHEDULED: "bg-sky-50 text-sky-700 ring-sky-200",
+  PAUSED: "bg-yellow-50 text-yellow-700 ring-yellow-200",
+  DISABLED: "bg-slate-50 text-slate-700 ring-slate-200",
 };
 
 export default function PromotionsPage() {
-  const active = mockPromotions.filter(p => p.status === "Active").length;
-  const expired = mockPromotions.filter(p => p.status === "Expired").length;
-  const scheduled = mockPromotions.filter(p => p.status === "Scheduled").length;
-  const totalUses = mockPromotions.reduce((sum, p) => sum + p.used, 0);
+
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
+
+  const active = promotions?.filter(p => p.status === "ACTIVE").length;
+  const expired = promotions?.filter(p => p.status === "EXPIRED").length;
+  const scheduled = promotions?.filter(p => p.status === "SCHEDULED").length;
+  const totalUses = promotions?.reduce((sum, p) => sum + p.usageCount, 0);
+
+  const handleFetchPromotions = async () => {
+    try {
+      const response = await promotionService.getAll();
+      if (response.success) {
+        setPromotions(response.data);
+      }
+    } catch (error) {
+      console.log("Error fetching promotions: ", error);
+    }
+  };
+
+  const openCreateModal = () => {
+    setSelectedPromotion(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (promotion: Promotion) => {
+    setSelectedPromotion(promotion);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedPromotion(null);
+    setIsModalOpen(false);
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadPromotions = async () => {
+      await handleFetchPromotions();
+      if (!isMounted) return;
+    };
+
+    void loadPromotions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
@@ -44,11 +75,22 @@ export default function PromotionsPage() {
         <span className="font-medium text-slate-700">Promotions</span>
       </nav>
 
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-          <Tag className="text-orange-500" size={24} /> Promotions & Coupons
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">Create and manage discount codes, promotional offers, and flash sales.</p>
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
+            <Tag className="text-orange-500" size={24} /> Promotions & Coupons
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">Create and manage discount codes, promotional offers, and flash sales.</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={openCreateModal}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+        >
+          <Plus size={16} />
+          New promotion
+        </button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -69,34 +111,53 @@ export default function PromotionsPage() {
               <th className="px-5 py-4 font-semibold text-center">Used / Limit</th>
               <th className="px-5 py-4 font-semibold">Expiry</th>
               <th className="px-5 py-4 font-semibold">Status</th>
+              <th className="px-5 py-4 font-semibold text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {mockPromotions.map(p => (
+            {promotions?.map(p => (
               <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-5 py-4">
                   <span className="font-mono font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded text-xs">{p.code}</span>
                 </td>
                 <td className="px-5 py-4 text-slate-600">{p.type}</td>
                 <td className="px-5 py-4 text-center font-semibold text-slate-900">
-                  {p.type === "Percentage" ? `${p.value}%` : p.type === "Fixed" ? `$${p.value}` : "Free"}
+                  {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
                 </td>
-                <td className="px-5 py-4 text-center text-slate-500">${p.minOrder}</td>
+                <td className="px-5 py-4 text-center text-slate-500">${p.minimumOrder}</td>
                 <td className="px-5 py-4 text-center">
-                  <div className="text-sm text-slate-700">{p.used} / {p.limit}</div>
+                  <div className="text-sm text-slate-700">{p.usageCount} / {p.usageLimit}</div>
                   <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="h-full bg-orange-400 rounded-full" style={{ width: `${Math.min((p.used/p.limit)*100, 100)}%` }} />
+                    <div className="h-full bg-orange-400 rounded-full" style={{ width: `${Math.min((p.usageCount/p.usageLimit)*100, 100)}%` }} />
                   </div>
                 </td>
-                <td className="px-5 py-4 text-slate-500">{p.expiry}</td>
+                <td className="px-5 py-4 text-slate-500">{p.expiryAt}</td>
                 <td className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[p.status]}`}>{p.status}</span>
+                </td>
+                <td className="px-5 py-4 text-right">
+                  <button
+                    type="button"
+                    onClick={() => openEditModal(p)}
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-orange-400 hover:bg-orange-50 hover:text-orange-600"
+                  >
+                    <Pencil size={14} />
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {isModalOpen ? (
+        <PromotionModal
+          promotion={selectedPromotion}
+          onClose={closeModal}
+          onSaved={handleFetchPromotions}
+        />
+      ) : null}
     </div>
   );
 }
