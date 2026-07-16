@@ -2,30 +2,33 @@
 import Link from "next/link";
 import { ChevronRight, Home, Star, ThumbsUp, ThumbsDown, AlertOctagon, MessageSquare } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
+import { useEffect, useState } from "react";
+import { Review } from "@/types/review";
+import { reviewService } from "@/services/review-service";
 
-type Review = {
-  id: string;
-  customer: string;
-  product: string;
-  rating: number;
-  comment: string;
-  status: "Published" | "Pending" | "Hidden";
-  date: string;
-};
+// type Review = {
+//   id: string;
+//   customer: string;
+//   product: string;
+//   rating: number;
+//   comment: string;
+//   status: "Published" | "Pending" | "Hidden";
+//   date: string;
+// };
 
-const mockReviews: Review[] = [
-  { id: "REV-501", customer: "Virak Chamreun", product: "Wireless Headphones Pro", rating: 5, comment: "Exceptional sound quality and very comfortable. Highly recommended!", status: "Published", date: "2026-07-02" },
-  { id: "REV-502", customer: "Socheata Lim", product: "Running Shoes X500", rating: 2, comment: "Sizing is way off. Expected a 40 but received something closer to a 38.", status: "Pending", date: "2026-07-02" },
-  { id: "REV-503", customer: "Dara Pich", product: "Mechanical Keyboard RGB", rating: 4, comment: "Great keyboard, the RGB lighting is gorgeous. Slightly loud for offices.", status: "Published", date: "2026-07-01" },
-  { id: "REV-504", customer: "Bopha Keo", product: "Slim Fit Jeans", rating: 1, comment: "Terrible quality, fabric is very thin and tore on first wear.", status: "Hidden", date: "2026-06-30" },
-  { id: "REV-505", customer: "Rathana Mao", product: "USB-C Hub 7-in-1", rating: 5, comment: "Works perfectly with my MacBook Pro. All ports function as expected.", status: "Published", date: "2026-06-29" },
-  { id: "REV-506", customer: "Piseth Nhem", product: "Yoga Mat Pro", rating: 3, comment: "Decent mat, but gets slippery when sweating a lot during hot yoga.", status: "Pending", date: "2026-06-28" },
-];
+// const mockReviews: Review[] = [
+//   { id: "REV-501", customer: "Virak Chamreun", product: "Wireless Headphones Pro", rating: 5, comment: "Exceptional sound quality and very comfortable. Highly recommended!", status: "Published", date: "2026-07-02" },
+//   { id: "REV-502", customer: "Socheata Lim", product: "Running Shoes X500", rating: 2, comment: "Sizing is way off. Expected a 40 but received something closer to a 38.", status: "Pending", date: "2026-07-02" },
+//   { id: "REV-503", customer: "Dara Pich", product: "Mechanical Keyboard RGB", rating: 4, comment: "Great keyboard, the RGB lighting is gorgeous. Slightly loud for offices.", status: "Published", date: "2026-07-01" },
+//   { id: "REV-504", customer: "Bopha Keo", product: "Slim Fit Jeans", rating: 1, comment: "Terrible quality, fabric is very thin and tore on first wear.", status: "Hidden", date: "2026-06-30" },
+//   { id: "REV-505", customer: "Rathana Mao", product: "USB-C Hub 7-in-1", rating: 5, comment: "Works perfectly with my MacBook Pro. All ports function as expected.", status: "Published", date: "2026-06-29" },
+//   { id: "REV-506", customer: "Piseth Nhem", product: "Yoga Mat Pro", rating: 3, comment: "Decent mat, but gets slippery when sweating a lot during hot yoga.", status: "Pending", date: "2026-06-28" },
+// ];
 
 const statusStyle: Record<Review["status"], string> = {
-  Published: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  Pending: "bg-amber-50 text-amber-700 ring-amber-200",
-  Hidden: "bg-rose-50 text-rose-700 ring-rose-200",
+  PUBLISHED: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  PENDING: "bg-amber-50 text-amber-700 ring-amber-200",
+  HIDDEN: "bg-rose-50 text-rose-700 ring-rose-200",
 };
 
 function StarRating({ rating }: { rating: number }) {
@@ -39,10 +42,30 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function ReviewsPage() {
-  const published = mockReviews.filter(r => r.status === "Published").length;
-  const pending = mockReviews.filter(r => r.status === "Pending").length;
-  const hidden = mockReviews.filter(r => r.status === "Hidden").length;
-  const avgRating = mockReviews.reduce((s, r) => s + r.rating, 0) / mockReviews.length;
+
+  const [reviews , setReviews] = useState<Review[]>([]);
+
+  const published = reviews.filter(r => r.status === "PUBLISHED").length;
+  const pending = reviews.filter(r => r.status === "PENDING").length;
+  const hidden = reviews.filter(r => r.status === "HIDDEN").length;
+  const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+
+
+  const handleFetchReviews = async () => {
+    try {
+      const response = await reviewService.getAll();
+      if(response.success) {
+        setReviews(response.data);
+      }
+    }catch(err: any) {
+      console.log("Error fetching reviews: ", err);
+    }
+  }
+
+  useEffect(() => {
+    handleFetchReviews();
+    return () => new AbortController().abort();
+  } , []);
 
   return (
     <div className="flex flex-col gap-6">
@@ -79,16 +102,16 @@ export default function ReviewsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {mockReviews.map(r => (
+            {reviews.map(r => (
               <tr key={r.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-semibold text-slate-900">{r.customer}</td>
-                <td className="px-5 py-4 text-slate-600 max-w-[160px] truncate">{r.product}</td>
+                <td className="px-5 py-4 font-semibold text-slate-900">{r.customer.name}</td>
+                <td className="px-5 py-4 text-slate-600 max-w-40 truncate">{r.product.name}</td>
                 <td className="px-5 py-4"><StarRating rating={r.rating} /></td>
-                <td className="px-5 py-4 text-slate-500 italic max-w-[260px] truncate">"{r.comment}"</td>
+                <td className="px-5 py-4 text-slate-500 italic max-w-65 truncate">"{r.comment}"</td>
                 <td className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[r.status]}`}>{r.status}</span>
                 </td>
-                <td className="px-5 py-4 text-slate-500">{r.date}</td>
+                <td className="px-5 py-4 text-slate-500">{r.createdAt}</td>
               </tr>
             ))}
           </tbody>

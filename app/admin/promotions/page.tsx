@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
-import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus, Pencil } from "lucide-react";
+import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus, Pencil, Trash } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import PromotionModal from "@/components/PromotionModal";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { promotionService } from "@/services/promotion-service";
 import { Promotion } from "@/types/promotion";
 
@@ -20,6 +22,8 @@ export default function PromotionsPage() {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Promotion | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const active = promotions?.filter(p => p.status === "ACTIVE").length;
   const expired = promotions?.filter(p => p.status === "EXPIRED").length;
@@ -50,6 +54,24 @@ export default function PromotionsPage() {
   const closeModal = () => {
     setSelectedPromotion(null);
     setIsModalOpen(false);
+  };
+
+  const handleDeletePromotion = async (promotionId: number) => {
+    setIsDeleting(true);
+
+    try {
+      const response = await promotionService.delete(promotionId);
+      if (response.success) {
+        toast.success("Promotion deleted successfully.");
+        await handleFetchPromotions();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete promotion.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
+    }
   };
 
   useEffect(() => {
@@ -136,14 +158,24 @@ export default function PromotionsPage() {
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[p.status]}`}>{p.status}</span>
                 </td>
                 <td className="px-5 py-4 text-right">
-                  <button
-                    type="button"
-                    onClick={() => openEditModal(p)}
-                    className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-orange-400 hover:bg-orange-50 hover:text-orange-600"
-                  >
-                    <Pencil size={14} />
-                    Edit
-                  </button>
+                  <div className="flex items-center justify-end gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(p)}
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-amber-500 transition hover:bg-amber-50"
+                      aria-label="Edit promotion"
+                    >
+                      <Pencil size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(p)}
+                      className="flex h-7 w-7 items-center justify-center rounded-md text-rose-500 transition hover:bg-rose-50"
+                      aria-label="Delete promotion"
+                    >
+                      <Trash size={15} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -156,6 +188,20 @@ export default function PromotionsPage() {
           promotion={selectedPromotion}
           onClose={closeModal}
           onSaved={handleFetchPromotions}
+        />
+      ) : null}
+
+      {deleteTarget ? (
+        <DeleteConfirmationModal
+          title="Delete promotion"
+          message={
+            <>
+              Are you sure you want to delete <span className="font-semibold text-slate-900">{deleteTarget.code}</span>? This will remove the promotion permanently.
+            </>
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => handleDeletePromotion(deleteTarget.id)}
+          isDeleting={isDeleting}
         />
       ) : null}
     </div>

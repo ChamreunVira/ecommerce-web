@@ -20,6 +20,11 @@ class PromotionService {
         const response = await http.put<ApiResponse<Promotion>>(`${this.endPoint}/${id}`, promotion);
         return response.data;
     }
+
+    async delete(id: number): Promise<ApiResponse<null>> {
+        const response = await http.delete<ApiResponse<null>>(`${this.endPoint}/${id}`);
+        return response.data;
+    }
 }
 
 export const promotionService = new PromotionService();
