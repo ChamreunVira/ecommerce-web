@@ -73,7 +73,7 @@ export default function UpdateCategoryModal({
             form="update-category-form"
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save size={16} />
             {isSaving ? "Saving..." : "Save changes"}
@@ -92,7 +92,7 @@ export default function UpdateCategoryModal({
             type="text"
             value={formData.name}
             onChange={handleChange}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             placeholder="Category name"
             required
           />
@@ -107,7 +107,7 @@ export default function UpdateCategoryModal({
             value={formData.description}
             onChange={handleChange}
             rows={5}
-            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             placeholder="Short category description"
             required
           />

@@ -70,7 +70,7 @@ const SignInPage: React.FC = () => {
                 {...register("email")}
                 type="email"
                 placeholder="virachamreun@gmail.com"
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-indigo-500 transition-all"
               />
               {errors.email && <p className="text-sm text-rose-500">{errors.email.message}</p>}
             </div>
@@ -80,7 +80,7 @@ const SignInPage: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
-                <Link href="/forgot-password" className="text-sm font-medium text-orange-600 hover:text-orange-500 transition-colors">
+                <Link href="/forgot-password" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -88,7 +88,7 @@ const SignInPage: React.FC = () => {
                 {...register("password")}
                 type="password"
                 placeholder="Enter password..."
-                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-orange-500 transition-all"
+                className="w-full rounded-lg border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-indigo-500 transition-all"
               />
               {errors.password && <p className="text-sm text-rose-500">{errors.password.message}</p>}
             </div>
@@ -96,7 +96,7 @@ const SignInPage: React.FC = () => {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg text-sm font-bold text-white bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
+              className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg text-sm font-bold text-white bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </button>
@@ -127,7 +127,7 @@ const SignInPage: React.FC = () => {
 
           <p className="mt-8 text-center text-sm text-gray-600">
             Don't have an account yet?{" "}
-            <Link href="/sign-up" className="font-semibold text-orange-600 hover:text-orange-500 transition-colors">
+            <Link href="/sign-up" className="font-semibold text-indigo-600 hover:text-indigo-500 transition-colors">
               Create an account
             </Link>
           </p>

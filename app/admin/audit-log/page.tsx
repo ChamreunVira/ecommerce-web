@@ -1,106 +1,82 @@
 "use client";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, Home, ShieldAlert, Monitor, TerminalSquare, AlertCircle } from "lucide-react";
+import { isAxiosError } from "axios";
+import { ArrowDownAZ, ChevronRight, Home, ShieldAlert, AlertCircle, RefreshCw } from "lucide-react";
+import { AuditModule } from "@/constant/constant";
+import { http } from "@/lib/axios";
+import { PageResponse } from "@/types/page-response";
+import LegacyTable, { Column } from "@/components/Table";
 
-export type AuditEvent = {
-  logId: string;
-  action: string;
-  module: "ORDER" | "PRODUCT" | "USER" | "CATEGORY" | "SYSTEM" | "SETTING";
-  entityId: string;
-  performedBy: string;
-  role: string;
-  ipAddress: string;
+export enum AuditAction {
+  CREATE = "CREATE",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+  VIEW = "VIEW",
+  LOGIN = "LOGIN",
+}
+
+export interface AuditLogs {
+  id: number;
+  action: AuditAction;
+  module: AuditModule;
+  entityId: string | null;
+  performedBy: string | null;
+  role: string | null;
+  ipAddress: string | null;
   timestamp: string;
-  details: string;
-  reason: string;
-  oldValues?: string;
-  newValues?: string;
-};
-
-const mockAuditLogs: AuditEvent[] = [
-  {
-    logId: "AUD-10492",
-    action: "UPDATE",
-    module: "PRODUCT",
-    entityId: "1042",
-    performedBy: "Admin Virak",
-    role: "ROLE_ADMIN",
-    ipAddress: "192.168.1.45",
-    timestamp: "2026-07-03 16:30:11",
-    details: "Changed stock level from 15 to 45",
-    reason: "Restocked inventory batch #51",
-    oldValues: "{\"qty\": 15}",
-    newValues: "{\"qty\": 45}",
-  },
-  {
-    logId: "AUD-10491",
-    action: "DELETE",
-    module: "CATEGORY",
-    entityId: "18",
-    performedBy: "Manager Sok",
-    role: "ROLE_MANAGER",
-    ipAddress: "192.168.1.120",
-    timestamp: "2026-07-03 14:15:22",
-    details: "Deleted category 'Old Tech'",
-    reason: "Phasing out obsolete category and migrating items",
-  },
-  {
-    logId: "AUD-10490",
-    action: "LOGIN",
-    module: "SYSTEM",
-    entityId: "Sys-Auth",
-    performedBy: "Admin Virak",
-    role: "ROLE_ADMIN",
-    ipAddress: "192.168.1.1",
-    timestamp: "2026-07-03 09:00:05",
-    details: "Successful login via Portal",
-    reason: "New session started",
-  },
-  {
-    logId: "AUD-10489",
-    action: "CREATE",
-    module: "ORDER",
-    entityId: "8891",
-    performedBy: "System_API",
-    role: "ROLE_SYSTEM",
-    ipAddress: "127.0.0.1",
-    timestamp: "2026-07-02 23:45:00",
-    details: "Placed order for $120.00",
-    reason: "Customer checkout via mobile app",
-  },
-  {
-    logId: "AUD-10488",
-    action: "UPDATE",
-    module: "USER",
-    entityId: "User-34",
-    performedBy: "SuperAdmin Rith",
-    role: "ROLE_SUPERADMIN",
-    ipAddress: "10.0.0.5",
-    timestamp: "2026-07-01 10:20:10",
-    details: "Modified roles for user 'Sok'",
-    reason: "Promoted standard employee to Manager position",
-    oldValues: "{\"roles\": [\"ROLE_EMPLOYEE\"]}",
-    newValues: "{\"roles\": [\"ROLE_MANAGER\"]}",
-  },
-  {
-    logId: "AUD-10487",
-    action: "UPDATE",
-    module: "SETTING",
-    entityId: "Store-Config",
-    performedBy: "SuperAdmin Rith",
-    role: "ROLE_SUPERADMIN",
-    ipAddress: "10.0.0.5",
-    timestamp: "2026-06-30 08:15:00",
-    details: "Modified global Tax Rate",
-    reason: "Quarterly tax policy regulation update",
-    oldValues: "{\"taxRate\": 0.05}",
-    newValues: "{\"taxRate\": 0.07}",
-  }
-];
+  details: string | null;
+  reason: string | null;
+  oldValues: string | null;
+  newValues: string | null;
+}
 
 export default function AuditLogPage() {
-  const [logs] = useState<AuditEvent[]>(mockAuditLogs);
+  const [auditLogs, setAuditLogs] = useState<AuditLogs[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState("id");
+  const [ascending, setAscending] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFetchAuditLogs = useCallback(async (signal?: AbortSignal) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await http.get<PageResponse<AuditLogs>>("/audit", {
+        params: {
+          // The API is zero-indexed; the UI pagination is one-indexed.
+          page: currentPage - 1,
+          size: pageSize,
+          sortBy,
+          ascending,
+        },
+        signal,
+      });
+      if (response.status === 200) {
+        const data = response.data;
+        setAuditLogs(data.content);
+        setTotalPages(data.totalPage);
+        setTotalElements(data.totalElement);
+      }
+    } catch (error: unknown) {
+      if (!isAxiosError(error) || error.code !== "ERR_CANCELED") {
+        setError("Unable to load audit logs. Please try again.");
+      }
+    } finally {
+      if (!signal?.aborted) setIsLoading(false);
+    }
+  }, [ascending, currentPage, pageSize, sortBy]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- this effect synchronizes the table with its server query.
+    void handleFetchAuditLogs(controller.signal);
+    return () => controller.abort();
+  }, [handleFetchAuditLogs]);
 
   const getActionColor = (action: string) => {
     switch (action) {
@@ -111,6 +87,69 @@ export default function AuditLogPage() {
       default: return "bg-slate-100 text-slate-700 ring-slate-200";
     }
   };
+
+  const columns: Column<AuditLogs>[] = [
+    {
+      header: "Log ID",
+      key: "id",
+      cellClassName: "font-mono text-xs text-slate-500",
+      render: (_, log) => <span>{log.id}</span>
+    },
+    {
+      header: "Action",
+      key: "action",
+      render: (_, log) => (
+        <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] uppercase font-bold ring-1 ${getActionColor(log.action)}`}>
+          {log.action}
+        </span>
+      )
+    },
+    {
+      header: "Module & ID",
+      key: "module",
+      render: (_, log) => (
+        <>
+          <p className="font-semibold text-slate-700">{log.module}</p>
+          <p className="text-xs text-slate-400">ID: {log.entityId}</p>
+        </>
+      )
+    },
+    {
+      header: "Performed By",
+      key: "performedBy",
+      render: (_, log) => (
+        <>
+          <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
+            {log.performedBy}
+          </div>
+          <p className="text-xs text-slate-400">{log.ipAddress}</p>
+        </>
+      )
+    },
+    {
+      header: "Reason / Why",
+      key: "details",
+      className: "w-1/4",
+      render: (_, log) => (
+        <>
+          <p className="text-sm font-medium text-slate-800">{log.details}</p>
+          {log.reason && (
+            <p className="mt-0.5 text-xs text-slate-500 italic flex items-center gap-1 font-normal">
+              <AlertCircle size={12} className="text-indigo-400 shrink-0" />
+              {log.reason}
+            </p>
+          )}
+        </>
+      )
+    },
+    {
+      header: "Timestamp",
+      key: "timestamp",
+      className: "text-right",
+      cellClassName: "text-right whitespace-nowrap text-slate-500 text-xs",
+      render: (_, log) => <span>{new Date(log.timestamp).toLocaleString()}</span>
+    }
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -130,7 +169,7 @@ export default function AuditLogPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-            <ShieldAlert className="text-orange-500" size={24} />
+            <ShieldAlert className="text-indigo-500" size={24} />
             System Audit & Activity Logs
           </h1>
           <p className="mt-1 text-sm text-slate-500">
@@ -139,56 +178,83 @@ export default function AuditLogPage() {
         </div>
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-              <tr>
-                <th className="px-5 py-4 font-semibold">Log ID</th>
-                <th className="px-5 py-4 font-semibold">Action</th>
-                <th className="px-5 py-4 font-semibold">Module & ID</th>
-                <th className="px-5 py-4 font-semibold">Performed By</th>
-                <th className="px-5 py-4 font-semibold" style={{ width: "25%" }}>Reason / Why</th>
-                <th className="px-5 py-4 font-semibold text-right">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {logs.map((log) => (
-                <tr key={log.logId} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-5 py-4">
-                    <span className="font-mono text-xs text-slate-500">{log.logId}</span>
-                  </td>
-                  <td className="px-5 py-4">
-                     <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] uppercase font-bold ring-1 ${getActionColor(log.action)}`}>
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="font-semibold text-slate-700">{log.module}</p>
-                    <p className="text-xs text-slate-400">ID: {log.entityId}</p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
-                      {log.performedBy}
-                    </div>
-                    <p className="text-xs text-slate-400">{log.ipAddress}</p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="text-sm font-medium text-slate-800">{log.details}</p>
-                    <p className="mt-0.5 text-xs text-slate-500 italic flex items-center gap-1">
-                      <AlertCircle size={12} className="text-orange-400"/>
-                      {log.reason}
-                    </p>
-                  </td>
-                  <td className="px-5 py-4 text-right whitespace-nowrap text-slate-500 text-xs">
-                    {new Date(log.timestamp).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 text-sm text-slate-600">
+          <ArrowDownAZ size={16} className="text-indigo-500" />
+          <span className="font-medium">Audit log controls</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="sr-only" htmlFor="audit-sort">Sort audit logs</label>
+          <select
+            id="audit-sort"
+            value={sortBy}
+            onChange={(event) => {
+              setSortBy(event.target.value);
+              setCurrentPage(1);
+            }}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+          >
+            <option value="id">Sort by ID</option>
+            <option value="timestamp">Sort by time</option>
+            <option value="action">Sort by action</option>
+            <option value="module">Sort by module</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              setAscending((value) => !value);
+              setCurrentPage(1);
+            }}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+          >
+            {ascending ? "Ascending" : "Descending"}
+          </button>
+          <label className="sr-only" htmlFor="audit-page-size">Audit logs per page</label>
+          <select
+            id="audit-page-size"
+            value={pageSize}
+            onChange={(event) => {
+              setPageSize(Number(event.target.value));
+              setCurrentPage(1);
+            }}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+          >
+            <option value={10}>10 per page</option>
+            <option value={25}>25 per page</option>
+            <option value={50}>50 per page</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => handleFetchAuditLogs()}
+            disabled={isLoading}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw size={15} className={isLoading ? "animate-spin" : ""} />
+            Refresh
+          </button>
         </div>
       </div>
+
+      {error ? (
+        <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {error}
+        </div>
+      ) : null}
+
+      <LegacyTable
+        data={auditLogs}
+        columns={columns}
+        rowKey="id"
+        emptyTitle={isLoading ? "Loading audit logs" : "No audit logs found"}
+        emptyDescription={isLoading ? "Please wait while the latest activity is retrieved." : "There are no audit logs for this page."}
+        pagination={{
+          currentPage,
+          pageSize,
+          totalElements,
+          totalPages,
+          onPageChange: (page) => setCurrentPage(page)
+        }}
+      />
     </div>
   );
 }

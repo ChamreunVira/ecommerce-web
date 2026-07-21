@@ -155,13 +155,13 @@ export default function ReportsPage() {
 
       <div>
         <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-          <BarChart2 className="text-orange-500" size={24} /> Reports & Analytics
+          <BarChart2 className="text-indigo-500" size={24} /> Reports & Analytics
         </h1>
         <p className="mt-1 text-sm text-slate-500">Comprehensive sales, revenue, and customer analytics for this period.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon={<DollarSign className="text-orange-500" />} accent="bg-orange-50" label="Total Revenue" value={`$${(totalRevenue / 1000).toFixed(1)}`} trend={+14} />
+        <StatsCard icon={<DollarSign className="text-indigo-500" />} accent="bg-indigo-50" label="Total Revenue" value={`$${(totalRevenue / 1000).toFixed(1)}`} trend={+14} />
         <StatsCard icon={<ShoppingCart className="text-emerald-500" />} accent="bg-emerald-50" label="Total Orders" value={totalOrders} trend={+8} />
         <StatsCard icon={<Users className="text-sky-500" />} accent="bg-sky-50" label="New Customers" value={0} trend={+5} />
         <StatsCard icon={<TrendingUp className="text-indigo-500" />} accent="bg-indigo-50" label="Conversion Rate" value="0%" trend={+1} />
@@ -198,7 +198,7 @@ export default function ReportsPage() {
                   <span className="font-semibold text-slate-950">${p.revenue.toLocaleString()} <span className="text-slate-400 font-normal">({p.sales} sold)</span></span>
                 </div>
                 <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-orange-500 transition-all" style={{ width: `${pct}%` }} />
+                  <div className="h-full rounded-full bg-indigo-500 transition-all" style={{ width: `${pct}%` }} />
                 </div>
               </div>
             );

@@ -5,6 +5,7 @@ import StatsCard from "@/components/StatsCard";
 import { useEffect, useState } from "react";
 import { shipmentService } from "@/services/shipment-service";
 import { Shipment } from "@/types/shipment";
+import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
 
 const statusStyle: Record<Shipment["status"], string> = {
   PENDING: "bg-sky-50 text-sky-700 ring-sky-200",
@@ -47,49 +48,47 @@ export default function ShippingPage() {
 
       <div>
         <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-          <Truck className="text-orange-500" size={24} /> Shipment Tracking
+          <Truck className="text-indigo-500" size={24} /> Shipment Tracking
         </h1>
         <p className="mt-1 text-sm text-slate-500">View all active shipments, carriers, and delivery statuses.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon={<Package className="text-orange-500" />} accent="bg-orange-50" label="Dispatched" value={dispatched} trend={+2} />
+        <StatsCard icon={<Package className="text-indigo-500" />} accent="bg-indigo-50" label="Dispatched" value={dispatched} trend={+2} />
         <StatsCard icon={<Truck className="text-indigo-500" />} accent="bg-indigo-50" label="In Transit" value={inTransit} trend={0} />
         <StatsCard icon={<CheckCircle2 className="text-emerald-500" />} accent="bg-emerald-50" label="Delivered" value={delivered} trend={+5} />
         <StatsCard icon={<Clock className="text-rose-500" />} accent="bg-rose-50" label="Delayed" value={delayed} trend={-1} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-5 py-4 font-semibold">Shipment ID</th>
-              <th className="px-5 py-4 font-semibold">Order</th>
-              <th className="px-5 py-4 font-semibold">Customer</th>
-              <th className="px-5 py-4 font-semibold">Carrier</th>
-              <th className="px-5 py-4 font-semibold">Tracking No.</th>
-              <th className="px-5 py-4 font-semibold">Destination</th>
-              <th className="px-5 py-4 font-semibold">Est. Delivery</th>
-              <th className="px-5 py-4 font-semibold">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <Table>
+          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <THeading className="px-5 py-4 font-semibold">Shipment ID</THeading>
+            <THeading className="px-5 py-4 font-semibold">Order</THeading>
+            <THeading className="px-5 py-4 font-semibold">Customer</THeading>
+            <THeading className="px-5 py-4 font-semibold">Carrier</THeading>
+            <THeading className="px-5 py-4 font-semibold">Tracking No.</THeading>
+            <THeading className="px-5 py-4 font-semibold">Destination</THeading>
+            <THeading className="px-5 py-4 font-semibold">Est. Delivery</THeading>
+            <THeading className="px-5 py-4 font-semibold">Status</THeading>
+          </Thead>
+          <TBody className="divide-y divide-slate-100">
             {shipments?.map(s => (
               <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-mono text-xs text-slate-500">{s.code}</td>
-                <td className="px-5 py-4 font-semibold text-slate-800">{s.orderCode}</td>
-                <td className="px-5 py-4 text-slate-700">{s.customer}</td>
-                <td className="px-5 py-4 text-slate-600">{s.carrier}</td>
-                <td className="px-5 py-4 font-mono text-xs text-slate-500">{s.trackingNumber}</td>
-                <td className="px-5 py-4 text-slate-600">{s.destination}</td>
-                <td className="px-5 py-4 text-slate-500">{s.estimatedDelivery}</td>
-                <td className="px-5 py-4">
+                <TCell className="px-5 py-4 font-mono text-xs text-slate-500">{s.code}</TCell>
+                <TCell className="px-5 py-4 font-semibold text-slate-800">{s.orderCode}</TCell>
+                <TCell className="px-5 py-4 text-slate-700">{s.customer}</TCell>
+                <TCell className="px-5 py-4 text-slate-600">{s.carrier}</TCell>
+                <TCell className="px-5 py-4 font-mono text-xs text-slate-500">{s.trackingNumber}</TCell>
+                <TCell className="px-5 py-4 text-slate-600">{s.destination}</TCell>
+                <TCell className="px-5 py-4 text-slate-500">{s.estimatedDelivery}</TCell>
+                <TCell className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[s.status]}`}>{s.status}</span>
-                </td>
+                </TCell>
               </tr>
             ))}
-          </tbody>
-        </table>
+          </TBody>
+        </Table>
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           unoptimized
         />
         {hasDiscount && (
-          <span className="absolute top-2 left-2 rounded-full bg-orange-500 px-2 py-0.5 text-[0.7rem] font-bold text-white shadow">
+          <span className="absolute top-2 left-2 rounded-full bg-indigo-500 px-2 py-0.5 text-[0.7rem] font-bold text-white shadow">
             -{product.discount}%
           </span>
         )}
@@ -55,7 +55,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="flex flex-1 flex-col gap-2 p-3">
         <h5
           onClick={() => router.push(`/product/${product.id}`)}
-          className="cursor-pointer line-clamp-2 text-sm font-semibold text-gray-800 leading-snug hover:text-orange-600 transition-colors"
+          className="cursor-pointer line-clamp-2 text-sm font-semibold text-gray-800 leading-snug hover:text-indigo-600 transition-colors"
         >
           {product.name}
         </h5>
@@ -63,7 +63,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         {/* Stars */}
         <div className="flex items-center gap-1">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className="w-3 h-3 fill-orange-400 text-orange-400" />
+            <Star key={i} className="w-3 h-3 fill-indigo-400 text-indigo-400" />
           ))}
           <span className="ml-1 text-[0.7rem] text-gray-400">(5.0)</span>
         </div>
@@ -84,7 +84,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           <button
             disabled={product.qty <= 0}
             onClick={handleAdd}
-            className="flex items-center gap-1.5 rounded-lg border border-orange-500 bg-orange-50 px-3 py-1.5 text-[0.75rem] font-semibold text-orange-600 transition hover:bg-orange-500 hover:text-white disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400"
+            className="flex items-center gap-1.5 rounded-lg border border-indigo-500 bg-indigo-50 px-3 py-1.5 text-[0.75rem] font-semibold text-indigo-600 transition hover:bg-indigo-500 hover:text-white disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-400"
           >
             <ShoppingCart className="w-3.5 h-3.5" />
             Add

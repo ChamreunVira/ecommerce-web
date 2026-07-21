@@ -53,29 +53,29 @@ const OrderAdminPage = () => {
 
   const statCards = [
     {
-      icon: <ShoppingBag className="text-orange-500" />,
-      accent: "bg-orange-50",
+      icon: <ShoppingBag className="text-indigo-500" />,
+      accent: "bg-indigo-50",
       label: "Total Orders",
       value: orders.length,
       trend: +1,
     },
     {
-      icon: <Clock className="text-orange-500" />,
-      accent: "bg-orange-50",
+      icon: <Clock className="text-indigo-500" />,
+      accent: "bg-indigo-50",
       label: "Pending",
       value: orders.filter((o) => o.status === "PENDING").length,
       trend: +3
     },
     {
-      icon: <Truck className="text-orange-500" />,
-      accent: "bg-orange-50",
+      icon: <Truck className="text-indigo-500" />,
+      accent: "bg-indigo-50",
       label: "Delivered",
       value: orders.filter((o) => o.status === "DELIVERED").length,
       trend: +10
     },
     {
-      icon: <PackageMinusIcon className="text-orange-500" />,
-      accent: "bg-orange-50",
+      icon: <PackageMinusIcon className="text-indigo-500" />,
+      accent: "bg-indigo-50",
       label: "Cancelled",
       value: orders.filter((o) => o.status === "CANCELLED").length,
       trend: -1

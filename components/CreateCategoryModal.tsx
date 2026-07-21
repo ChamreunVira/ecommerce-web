@@ -68,7 +68,7 @@ export default function CreateCategoryModal({ handleClose }: CreateCategoryModal
             form="create-category-form"
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Plus size={16} />
             {isSaving ? "Creating..." : "Create category"}
@@ -88,7 +88,7 @@ export default function CreateCategoryModal({ handleClose }: CreateCategoryModal
             value={categoryData.name}
             placeholder="Accessories"
             name="name"
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             required
           />
         </div>
@@ -103,7 +103,7 @@ export default function CreateCategoryModal({ handleClose }: CreateCategoryModal
             value={categoryData.description}
             onChange={handleCategoryFieldsChange}
             rows={5}
-            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             required
           />
         </div>

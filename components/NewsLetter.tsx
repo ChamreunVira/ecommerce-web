@@ -16,7 +16,7 @@ const NewsLetter = () => {
           placeholder="Enter your email id"
           className="px-2 w-full h-full py-4 rounded-tl-md rounded-bl-md border-0 outline-1 outline-gray-300 -outline-offset-1"
         />
-        <button className="text-sm text-white px-12 py-4 rounded-tr-md rounded-br-md bg-orange-500">
+        <button className="text-sm text-white px-12 py-4 rounded-tr-md rounded-br-md bg-indigo-500">
           Subcript
         </button>
       </div>

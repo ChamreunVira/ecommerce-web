@@ -126,7 +126,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
               <div className="flex h-full flex-col bg-white">
                 <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-md border border-indigo-100 bg-indigo-50 text-indigo-500">
                       <ShoppingBag size={20} />
                     </span>
                     <div>
@@ -176,7 +176,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                                 <Link
                                   href={`/product/${item.productId}`}
                                   onClick={() => setOpen(false)}
-                                  className="line-clamp-2 text-sm font-semibold text-slate-900 hover:text-orange-600"
+                                  className="line-clamp-2 text-sm font-semibold text-slate-900 hover:text-indigo-600"
                                 >
                                   {item.productName}
                                 </Link>
@@ -230,7 +230,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                     </ul>
                   ) : (
                     <div className="flex h-full min-h-80 flex-col items-center justify-center text-center">
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border border-indigo-100 bg-indigo-50 text-indigo-500">
                         <ShoppingBag size={22} />
                       </div>
                       <p className="font-semibold text-slate-900">
@@ -255,7 +255,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                   <Link
                     href={cartItems.length > 0 ? "/checkout" : ""}
                     onClick={() => setOpen(false)}
-                    className="mt-5 flex h-11 items-center justify-center rounded-md bg-orange-500 px-6 text-sm font-semibold text-white transition hover:bg-orange-600"
+                    className="mt-5 flex h-11 items-center justify-center rounded-md bg-indigo-500 px-6 text-sm font-semibold text-white transition hover:bg-indigo-600"
                   >
                     Processed to Checkout
                   </Link>

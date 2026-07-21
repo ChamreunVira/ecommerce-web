@@ -14,7 +14,7 @@ export const OrderReceipt = forwardRef<HTMLDivElement, Props>(({ order }, ref) =
           <p className="mt-2 text-sm text-slate-500">#{order.orderCode}</p>
         </div>
         <div className="text-right">
-          <h2 className="text-xl font-bold text-orange-600">vSt4reKH</h2>
+          <h2 className="text-xl font-bold text-indigo-600">vSt4reKH</h2>
           <p className="text-sm text-slate-500 mt-1">167st, BSL Toulkork Phnom Penh</p>
         </div>
       </div>

@@ -25,4 +25,15 @@ export enum Currency {
     EN = "USD"
 }
 
+export enum AuditModule {
+  PRODUCT = "PRODUCT",
+  ORDER = "ORDER",
+  CATEGORY = "CATEGORY",
+  USER = "USER",
+  CUSTOMER = "CUSTOMER",
+  INVENTORY = "INVENTORY",
+  SETTING = "SETTING",
+  SYSTEM = "SYSTEM"
+}
+
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

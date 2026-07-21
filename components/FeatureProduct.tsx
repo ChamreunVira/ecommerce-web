@@ -36,7 +36,7 @@ const FeatureProduct = () => {
     <div className='mt-14'>
         <div className='flex flex-col items-center'>
             <p className='text-3xl font-medium'>Feature Products</p>
-            <div className='rounded-full w-28 h-0.5 bg-orange-600 mt-2'></div>
+            <div className='rounded-full w-28 h-0.5 bg-indigo-600 mt-2'></div>
         </div>
 
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-14 mt-12 py-14 px-4'>
@@ -50,7 +50,7 @@ const FeatureProduct = () => {
                     <div className='group-hover:-translate-y-4 transition-transform duration-300 absolute bottom-8 left-8'>
                         <p className='text-white text-xl font-medium leading-loose'>{title}</p>
                         <p className='text-white'>{description}</p>
-                        <button className='mt-2 cursor-pointer flex items-center gap-2 font-medium text-white rounded-sm bg-orange-500 px-3 py-2'>
+                        <button className='mt-2 cursor-pointer flex items-center gap-2 font-medium text-white rounded-sm bg-indigo-500 px-3 py-2'>
                             Buy now
                             <Image
                             className='w-3 h-3 group-hover:-translate-y-1 transition-transform duration-300'

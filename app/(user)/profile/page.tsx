@@ -38,7 +38,7 @@ const ProfilePage = () => {
         
         {/* Profile Header */}
         <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
-          <div className="h-32 sm:h-40 bg-linear-to-r from-orange-400 to-rose-500"></div>
+          <div className="h-32 sm:h-40 bg-linear-to-r from-indigo-400 to-rose-500"></div>
           <div className="relative px-6 pb-8">
             <div className="relative -mt-16 sm:-mt-20 flex justify-center sm:justify-start">
               <div className="h-32 w-32 rounded-full border-4 border-white bg-white flex items-center justify-center overflow-hidden z-10 shadow-md">
@@ -70,7 +70,7 @@ const ProfilePage = () => {
 
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="bg-orange-50 p-3 rounded-lg text-orange-600">
+                  <div className="bg-indigo-50 p-3 rounded-lg text-indigo-600">
                     <Mail size={20} />
                   </div>
                   <div>

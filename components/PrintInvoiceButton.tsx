@@ -17,7 +17,7 @@ export const PrintInvoiceButton = ({ order }: { order: Order }) => {
     <>
       <button 
         onClick={(e) => { e.preventDefault(); handlePrint(); }}
-        className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-orange-100 hover:text-orange-600"
+        className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-indigo-100 hover:text-indigo-600"
         title="Print Invoice"
       >
         <Printer size={15} />

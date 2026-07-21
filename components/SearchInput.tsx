@@ -20,7 +20,7 @@ const SearchInput = (props: SearchInputType) => {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
         <input
           type="text"
-          className={`${props.className || ""} w-full rounded-lg border border-slate-200 bg-white px-10 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-100`}
+          className={`${props.className || ""} w-full rounded-lg border border-slate-200 bg-white px-10 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100`}
           placeholder="Search..."
           value={inputValue}
           onChange={handleSearch}

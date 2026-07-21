@@ -219,7 +219,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-bold flex items-center text-gray-700">
                     <svg
-                      className="w-5 h-5 mr-2 text-orange-500"
+                      className="w-5 h-5 mr-2 text-indigo-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -246,7 +246,7 @@ export default function CheckoutPage() {
                         handleValidateShippingAddress();
                         setIsCreatingAddress(true);
                       }}
-                      className="text-sm text-orange-600 font-medium hover:underline"
+                      className="text-sm text-indigo-600 font-medium hover:underline"
                     >
                       + Add New Address
                     </button>
@@ -262,7 +262,7 @@ export default function CheckoutPage() {
                     ) : (
                       <>
                         <select
-                          className="w-full border border-slate-200 bg-slate-50 rounded-md px-3 py-2.5 text-sm text-gray-800 focus:outline-orange-500"
+                          className="w-full border border-slate-200 bg-slate-50 rounded-md px-3 py-2.5 text-sm text-gray-800 focus:outline-indigo-500"
                           value={selectedAddressId ?? ""}
                           onChange={(e) =>
                             setSelectedAddressId(Number(e.target.value))
@@ -330,7 +330,7 @@ export default function CheckoutPage() {
                         name="fullName"
                         value={newAddress.fullName}
                         onChange={handleShippingAddressChange}
-                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-indigo-500"
                         placeholder="ឆុន ប៊ុនឈាន"
                         required
                       />
@@ -344,7 +344,7 @@ export default function CheckoutPage() {
                         name="phone"
                         value={newAddress.phone}
                         onChange={handleShippingAddressChange}
-                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-indigo-500"
                         placeholder="012345678"
                         required
                       />
@@ -358,7 +358,7 @@ export default function CheckoutPage() {
                         name="province"
                         value={newAddress.province}
                         onChange={handleShippingAddressChange}
-                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-indigo-500"
                         placeholder="Phnom Penh"
                         required
                       />
@@ -372,7 +372,7 @@ export default function CheckoutPage() {
                         name="addressLine"
                         value={newAddress.addressLine}
                         onChange={handleShippingAddressChange}
-                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                        className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-indigo-500"
                         placeholder="House No., Street, Sangkat..."
                         required
                       />
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
                         type="button"
                         onClick={() => handleCreateShippingAddress()}
                         disabled={loading}
-                        className="px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 transition"
+                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition"
                       >
                         Save Address
                       </button>
@@ -406,7 +406,7 @@ export default function CheckoutPage() {
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="e.g., Please call before delivery..."
-                    className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-orange-500"
+                    className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-indigo-500"
                   />
                 </div>
               </div>
@@ -414,7 +414,7 @@ export default function CheckoutPage() {
               <div className="bg-white p-6 rounded-md border border-slate-100">
                 <h2 className="text-lg font-bold mb-4 flex items-center text-gray-700">
                   <svg
-                    className="w-5 h-5 mr-2 text-orange-500"
+                    className="w-5 h-5 mr-2 text-indigo-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -431,7 +431,7 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div
                     onClick={() => setPaymentMethod("KHQR_BAKONG")}
-                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === "KHQR_BAKONG" ? "outline-2 outline-orange-500" : "border-slate-200"}`}
+                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === "KHQR_BAKONG" ? "outline-2 outline-indigo-500" : "border-slate-200"}`}
                   >
                     <Image
                       className="w-20 object-cover"
@@ -448,7 +448,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <label
-                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === "CASH_ON_DELIVERY" ? "outline-2 outline-orange-500" : "border-slate-200"}`}
+                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === "CASH_ON_DELIVERY" ? "outline-2 outline-indigo-500" : "border-slate-200"}`}
                   >
                     <input
                       type="radio"
@@ -521,7 +521,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-base font-bold text-gray-900 border-t border-slate-100 pt-2">
                   <span>Total</span>
-                  <span className="text-orange-600">
+                  <span className="text-indigo-600">
                     ${totalAmount.toFixed(2)}
                   </span>
                 </div>
@@ -530,7 +530,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={handlePlaceOrder}
-                className="btn btn-primary w-full mt-6 py-3 font-bold flex items-center justify-center gap-2 hover:bg-orange-600"
+                className="btn btn-primary w-full mt-6 py-3 font-bold flex items-center justify-center gap-2 hover:bg-indigo-600"
                 disabled={loading}
               >
                 <svg

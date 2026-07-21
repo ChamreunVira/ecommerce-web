@@ -69,10 +69,10 @@ const HeaderSlider = () => {
                     className='min-w-full mt-6 py-8 md:px-14 px-5 rounded-xl flex flex-col md:flex-row items-center justify-between bg-indigo-50'
                 >
                     <div className='md:pl-8 mt-10 md:mt-0'>
-                        <p className='md:text-base text-orange-500 pb-1'>{slide.offer}</p>
+                        <p className='md:text-base text-indigo-500 pb-1'>{slide.offer}</p>
                         <h1 className='max-w-lg md:text-[40px] md:leading-12 text-2xl font-semibold'>{slide.title}</h1>
                         <div className='flex items-center mt-4 md:mt-6'>
-                            <button className='md:px-10 md:py-2.5 px-7 py-2 bg-orange-500 font-medium text-white rounded-full cursor-pointer'>{slide.firstContentBtn}</button>
+                            <button className='md:px-10 md:py-2.5 px-7 py-2 bg-indigo-500 font-medium text-white rounded-full cursor-pointer'>{slide.firstContentBtn}</button>
                             <button className='group flex items-center gap-2 px-7 py-2.5 font-medium'>
                                 {slide.secondContentBtn}
                                 <Image
@@ -100,7 +100,7 @@ const HeaderSlider = () => {
                 <button
                  key={i}
                  onClick={() => handleNextSlice(i)}
-                 className={`w-2 h-2 rounded-full cursor-pointer ${currentSlide === i ? 'bg-orange-500' : 'bg-gray-300'}`}></button>
+                 className={`w-2 h-2 rounded-full cursor-pointer ${currentSlide === i ? 'bg-indigo-500' : 'bg-gray-300'}`}></button>
             ))}
         </div>
     </section>

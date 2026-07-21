@@ -29,7 +29,7 @@ export default function OrderSuccessPage() {
                 </div>
 
                 <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/" className="px-6 py-3 font-semibold text-white bg-orange-500 rounded-md hover:bg-orange-600 transition flex-1">
+                    <Link href="/" className="px-6 py-3 font-semibold text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition flex-1">
                         Continue Shopping
                     </Link>
                     <Link href={`/profile/orders/${orderId}`} className="px-6 py-3 font-semibold text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 transition flex-1">

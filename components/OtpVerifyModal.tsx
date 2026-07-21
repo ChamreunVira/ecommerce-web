@@ -126,14 +126,14 @@ const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-linear-to-r from-orange-500 to-orange-600 p-6 text-white text-center">
+        <div className="bg-linear-to-r from-indigo-500 to-indigo-600 p-6 text-white text-center">
           <div className="flex justify-center mb-3">
             <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
               <ShieldCheck size={28} />
             </div>
           </div>
           <h2 className="text-xl font-bold">Verify OTP</h2>
-          <p className="text-orange-100 text-sm mt-1">
+          <p className="text-indigo-100 text-sm mt-1">
             We sent a 6-digit code to <span className="font-semibold text-white">{email}</span>
           </p>
         </div>
@@ -164,8 +164,8 @@ const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
                     onPaste={handlePaste}
                     className={`w-11 h-13 sm:w-12 sm:h-14 text-center text-xl font-bold border rounded-xl outline-none transition-all
                       ${digit
-                        ? "bg-orange-50 border-orange-400 text-orange-600 ring-2 ring-orange-100"
-                        : "bg-slate-50 border-slate-200 text-slate-800 focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-100"
+                        ? "bg-indigo-50 border-indigo-400 text-indigo-600 ring-2 ring-indigo-100"
+                        : "bg-slate-50 border-slate-200 text-slate-800 focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-100"
                       }`}
                   />
                 ))}
@@ -177,14 +177,14 @@ const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
               {countdown > 0 ? (
                 <p className="text-sm text-slate-500">
                   Resend code in{" "}
-                  <span className="font-semibold text-orange-500">{countdown}s</span>
+                  <span className="font-semibold text-indigo-500">{countdown}s</span>
                 </p>
               ) : (
                 <button
                   type="button"
                   onClick={handleResend}
                   disabled={isResending}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-orange-600 hover:text-orange-500 transition disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-500 transition disabled:opacity-60"
                 >
                   <RefreshCw size={14} className={isResending ? "animate-spin" : ""} />
                   {isResending ? "Resending..." : "Resend OTP"}
@@ -195,7 +195,7 @@ const OtpVerifyModal: React.FC<OtpVerifyModalProps> = ({
             <button
               type="submit"
               disabled={!otpFull || isLoading}
-              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-orange-200"
+              className="w-full flex justify-center items-center gap-2 py-3.5 px-4 rounded-xl text-sm font-bold text-white bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-indigo-200"
             >
               {isLoading ? (
                 <>

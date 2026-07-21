@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { promotionService } from "@/services/promotion-service";
 import { Promotion } from "@/types/promotion";
+import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
 
 const statusStyle: Record<Promotion["status"], string> = {
   ACTIVE: "bg-emerald-50 text-emerald-700 ring-emerald-200",
@@ -100,7 +101,7 @@ export default function PromotionsPage() {
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-            <Tag className="text-orange-500" size={24} /> Promotions & Coupons
+            <Tag className="text-indigo-500" size={24} /> Promotions & Coupons
           </h1>
           <p className="mt-1 text-sm text-slate-500">Create and manage discount codes, promotional offers, and flash sales.</p>
         </div>
@@ -108,7 +109,7 @@ export default function PromotionsPage() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
         >
           <Plus size={16} />
           New promotion
@@ -116,48 +117,46 @@ export default function PromotionsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon={<TicketCheck className="text-orange-500" />} accent="bg-orange-50" label="Total Uses" value={totalUses} trend={+12} />
+        <StatsCard icon={<TicketCheck className="text-indigo-500" />} accent="bg-indigo-50" label="Total Uses" value={totalUses} trend={+12} />
         <StatsCard icon={<CheckCircle2 className="text-emerald-500" />} accent="bg-emerald-50" label="Active" value={active} trend={0} />
         <StatsCard icon={<Clock className="text-sky-500" />} accent="bg-sky-50" label="Scheduled" value={scheduled} trend={0} />
         <StatsCard icon={<Percent className="text-rose-500" />} accent="bg-rose-50" label="Expired" value={expired} trend={0} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-5 py-4 font-semibold">Code</th>
-              <th className="px-5 py-4 font-semibold">Type</th>
-              <th className="px-5 py-4 font-semibold text-center">Value</th>
-              <th className="px-5 py-4 font-semibold text-center">Min. Order</th>
-              <th className="px-5 py-4 font-semibold text-center">Used / Limit</th>
-              <th className="px-5 py-4 font-semibold">Expiry</th>
-              <th className="px-5 py-4 font-semibold">Status</th>
-              <th className="px-5 py-4 font-semibold text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <Table>
+          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <THeading className="px-5 py-4 font-semibold">Code</THeading>
+            <THeading className="px-5 py-4 font-semibold">Type</THeading>
+            <THeading className="px-5 py-4 font-semibold text-center">Value</THeading>
+            <THeading className="px-5 py-4 font-semibold text-center">Min. Order</THeading>
+            <THeading className="px-5 py-4 font-semibold text-center">Used / Limit</THeading>
+            <THeading className="px-5 py-4 font-semibold">Expiry</THeading>
+            <THeading className="px-5 py-4 font-semibold">Status</THeading>
+            <THeading className="px-5 py-4 font-semibold text-right">Actions</THeading>
+          </Thead>
+          <TBody className="divide-y divide-slate-100">
             {promotions?.map(p => (
               <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4">
-                  <span className="font-mono font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded text-xs">{p.code}</span>
-                </td>
-                <td className="px-5 py-4 text-slate-600">{p.type}</td>
-                <td className="px-5 py-4 text-center font-semibold text-slate-900">
+                <TCell className="px-5 py-4">
+                  <span className="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded text-xs">{p.code}</span>
+                </TCell>
+                <TCell className="px-5 py-4 text-slate-600">{p.type}</TCell>
+                <TCell className="px-5 py-4 text-center font-semibold text-slate-900">
                   {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
-                </td>
-                <td className="px-5 py-4 text-center text-slate-500">${p.minimumOrder}</td>
-                <td className="px-5 py-4 text-center">
+                </TCell>
+                <TCell className="px-5 py-4 text-center text-slate-500">${p.minimumOrder}</TCell>
+                <TCell className="px-5 py-4 text-center">
                   <div className="text-sm text-slate-700">{p.usageCount} / {p.usageLimit}</div>
                   <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="h-full bg-orange-400 rounded-full" style={{ width: `${Math.min((p.usageCount/p.usageLimit)*100, 100)}%` }} />
+                    <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${Math.min((p.usageCount/p.usageLimit)*100, 100)}%` }} />
                   </div>
-                </td>
-                <td className="px-5 py-4 text-slate-500">{p.expiryAt}</td>
-                <td className="px-5 py-4">
+                </TCell>
+                <TCell className="px-5 py-4 text-slate-500">{p.expiryAt}</TCell>
+                <TCell className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[p.status]}`}>{p.status}</span>
-                </td>
-                <td className="px-5 py-4 text-right">
+                </TCell>
+                <TCell className="px-5 py-4 text-right">
                   <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
@@ -176,11 +175,11 @@ export default function PromotionsPage() {
                       <Trash size={15} />
                     </button>
                   </div>
-                </td>
+                </TCell>
               </tr>
             ))}
-          </tbody>
-        </table>
+          </TBody>
+        </Table>
       </div>
 
       {isModalOpen ? (

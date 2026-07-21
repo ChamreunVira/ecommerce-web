@@ -117,7 +117,7 @@ const AllProduct = () => {
     return (
       <>
         {text.slice(0, index)}
-        <span className="font-bold text-orange-600">
+        <span className="font-bold text-indigo-600">
           {text.slice(index, index + query.length)}
         </span>
         {text.slice(index + query.length)}
@@ -138,14 +138,14 @@ const AllProduct = () => {
               className="flex w-full items-center justify-between rounded-md border border-slate-200 bg-white px-4 py-3 lg:hidden"
             >
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
+                <span className="flex h-8 w-8 items-center justify-center rounded-md border border-indigo-100 bg-indigo-50 text-indigo-500">
                   <SlidersHorizontal size={18} />
                 </span>
                 <span className="font-semibold text-slate-800">
                   {sidebarOpen ? "Hide Filters" : "Show Filters"}
                 </span>
                 {activeFilterCount > 0 && (
-                  <span className="rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white">
+                  <span className="rounded-full bg-indigo-500 px-2 py-0.5 text-xs font-bold text-white">
                     {activeFilterCount}
                   </span>
                 )}
@@ -162,7 +162,7 @@ const AllProduct = () => {
             >
               <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-md border border-orange-100 bg-orange-50 text-orange-500">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-md border border-indigo-100 bg-indigo-50 text-indigo-500">
                     <SlidersHorizontal size={24} />
                   </span>
                   <div>
@@ -199,7 +199,7 @@ const AllProduct = () => {
                     id="product-sort"
                     value={sortBy}
                     onChange={(event) => setSortBy(event.target.value)}
-                    className="h-12 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+                    className="h-12 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
                   >
                     <option value="latest">Latest</option>
                     <option value="price-low">Price: low to high</option>
@@ -248,7 +248,7 @@ const AllProduct = () => {
                       onClick={() => setSelectedCategory("")}
                       className={`flex w-fit font-semibold items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${
                         selectedCategory === ""
-                          ? "text-white bg-orange-500"
+                          ? "text-white bg-indigo-500"
                           : "border-slate-200 bg-slate-100/50 text-slate-600 hover:bg-slate-50"
                       }`}
                     >
@@ -263,7 +263,7 @@ const AllProduct = () => {
                         onClick={() => setSelectedCategory(category.name)}
                         className={`flex w-fit font-semibold items-center justify-between rounded-md border px-4 py-2 text-left text-sm transition ${
                           selectedCategory === category.name
-                            ? "text-white bg-orange-500"
+                            ? "text-white bg-indigo-500"
                             : "border-slate-200 bg-slate-100/50 text-slate-600 hover:bg-slate-50"
                         }`}
                       >
@@ -282,7 +282,7 @@ const AllProduct = () => {
               {/* Page title row */}
               <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
                 <div>
-                  <p className="text-sm font-medium text-orange-600">Shop</p>
+                  <p className="text-sm font-medium text-indigo-600">Shop</p>
                   <h1 className="mt-1 text-2xl font-semibold text-slate-950">
                     All Products
                   </h1>
@@ -312,7 +312,7 @@ const AllProduct = () => {
                     setIsFocused(true);
                     setShowSuggestions(true);
                   }}
-                  className="h-14 w-full rounded-lg border border-slate-200 bg-white pl-12 pr-12 text-base text-slate-800 outline-none transition focus:border-orange-500"
+                  className="h-14 w-full rounded-lg border border-slate-200 bg-white pl-12 pr-12 text-base text-slate-800 outline-none transition focus:border-indigo-500"
                 />
                 {searchTerm && (
                   <button
@@ -342,7 +342,7 @@ const AllProduct = () => {
                           setShowSuggestions(false);
                           setIsFocused(false);
                         }}
-                        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:bg-orange-50"
+                        className="flex w-full items-center justify-between px-4 py-3 text-left text-sm transition hover:bg-indigo-50"
                       >
                         <span className="text-slate-800">
                           {highlightMatch(product.name, searchTerm.trim())}
@@ -362,26 +362,26 @@ const AllProduct = () => {
                 priceRange[1] < 1000) && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {selectedCategory && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
                       Category: {selectedCategory}
                       <button
                         type="button"
                         onClick={() => setSelectedCategory("")}
                         aria-label="Remove category filter"
-                        className="flex h-4 w-4 items-center justify-center rounded-full transition hover:bg-orange-200"
+                        className="flex h-4 w-4 items-center justify-center rounded-full transition hover:bg-indigo-200"
                       >
                         <X size={10} />
                       </button>
                     </span>
                   )}
                   {(priceRange[0] > 0 || priceRange[1] < 1000) && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
                       Price: ${priceRange[0]} – ${priceRange[1]}
                       <button
                         type="button"
                         onClick={() => setPriceRange([0, 1000])}
                         aria-label="Remove price filter"
-                        className="flex h-4 w-4 items-center justify-center rounded-full transition hover:bg-orange-200"
+                        className="flex h-4 w-4 items-center justify-center rounded-full transition hover:bg-indigo-200"
                       >
                         <X size={10} />
                       </button>
@@ -408,7 +408,7 @@ const AllProduct = () => {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="mt-5 rounded-md bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+                  className="mt-5 rounded-md bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600"
                 >
                   Clear filters
                 </button>

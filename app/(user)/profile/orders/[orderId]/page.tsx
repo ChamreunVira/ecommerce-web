@@ -118,7 +118,7 @@ export default function ViewOrderPage() {
     return (
       <div className="app-container py-12 flex justify-center items-center min-h-[50vh]">
         <div className="flex flex-col items-center gap-3 text-slate-400">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-orange-500" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-500" />
           <p className="text-sm">Loading order…</p>
         </div>
       </div>
@@ -132,7 +132,7 @@ export default function ViewOrderPage() {
         <h2 className="text-xl font-bold text-gray-700">Order not found</h2>
         <button
           onClick={() => router.back()}
-          className="text-orange-500 hover:underline text-sm"
+          className="text-indigo-500 hover:underline text-sm"
         >
           ← Go Back
         </button>
@@ -300,7 +300,7 @@ export default function ViewOrderPage() {
                 </div>
                 <div className="pt-3 mt-3 border-t border-slate-100 flex justify-between text-base font-bold text-slate-900">
                   <span>Total</span>
-                  <span className="text-orange-600">
+                  <span className="text-indigo-600">
                     ${Number(order.totalAmount ?? 0).toFixed(2)}
                   </span>
                 </div>

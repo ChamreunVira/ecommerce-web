@@ -88,7 +88,7 @@ export default function AddUserModal({
             form="create-user-form"
             type="submit"
             disabled={isSaving || userData.roles.length === 0}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <CheckIcon size={16} />
             {isSaving ? "Creating..." : "Create user"}
@@ -108,7 +108,7 @@ export default function AddUserModal({
             placeholder="Chamreun Vira"
             name="fullName"
             value={userData.fullName}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             required
           />
         </div>
@@ -123,7 +123,7 @@ export default function AddUserModal({
             placeholder="user@example.com"
             name="email"
             value={userData.email}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             required
           />
         </div>
@@ -138,7 +138,7 @@ export default function AddUserModal({
             placeholder="Minimum 8 characters"
             name="password"
             value={userData.password}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             required
           />
         </div>
@@ -155,7 +155,7 @@ export default function AddUserModal({
                   type="checkbox"
                   checked={userData.roles.includes(role.value)}
                   onChange={(event) => handleRoleChange(role.value, event.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
+                  className="h-4 w-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-500"
                 />
                 {role.label}
               </label>

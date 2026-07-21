@@ -106,7 +106,7 @@ const OrdersPage = () => {
             </p>
             <Link
               href="/products"
-              className="inline-flex py-2 px-6 rounded-lg text-sm font-semibold text-white bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 transition transform hover:-translate-y-0.5"
+              className="inline-flex py-2 px-6 rounded-lg text-sm font-semibold text-white bg-linear-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 transition transform hover:-translate-y-0.5"
             >
               Start Shopping
             </Link>
@@ -136,14 +136,14 @@ const OrdersPage = () => {
                 
                 <div className="p-5 sm:p-6 flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
                   <div className="flex gap-4 items-center">
-                    <div className="h-12 w-12 rounded-lg bg-orange-50 flex items-center justify-center text-orange-500">
+                    <div className="h-12 w-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
                       <ShoppingBag size={24} />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-slate-900">
                         {order.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0} items
                       </p>
-                      <p className="text-sm font-bold text-orange-600 mt-0.5">
+                      <p className="text-sm font-bold text-indigo-600 mt-0.5">
                          ${order.totalAmount.toFixed(2)}
                       </p>
                     </div>

@@ -77,13 +77,13 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
                 key={`${item.path}-${item.label}`}
                 href={item.path}
                 className={`relative rounded-md px-3 py-2 text-sm font-medium transition ${isActive
-                  ? "text-orange-600"
+                  ? "text-indigo-600"
                   : "text-slate-900 hover:bg-slate-50 hover:text-slate-950"
                   }`}
               >
                 {item.label}
                 {isActive && (
-                  <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-orange-500" />
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-indigo-500" />
                 )}
               </Link>
             );
@@ -114,7 +114,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
             <button
               type="button"
               onClick={toggleCart}
-              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+              className="flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-indigo-50 hover:text-indigo-600"
               aria-label="Open shopping cart"
             >
               <ShoppingBag size={18} />
@@ -188,12 +188,12 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
                     href={item.path}
                     onClick={() => setIsMenuOpen(false)}
                     className={`flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition ${isActive
-                      ? "bg-orange-50 text-orange-600"
+                      ? "bg-indigo-50 text-indigo-600"
                       : "text-slate-900 hover:bg-slate-50 hover:text-slate-950"
                       }`}
                   >
                     {isActive && (
-                      <span className="mr-2 h-4 w-0.5 rounded-full bg-orange-500" />
+                      <span className="mr-2 h-4 w-0.5 rounded-full bg-indigo-500" />
                     )}
                     {item.label}
                   </Link>

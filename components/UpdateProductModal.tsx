@@ -131,7 +131,7 @@ export default function UpdateProductModal({
             form="update-product-form"
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save size={16} />
             {isSaving ? "Saving..." : "Save changes"}
@@ -156,7 +156,7 @@ export default function UpdateProductModal({
             name="categoryId"
             value={formData.categoryId}
             onChange={() => null}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             required
           >
             <option value={product.categoryId}>{product.categoryName}</option>
@@ -179,7 +179,7 @@ export default function UpdateProductModal({
             placeholder="Wireless headphone"
             name="name"
             value={formData.name}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             required
           />
         </div>
@@ -201,7 +201,7 @@ export default function UpdateProductModal({
               name="price"
               value={formData.price}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
               required
             />
           </div>
@@ -222,7 +222,7 @@ export default function UpdateProductModal({
               name="discount"
               value={formData.discount}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             />
           </div>
 
@@ -238,7 +238,7 @@ export default function UpdateProductModal({
               name="qty"
               value={formData.qty}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
               required
             />
           </div>
@@ -258,7 +258,7 @@ export default function UpdateProductModal({
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             required
           />
         </div>
@@ -272,7 +272,7 @@ export default function UpdateProductModal({
           </label>
           <label
             htmlFor="images"
-            className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-orange-300 hover:bg-orange-50/40"
+            className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-indigo-300 hover:bg-indigo-50/40"
           >
             <ImagePlus className="text-slate-400" size={28} />
             <span className="mt-2 text-sm font-medium text-slate-700">

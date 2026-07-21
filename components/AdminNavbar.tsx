@@ -21,7 +21,7 @@ const AdminNavbar = () => {
             <Search className="text-slate-400" size={18} />
           </button>
           <input
-            className="w-72 rounded-lg bg-slate-100 px-10 py-2.5 text-sm text-slate-800 outline-none ring-1 ring-transparent transition placeholder:text-slate-400 focus:bg-white focus:ring-orange-500"
+            className="w-72 rounded-lg bg-slate-100 px-10 py-2.5 text-sm text-slate-800 outline-none ring-1 ring-transparent transition placeholder:text-slate-400 focus:bg-white focus:ring-indigo-500"
             type="text"
             placeholder="Search stock, order, customer"
           />

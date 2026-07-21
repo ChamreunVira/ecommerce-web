@@ -88,7 +88,7 @@ const ProductAdminPage = () => {
         </div>
         <Link
           href="/admin/product/new"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
         >
           <Plus size={16} />
           Add Product
@@ -96,10 +96,10 @@ const ProductAdminPage = () => {
       </div>
       {/* Stat cards */}
       <div className="w-full grid grid-cols-4 space-x-4 py-4">
-        <StatsCard icon={<Package className="text-orange-500" />} accent="bg-orange-50" label="Products" value={products.length} trend={+1} />
-        <StatsCard icon={<Tag className="text-orange-500" />} accent="bg-orange-50" label="Categories" value={categoryNames.length} trend={+10} />
-        <StatsCard icon={<AlertCircle className="text-orange-500" />} accent="bg-orange-50" label="Low Stocks" value={lowStock} trend={-1} />
-        <StatsCard icon={<PackageOpen className="text-orange-500" />} accent="bg-orange-50" label="Out of Stock" value={outOfStock} trend={+2} />
+        <StatsCard icon={<Package className="text-indigo-500" />} accent="bg-indigo-50" label="Products" value={products.length} trend={+1} />
+        <StatsCard icon={<Tag className="text-indigo-500" />} accent="bg-indigo-50" label="Categories" value={categoryNames.length} trend={+10} />
+        <StatsCard icon={<AlertCircle className="text-indigo-500" />} accent="bg-indigo-50" label="Low Stocks" value={lowStock} trend={-1} />
+        <StatsCard icon={<PackageOpen className="text-indigo-500" />} accent="bg-indigo-50" label="Out of Stock" value={outOfStock} trend={+2} />
       </div>
 
       {/* Table */}

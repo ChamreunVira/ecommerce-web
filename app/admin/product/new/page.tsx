@@ -142,7 +142,7 @@ export default function CreateProductPage() {
           Products
         </Link>
         <ChevronRight size={14} className="text-slate-300" />
-        <span className="font-medium text-orange-600">Add New Product</span>
+        <span className="font-medium text-indigo-600">Add New Product</span>
       </nav>
 
       {/* Page header */}
@@ -180,7 +180,7 @@ export default function CreateProductPage() {
                     placeholder="e.g. Wireless Headphones"
                     value={productData.name}
                     onChange={handleFieldChange}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   />
                 </div>
                 <div>
@@ -198,7 +198,7 @@ export default function CreateProductPage() {
                     placeholder="Describe the product…"
                     value={productData.description}
                     onChange={handleFieldChange}
-                    className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                    className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ export default function CreateProductPage() {
                   required
                   value={productData.categoryId}
                   onChange={handleFieldChange}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 >
                   <option value="">— Select a category —</option>
                   {categoryData.map((c) => (
@@ -255,7 +255,7 @@ export default function CreateProductPage() {
                   placeholder="0"
                   value={productData.qty}
                   onChange={handleFieldChange}
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                 />
               </div>
             </div>
@@ -289,7 +289,7 @@ export default function CreateProductPage() {
                       placeholder="0.00"
                       value={productData.price}
                       onChange={handleFieldChange}
-                      className="w-full rounded-lg border border-slate-200 py-2.5 pl-7 pr-3 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                      className="w-full rounded-lg border border-slate-200 py-2.5 pl-7 pr-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                     />
                   </div>
                 </div>
@@ -310,7 +310,7 @@ export default function CreateProductPage() {
                       placeholder="0"
                       value={productData.discount}
                       onChange={handleFieldChange}
-                      className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-8 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                      className="w-full rounded-lg border border-slate-200 py-2.5 pl-3 pr-8 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                     />
                     <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-400">
                       %
@@ -334,7 +334,7 @@ export default function CreateProductPage() {
               >
                 <label
                   htmlFor="images"
-                  className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-orange-300 hover:bg-orange-50/40"
+                  className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center transition hover:border-indigo-300 hover:bg-indigo-50/40"
                 >
                   <ImagePlus className="text-slate-400" size={26} />
                   <span className="mt-2 text-sm font-medium text-slate-700">
@@ -395,7 +395,7 @@ export default function CreateProductPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Plus size={16} />
             {isLoading ? "Creating..." : "Add Product"}

@@ -146,7 +146,7 @@ export default function AdminOrderDetailPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3 text-slate-400">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-orange-500" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-500" />
           <p className="text-sm">Loading order…</p>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function AdminOrderDetailPage() {
         <p className="text-lg font-semibold">Order not found</p>
         <button
           onClick={() => router.back()}
-          className="text-sm text-orange-500 hover:underline"
+          className="text-sm text-indigo-500 hover:underline"
         >
           ← Go back
         </button>
@@ -356,7 +356,7 @@ export default function AdminOrderDetailPage() {
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                 >
                   <option value={OrderStatus.PENDING_PAYMENT}>
                     Pending Payment
@@ -373,7 +373,7 @@ export default function AdminOrderDetailPage() {
               <button
                 onClick={handleStatusUpdate}
                 disabled={!hasStatusChanged || statusUpdating}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {statusUpdating ? (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -422,7 +422,7 @@ export default function AdminOrderDetailPage() {
               </div>
               <div className="flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
                 <span>Total</span>
-                <span className="text-orange-600">
+                <span className="text-indigo-600">
                   ${Number(order.totalAmount ?? 0).toFixed(2)}
                 </span>
               </div>

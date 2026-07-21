@@ -100,6 +100,12 @@ const ProductDetail = () => {
     await handleAddProductToCart(productData.id, quantity);
   };
 
+  const handleBuyNow = async () => {
+    if (!productData) return;
+    await handleAddProductToCart(productData.id, quantity);
+    router.push("/checkout");
+  };
+
   const handleSubmitReview = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -191,8 +197,8 @@ const ProductDetail = () => {
                       type="button"
                       onClick={() => handleSwitchImage(index)}
                       className={`overflow-hidden rounded-md border bg-slate-50 transition ${isSelected
-                        ? "border-orange-500"
-                        : "border-slate-200 hover:border-orange-200"
+                        ? "border-indigo-500"
+                        : "border-slate-200 hover:border-indigo-200"
                         }`}
                     >
                       <Image
@@ -210,7 +216,7 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-orange-600">
+              <p className="text-sm font-medium text-indigo-600">
                 {productData.categoryName}
               </p>
               <h1 className="mt-2 text-3xl font-semibold text-slate-950">
@@ -222,7 +228,7 @@ const ProductDetail = () => {
                   {Array.from({ length: 5 }).map((_, index) => (
                     <Star
                       key={index}
-                      className="h-4 w-4 fill-orange-500 text-orange-500"
+                      className="h-4 w-4 fill-indigo-500 text-indigo-500"
                     />
                   ))}
                 </div>
@@ -296,14 +302,14 @@ const ProductDetail = () => {
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="h-12 flex-1 rounded-md border border-orange-500 bg-orange-500 px-5 text-sm font-semibold text-white transition hover:bg-orange-600"
+                  className="h-12 flex-1 rounded-md border border-indigo-500 bg-indigo-500 px-5 text-sm font-semibold text-white transition hover:bg-indigo-600"
                 >
                   Add to cart
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => router.push("/cart")}
+                  onClick={handleBuyNow}
                   className="h-12 flex-1 rounded-md border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-800 transition hover:bg-slate-50"
                 >
                   Buy now
@@ -317,7 +323,7 @@ const ProductDetail = () => {
               <div className="rounded-md border border-slate-200 bg-white p-6">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                   <div>
-                    <p className="text-sm font-medium text-orange-600">Customer feedback</p>
+                    <p className="text-sm font-medium text-indigo-600">Customer feedback</p>
                     <h2 className="mt-1 text-2xl font-semibold text-slate-950">
                       What shoppers are saying
                     </h2>
@@ -383,7 +389,7 @@ const ProductDetail = () => {
                 onSubmit={handleSubmitReview}
                 className="rounded-md border border-slate-200 bg-white p-6"
               >
-                <p className="text-sm font-medium text-orange-600">Write a review</p>
+                <p className="text-sm font-medium text-indigo-600">Write a review</p>
                 <h3 className="mt-1 text-xl font-semibold text-slate-950">
                   Share your experience
                 </h3>
@@ -403,7 +409,7 @@ const ProductDetail = () => {
                       onChange={(event) =>
                         setDraftReview((current) => ({ ...current, name: event.target.value }))
                       }
-                      className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none ring-0 focus:border-orange-400"
+                      className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none ring-0 focus:border-indigo-400"
                       placeholder="Enter your name"
                     />
                   </div>
@@ -418,7 +424,7 @@ const ProductDetail = () => {
                       onChange={(event) =>
                         setDraftReview((current) => ({ ...current, rating: Number(event.target.value) }))
                       }
-                      className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-orange-400"
+                      className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400"
                     >
                       {[5, 4, 3, 2, 1].map((value) => (
                         <option key={value} value={value}>
@@ -439,7 +445,7 @@ const ProductDetail = () => {
                       onChange={(event) =>
                         setDraftReview((current) => ({ ...current, comment: event.target.value }))
                       }
-                      className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-orange-400"
+                      className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-indigo-400"
                       placeholder="Tell other customers about your experience"
                     />
                   </div>
@@ -447,7 +453,7 @@ const ProductDetail = () => {
 
                 <button
                   type="submit"
-                  className="mt-6 inline-flex items-center justify-center rounded-md bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+                  className="mt-6 inline-flex items-center justify-center rounded-md bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
                 >
                   Submit review
                 </button>
@@ -456,7 +462,7 @@ const ProductDetail = () => {
 
             <div className="mb-6 mt-10 flex flex-col justify-between gap-3 md:flex-row md:items-end">
               <div>
-                <p className="text-sm font-medium text-orange-600">
+                <p className="text-sm font-medium text-indigo-600">
                   Related category
                 </p>
                 <h2 className="mt-1 text-2xl font-semibold text-slate-950">

@@ -51,7 +51,7 @@ const Footer = () => {
                   <li key={`${section.category}-${item.label}`}>
                     <Link
                       href={item.path}
-                      className="text-sm text-slate-500 transition hover:text-orange-600"
+                      className="text-sm text-slate-500 transition hover:text-indigo-600"
                     >
                       {item.label}
                     </Link>

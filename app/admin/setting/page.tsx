@@ -102,7 +102,7 @@ export default function SettingAdminPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
-            <p className="flex items-center gap-2 text-sm font-medium text-orange-600">
+            <p className="flex items-center gap-2 text-sm font-medium text-indigo-600">
               <Settings size={16} />
               Settings
             </p>
@@ -122,7 +122,7 @@ export default function SettingAdminPage() {
             </button>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
             >
               <Save size={18} />
               Save settings
@@ -143,7 +143,7 @@ export default function SettingAdminPage() {
                 {/* Date of Birth with styled date picker */}
                 <label className="block">
                   <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
-                    <Calendar size={14} className="text-orange-500" />
+                    <Calendar size={14} className="text-indigo-500" />
                     Date of Birth
                   </span>
                   <div className="relative mt-2">
@@ -152,7 +152,7 @@ export default function SettingAdminPage() {
                       type="date"
                       value={profile.dateOfBirth}
                       onChange={updateProfile}
-                      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition appearance-none cursor-pointer focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                      className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition appearance-none cursor-pointer focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                     />
                   </div>
                 </label>
@@ -165,7 +165,7 @@ export default function SettingAdminPage() {
                       value={profile.bio}
                       onChange={updateProfile}
                       placeholder="Write a short bio about yourself..."
-                      className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                      className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                     />
                   </label>
                 </div>
@@ -241,7 +241,7 @@ function SectionTitle({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="rounded-lg bg-orange-50 p-2 text-orange-600 ring-1 ring-orange-100">{icon}</div>
+      <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600 ring-1 ring-indigo-100">{icon}</div>
       <div>
         <h2 className="text-lg font-semibold text-slate-950">{title}</h2>
         <p className="mt-1 text-sm text-slate-500">{description}</p>
@@ -271,7 +271,7 @@ function Input({
         value={value}
         type={type}
         onChange={onChange}
-        className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+        className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
       />
     </label>
   );
@@ -297,7 +297,7 @@ function Select({
         name={name}
         value={value}
         onChange={onChange}
-        className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+        className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
       >
         {options.map((option) => (
           <option key={option} value={option}>
@@ -325,7 +325,7 @@ function Toggle({
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="h-5 w-5 rounded border-slate-300 text-orange-500 focus:ring-orange-500"
+        className="h-5 w-5 rounded border-slate-300 text-indigo-500 focus:ring-indigo-500"
       />
     </label>
   );

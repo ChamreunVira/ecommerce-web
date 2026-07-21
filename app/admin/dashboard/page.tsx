@@ -77,7 +77,7 @@ export default function DashboardPage() {
       trend: "up",
       caption: "vs. last month",
       icon: <BadgeDollarSign size={22} />,
-      accent: "bg-orange-50 text-orange-600 ring-orange-100",
+      accent: "bg-indigo-50 text-indigo-600 ring-indigo-100",
     },
     {
       label: "Orders",
@@ -197,7 +197,7 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-8">
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
-            <p className="text-sm font-medium text-orange-600">Overview</p>
+            <p className="text-sm font-medium text-indigo-600">Overview</p>
             <h2 className="mt-2 text-3xl font-semibold tracking-normal text-slate-950">
               Ecommerce performance
             </h2>
@@ -312,7 +312,7 @@ export default function DashboardPage() {
                     Ready to settle with providers
                   </p>
                 </div>
-                <CreditCard className="text-orange-400" size={24} />
+                <CreditCard className="text-indigo-400" size={24} />
               </div>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="rounded-lg bg-white/10 p-4">
@@ -343,9 +343,9 @@ export default function DashboardPage() {
                 <Link
                   key={action.label}
                   href={action.href}
-                  className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-orange-200 hover:bg-orange-50/60"
+                  className="group flex items-center gap-4 rounded-lg border border-slate-200 p-4 transition hover:border-indigo-200 hover:bg-indigo-50/60"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-orange-500 group-hover:text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 transition group-hover:bg-indigo-500 group-hover:text-white">
                     {action.icon}
                   </span>
                   <span className="min-w-0">
@@ -373,7 +373,7 @@ export default function DashboardPage() {
               </div>
               <Link
                 href="/admin/order"
-                className="text-sm font-semibold text-orange-600 hover:text-orange-700"
+                className="text-sm font-semibold text-indigo-600 hover:text-indigo-700"
               >
                 View all
               </Link>

@@ -154,7 +154,7 @@ export default function CreateProductModal({
             form="create-product-form"
             disabled={isLoading}
             type="submit"
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Plus size={16} />
             {isLoading ? "Creating..." : "Create product"}
@@ -180,7 +180,7 @@ export default function CreateProductModal({
               name="categoryId"
               value={productData.categoryId}
               onChange={handleProductFieldsChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
               required
             >
               <option value="">Select a category</option>
@@ -206,7 +206,7 @@ export default function CreateProductModal({
               placeholder="Wireless headphone"
               name="name"
               value={productData.name}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
               required
             />
           </div>
@@ -229,7 +229,7 @@ export default function CreateProductModal({
               name="price"
               value={productData.price}
               onChange={handleProductFieldsChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
               required
             />
           </div>
@@ -250,7 +250,7 @@ export default function CreateProductModal({
               name="discount"
               value={productData.discount}
               onChange={handleProductFieldsChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             />
           </div>
 
@@ -266,7 +266,7 @@ export default function CreateProductModal({
               name="qty"
               value={productData.qty}
               onChange={handleProductFieldsChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
               required
             />
           </div>
@@ -286,7 +286,7 @@ export default function CreateProductModal({
             value={productData.description}
             onChange={handleProductFieldsChange}
             rows={4}
-            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500"
+            className="mt-2 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500"
             required
           />
         </div>
@@ -300,7 +300,7 @@ export default function CreateProductModal({
           </label>
           <label
             htmlFor="images"
-            className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-orange-300 hover:bg-orange-50/40"
+            className="mt-2 flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center transition hover:border-indigo-300 hover:bg-indigo-50/40"
           >
             <ImagePlus className="text-slate-400" size={28} />
             <span className="mt-2 text-sm font-medium text-slate-700">

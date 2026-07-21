@@ -136,7 +136,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
             form="promotion-form"
             type="submit"
             disabled={isSaving}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isEditing ? <Save size={16} /> : <Plus size={16} />}
             {isSaving ? (isEditing ? "Saving..." : "Creating...") : isEditing ? "Save changes" : "Create promotion"}
@@ -157,7 +157,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               value={formData.code}
               onChange={handleChange}
               placeholder="vira168"
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               required
             />
           </div>
@@ -171,7 +171,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             >
               <option value="PERCENTAGE">Percentage</option>
               <option value="FIXED_AMOUNT">Fixed amount</option>
@@ -190,7 +190,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               min="0"
               value={formData.value}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               required
             />
           </div>
@@ -206,7 +206,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               min="0"
               value={formData.minimumOrder}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               required
             />
           </div>
@@ -222,7 +222,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               min="1"
               value={formData.usageLimit}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               required
             />
           </div>
@@ -236,7 +236,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
             >
               <option value="ACTIVE">Active</option>
               <option value="SCHEDULED">Scheduled</option>
@@ -256,7 +256,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               type="datetime-local"
               value={formData.startAt}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               required
             />
           </div>
@@ -271,7 +271,7 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
               type="datetime-local"
               value={formData.expiryAt}
               onChange={handleChange}
-              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+              className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               required
             />
           </div>

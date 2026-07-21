@@ -65,7 +65,7 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
           .toUpperCase();
         return (
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-600">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600">
               {initials}
             </div>
             <div className="min-w-0">

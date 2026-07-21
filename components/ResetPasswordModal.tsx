@@ -142,7 +142,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     className={`w-full rounded-xl border pr-10 px-4 py-3 text-slate-800 placeholder-slate-400 bg-slate-50 focus:bg-white outline-none transition-all
                       ${passwordErrors.tooShort
                         ? "border-rose-400 focus:ring-2 focus:ring-rose-100"
-                        : "border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                        : "border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                       }`}
                   />
                   <button
@@ -196,7 +196,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
                     className={`w-full rounded-xl border pr-10 px-4 py-3 text-slate-800 placeholder-slate-400 bg-slate-50 focus:bg-white outline-none transition-all
                       ${passwordErrors.noMatch
                         ? "border-rose-400 focus:ring-2 focus:ring-rose-100"
-                        : "border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                        : "border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                       }`}
                   />
                   <button

@@ -83,7 +83,7 @@ const UserAdminPage = () => {
   const statCards = [
     { label: "Total Users", value: users.length, color: "text-slate-900" },
     { label: "Customers", value: customers, color: "text-emerald-600" },
-    { label: "Admins", value: admins, color: "text-orange-600" },
+    { label: "Admins", value: admins, color: "text-indigo-600" },
   ];
 
   return (
@@ -110,7 +110,7 @@ const UserAdminPage = () => {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
         >
           <Plus size={16} />
           Add User
@@ -119,9 +119,9 @@ const UserAdminPage = () => {
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-12 lg:grid-cols-3">
-        <StatsCard icon={<Users className="text-orange-500" size={30} />} accent="bg-orange-50" label="Total Users" value={users.length} trend={+2} />
-        <StatsCard icon={<UserStarIcon className="text-orange-500" size={30} />} accent="bg-orange-50" label="Customers" value={customers} trend={+2} />
-        <StatsCard icon={<UserKey className="text-orange-500" size={30} />} accent="bg-orange-50" label="Admins" value={admins} trend={+2} />
+        <StatsCard icon={<Users className="text-indigo-500" size={30} />} accent="bg-indigo-50" label="Total Users" value={users.length} trend={+2} />
+        <StatsCard icon={<UserStarIcon className="text-indigo-500" size={30} />} accent="bg-indigo-50" label="Customers" value={customers} trend={+2} />
+        <StatsCard icon={<UserKey className="text-indigo-500" size={30} />} accent="bg-indigo-50" label="Admins" value={admins} trend={+2} />
       </div>
 
       {/* Table */}

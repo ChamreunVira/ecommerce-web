@@ -5,6 +5,7 @@ import StatsCard from "@/components/StatsCard";
 import { useEffect, useState } from "react";
 import { Review } from "@/types/review";
 import { reviewService } from "@/services/review-service";
+import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
 
 // type Review = {
 //   id: string;
@@ -85,37 +86,35 @@ export default function ReviewsPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatsCard icon={<Star className="text-amber-500" />} accent="bg-amber-50" label="Avg Rating" value={`${avgRating.toFixed(1)} ★`} trend={+1} />
         <StatsCard icon={<ThumbsUp className="text-emerald-500" />} accent="bg-emerald-50" label="Published" value={published} trend={+2} />
-        <StatsCard icon={<MessageSquare className="text-orange-500" />} accent="bg-orange-50" label="Pending" value={pending} trend={0} />
+        <StatsCard icon={<MessageSquare className="text-indigo-500" />} accent="bg-indigo-50" label="Pending" value={pending} trend={0} />
         <StatsCard icon={<ThumbsDown className="text-rose-500" />} accent="bg-rose-50" label="Hidden" value={hidden} trend={0} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-5 py-4 font-semibold">Customer</th>
-              <th className="px-5 py-4 font-semibold">Product</th>
-              <th className="px-5 py-4 font-semibold">Rating</th>
-              <th className="px-5 py-4 font-semibold">Comment</th>
-              <th className="px-5 py-4 font-semibold">Status</th>
-              <th className="px-5 py-4 font-semibold">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <Table>
+          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <THeading className="px-5 py-4 font-semibold">Customer</THeading>
+            <THeading className="px-5 py-4 font-semibold">Product</THeading>
+            <THeading className="px-5 py-4 font-semibold">Rating</THeading>
+            <THeading className="px-5 py-4 font-semibold">Comment</THeading>
+            <THeading className="px-5 py-4 font-semibold">Status</THeading>
+            <THeading className="px-5 py-4 font-semibold">Date</THeading>
+          </Thead>
+          <TBody className="divide-y divide-slate-100">
             {reviews.map(r => (
               <tr key={r.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-semibold text-slate-900">{r.customer.name}</td>
-                <td className="px-5 py-4 text-slate-600 max-w-40 truncate">{r.product.name}</td>
-                <td className="px-5 py-4"><StarRating rating={r.rating} /></td>
-                <td className="px-5 py-4 text-slate-500 italic max-w-65 truncate">"{r.comment}"</td>
-                <td className="px-5 py-4">
+                <TCell className="px-5 py-4 font-semibold text-slate-900">{r.customer.name}</TCell>
+                <TCell className="px-5 py-4 text-slate-600 max-w-40 truncate">{r.product.name}</TCell>
+                <TCell className="px-5 py-4"><StarRating rating={r.rating} /></TCell>
+                <TCell className="px-5 py-4 text-slate-500 italic max-w-65 truncate">"{r.comment}"</TCell>
+                <TCell className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[r.status]}`}>{r.status}</span>
-                </td>
-                <td className="px-5 py-4 text-slate-500">{r.createdAt}</td>
+                </TCell>
+                <TCell className="px-5 py-4 text-slate-500">{r.createdAt}</TCell>
               </tr>
             ))}
-          </tbody>
-        </table>
+          </TBody>
+        </Table>
       </div>
     </div>
   );

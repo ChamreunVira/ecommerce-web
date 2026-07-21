@@ -5,6 +5,7 @@ import StatsCard from "@/components/StatsCard";
 import { StockItem } from "@/types/stock-item";
 import { useEffect, useState } from "react";
 import { inventoryService } from "@/services/inventory-service";
+import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
 
 // type StockItem = {
 //   id: number;
@@ -68,50 +69,48 @@ export default function InventoryPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-            <Warehouse className="text-orange-500" size={24} /> Inventory Management
+            <Warehouse className="text-indigo-500" size={24} /> Inventory Management
           </h1>
           <p className="mt-1 text-sm text-slate-500">Track stock levels, reserve units, and manage reorder points.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon={<Package className="text-orange-500" />} accent="bg-orange-50" label="Total SKUs" value={total} trend={0} />
+        <StatsCard icon={<Package className="text-indigo-500" />} accent="bg-indigo-50" label="Total SKUs" value={total} trend={0} />
         <StatsCard icon={<Package className="text-emerald-500" />} accent="bg-emerald-50" label="In Stock" value={inStock} trend={+1} />
         <StatsCard icon={<TrendingDown className="text-amber-500" />} accent="bg-amber-50" label="Low Stock" value={lowStock} trend={-1} />
         <StatsCard icon={<PackageX className="text-rose-500" />} accent="bg-rose-50" label="Out of Stock" value={outOfStock} trend={-2} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-5 py-4 font-semibold">#</th>
-              <th className="px-5 py-4 font-semibold">Product</th>
-              <th className="px-5 py-4 font-semibold">Category</th>
-              <th className="px-5 py-4 font-semibold text-center">Qty</th>
-              {/* <th className="px-5 py-4 font-semibold text-center">Reserved</th> */}
-              <th className="px-5 py-4 font-semibold text-center">Reorder At</th>
-              <th className="px-5 py-4 font-semibold">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <Table>
+          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <THeading className="px-5 py-4 font-semibold">#</THeading>
+            <THeading className="px-5 py-4 font-semibold">Product</THeading>
+            <THeading className="px-5 py-4 font-semibold">Category</THeading>
+            <THeading className="px-5 py-4 font-semibold text-center">Qty</THeading>
+            {/* <THeading className="px-5 py-4 font-semibold text-center">Reserved</THeading> */}
+            <THeading className="px-5 py-4 font-semibold text-center">Reorder At</THeading>
+            <THeading className="px-5 py-4 font-semibold">Status</THeading>
+          </Thead>
+          <TBody className="divide-y divide-slate-100">
             {inventories.map(item => (
               <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-semibold text-slate-900">{"INV" + "-" + item.id.toString().padStart(4, "0")}</td>
-                <td className="px-5 py-4 font-semibold text-slate-900">{item.name}</td>
-                <td className="px-5 py-4 text-slate-500">{item.category}</td>
-                <td className="px-5 py-4 text-center font-bold text-slate-800">{item.qty}</td>
-                {/* <td className="px-5 py-4 text-center text-slate-500">{item.reserved}</td> */}
-                <td className="px-5 py-4 text-center text-slate-500">{item.reorderPoint}</td>
-                <td className="px-5 py-4">
+                <TCell className="px-5 py-4 font-semibold text-slate-900">{"INV" + "-" + item.id.toString().padStart(4, "0")}</TCell>
+                <TCell className="px-5 py-4 font-semibold text-slate-900">{item.name}</TCell>
+                <TCell className="px-5 py-4 text-slate-500">{item.category}</TCell>
+                <TCell className="px-5 py-4 text-center font-bold text-slate-800">{item.qty}</TCell>
+                {/* <TCell className="px-5 py-4 text-center text-slate-500">{item.reserved}</TCell> */}
+                <TCell className="px-5 py-4 text-center text-slate-500">{item.reorderPoint}</TCell>
+                <TCell className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[item.status]}`}>
                     {item.status}
                   </span>
-                </td>
+                </TCell>
               </tr>
             ))}
-          </tbody>
-        </table>
+          </TBody>
+        </Table>
       </div>
     </div>
   );

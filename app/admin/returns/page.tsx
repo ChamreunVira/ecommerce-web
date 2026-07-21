@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { ChevronRight, Home, RotateCcw, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
+import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
 
 type Return = {
   id: string;
@@ -45,7 +46,7 @@ export default function ReturnsPage() {
 
       <div>
         <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-          <RotateCcw className="text-orange-500" size={24} /> Returns & Refunds
+          <RotateCcw className="text-indigo-500" size={24} /> Returns & Refunds
         </h1>
         <p className="mt-1 text-sm text-slate-500">Manage return requests and issue refunds to customers.</p>
       </div>
@@ -57,37 +58,35 @@ export default function ReturnsPage() {
         <StatsCard icon={<XCircle className="text-rose-500" />} accent="bg-rose-50" label="Rejected" value={rejected} trend={0} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <tr>
-              <th className="px-5 py-4 font-semibold">Return ID</th>
-              <th className="px-5 py-4 font-semibold">Order</th>
-              <th className="px-5 py-4 font-semibold">Customer</th>
-              <th className="px-5 py-4 font-semibold">Product</th>
-              <th className="px-5 py-4 font-semibold">Reason</th>
-              <th className="px-5 py-4 font-semibold text-right">Amount</th>
-              <th className="px-5 py-4 font-semibold">Status</th>
-              <th className="px-5 py-4 font-semibold">Date</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <Table>
+          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <THeading className="px-5 py-4 font-semibold">Return ID</THeading>
+            <THeading className="px-5 py-4 font-semibold">Order</THeading>
+            <THeading className="px-5 py-4 font-semibold">Customer</THeading>
+            <THeading className="px-5 py-4 font-semibold">Product</THeading>
+            <THeading className="px-5 py-4 font-semibold">Reason</THeading>
+            <THeading className="px-5 py-4 font-semibold text-right">Amount</THeading>
+            <THeading className="px-5 py-4 font-semibold">Status</THeading>
+            <THeading className="px-5 py-4 font-semibold">Date</THeading>
+          </Thead>
+          <TBody className="divide-y divide-slate-100">
             {mockReturns.map(r => (
               <tr key={r.id} className="hover:bg-slate-50/50 transition-colors">
-                <td className="px-5 py-4 font-mono text-xs text-slate-500">{r.id}</td>
-                <td className="px-5 py-4 font-semibold text-slate-800">{r.orderCode}</td>
-                <td className="px-5 py-4 text-slate-700">{r.customer}</td>
-                <td className="px-5 py-4 text-slate-600 max-w-[180px] truncate">{r.product}</td>
-                <td className="px-5 py-4 text-slate-500 italic text-xs max-w-[180px] truncate">{r.reason}</td>
-                <td className="px-5 py-4 text-right font-bold text-slate-900">${r.amount.toFixed(2)}</td>
-                <td className="px-5 py-4">
+                <TCell className="px-5 py-4 font-mono text-xs text-slate-500">{r.id}</TCell>
+                <TCell className="px-5 py-4 font-semibold text-slate-800">{r.orderCode}</TCell>
+                <TCell className="px-5 py-4 text-slate-700">{r.customer}</TCell>
+                <TCell className="px-5 py-4 text-slate-600 max-w-[180px] truncate">{r.product}</TCell>
+                <TCell className="px-5 py-4 text-slate-500 italic text-xs max-w-[180px] truncate">{r.reason}</TCell>
+                <TCell className="px-5 py-4 text-right font-bold text-slate-900">${r.amount.toFixed(2)}</TCell>
+                <TCell className="px-5 py-4">
                   <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[r.status]}`}>{r.status}</span>
-                </td>
-                <td className="px-5 py-4 text-slate-500">{r.requestedAt}</td>
+                </TCell>
+                <TCell className="px-5 py-4 text-slate-500">{r.requestedAt}</TCell>
               </tr>
             ))}
-          </tbody>
-        </table>
+          </TBody>
+        </Table>
       </div>
     </div>
   );

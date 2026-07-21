@@ -144,14 +144,14 @@ const HomeProduct = () => {
     <>
       {/* Orange range-slider theme */}
       <style>{`
-        .hp-orange-slider .range-slider__range { background: #f97316; }
-        .hp-orange-slider .range-slider__thumb { background: #f97316; border: 2px solid #fff; box-shadow: 0 0 0 2px #f97316; }
+        .hp-indigo-slider .range-slider__range { background: #f97316; }
+        .hp-indigo-slider .range-slider__thumb { background: #f97316; border: 2px solid #fff; box-shadow: 0 0 0 2px #f97316; }
       `}</style>
 
       <div className="flex flex-col items-center pt-14">
 
         <div className="w-full mb-6 flex flex-col gap-0.5">
-          <p className="text-sm font-semibold text-orange-600 uppercase tracking-wide">
+          <p className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
             Discover
           </p>
           <h2 className="text-2xl font-bold text-gray-900">Popular Products</h2>
@@ -162,8 +162,8 @@ const HomeProduct = () => {
             type="button"
             onClick={() => setSelectedCategory("")}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${selectedCategory === ""
-                ? "bg-orange-500 text-white shadow-sm"
-                : "bg-gray-100 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-600"
+                ? "bg-indigo-500 text-white shadow-sm"
+                : "bg-gray-100 text-gray-600 border border-gray-200 hover:border-indigo-300 hover:text-indigo-600"
               }`}
           >
             All Products
@@ -176,8 +176,8 @@ const HomeProduct = () => {
               type="button"
               onClick={() => setSelectedCategory(cat.name)}
               className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all ${selectedCategory === cat.name
-                  ? "bg-orange-500 text-white shadow-sm"
-                  : "bg-gray-100 text-gray-600 border border-gray-200 hover:border-orange-300 hover:text-orange-600"
+                  ? "bg-indigo-500 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-600 border border-gray-200 hover:border-indigo-300 hover:text-indigo-600"
                 }`}
             >
               {cat.name}
@@ -190,7 +190,7 @@ const HomeProduct = () => {
           <button
             type="button"
             onClick={() => { setSelectedCategory(""); router.push("/products"); }}
-            className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:border-orange-400 hover:text-orange-600 transition-all"
+            className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold border border-gray-300 bg-white text-gray-700 hover:border-indigo-400 hover:text-indigo-600 transition-all"
           >
             See all
             <span>
@@ -210,8 +210,8 @@ const HomeProduct = () => {
                 aria-label={label}
                 onClick={() => setViewCols(cols)}
                 className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all ${viewCols === cols
-                    ? "bg-orange-500 text-white shadow-sm"
-                    : "border border-gray-200 bg-white text-gray-500 hover:border-orange-300 hover:text-orange-500"
+                    ? "bg-indigo-500 text-white shadow-sm"
+                    : "border border-gray-200 bg-white text-gray-500 hover:border-indigo-300 hover:text-indigo-500"
                   }`}
               >
                 {icon}
@@ -226,8 +226,8 @@ const HomeProduct = () => {
             type="button"
             onClick={() => setFiltersOpen((p) => !p)}
             className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold transition-all ${filtersOpen
-                ? "bg-orange-500 text-white shadow-sm"
-                : "border border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-600"
+                ? "bg-indigo-500 text-white shadow-sm"
+                : "border border-gray-200 bg-white text-gray-600 hover:border-indigo-300 hover:text-indigo-600"
               }`}
           >
             <Filter className="h-4 w-4" />
@@ -239,7 +239,7 @@ const HomeProduct = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-orange-500 cursor-pointer"
+              className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-indigo-500 cursor-pointer"
             >
               <option value="name">Name (A-Z)</option>
               <option value="name-desc">Name (Z-A)</option>
@@ -247,7 +247,7 @@ const HomeProduct = () => {
               <option value="price-high">Price: High to Low</option>
               <option value="latest">Latest</option>
             </select>
-            <span className="whitespace-nowrap rounded-full bg-orange-100 px-3 py-1 text-sm font-semibold text-orange-700">
+            <span className="whitespace-nowrap rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700">
               {displayedProducts.length} products
             </span>
           </div>
@@ -266,7 +266,7 @@ const HomeProduct = () => {
               {/* Price Range */}
               <div className="flex flex-col gap-3">
                 <h4 className="text-sm font-semibold text-gray-800">💰 Price Range</h4>
-                <div className="hp-orange-slider">
+                <div className="hp-indigo-slider">
                   <RangeSlider
                     min={0}
                     max={1000}
@@ -282,7 +282,7 @@ const HomeProduct = () => {
                     max={priceRange[1]}
                     value={priceRange[0]}
                     onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm text-gray-700 outline-none focus:border-orange-500"
+                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm text-gray-700 outline-none focus:border-indigo-500"
                     placeholder="Min"
                   />
                   <input
@@ -291,11 +291,11 @@ const HomeProduct = () => {
                     max={1000}
                     value={priceRange[1]}
                     onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm text-gray-700 outline-none focus:border-orange-500"
+                    className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-sm text-gray-700 outline-none focus:border-indigo-500"
                     placeholder="Max"
                   />
                 </div>
-                <span className="inline-flex w-fit rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
+                <span className="inline-flex w-fit rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
                   ${priceRange[0]} – ${priceRange[1]}
                 </span>
               </div>
@@ -306,7 +306,7 @@ const HomeProduct = () => {
                 <select
                   value={stockStatus}
                   onChange={(e) => setStockStatus(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-orange-500 cursor-pointer"
+                  className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="all">All Products</option>
                   <option value="in-stock">In Stock</option>
@@ -320,7 +320,7 @@ const HomeProduct = () => {
                 <select
                   value={quality}
                   onChange={(e) => setQuality(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-orange-500 cursor-pointer"
+                  className="h-10 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-indigo-500 cursor-pointer"
                 >
                   <option value="all">All Products</option>
                   <option value="top-rated">Top Rated</option>
@@ -334,7 +334,7 @@ const HomeProduct = () => {
                 <button
                   type="button"
                   onClick={() => setFiltersOpen(false)}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 active:scale-95"
+                  className="flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-600 active:scale-95"
                 >
                   <Sparkles className="h-4 w-4" />
                   Apply Filters ({displayedProducts.length})
@@ -360,7 +360,7 @@ const HomeProduct = () => {
           </div>
         ) : (
           <div className="w-full rounded-xl border border-gray-100 bg-white px-6 py-16 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-orange-400">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 text-indigo-400">
               <LayoutGrid className="h-7 w-7" />
             </div>
             <p className="text-base font-semibold text-gray-800">No products found</p>
@@ -368,7 +368,7 @@ const HomeProduct = () => {
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-5 rounded-lg bg-orange-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-600"
+              className="mt-5 rounded-lg bg-indigo-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600"
             >
               Clear filters
             </button>
@@ -377,7 +377,7 @@ const HomeProduct = () => {
 
         <button
           onClick={() => router.push("/products")}
-          className="mt-4 mb-4 rounded-full cursor-pointer border border-orange-200 bg-orange-50 px-12 py-2.5 text-sm font-semibold text-orange-700 transition hover:bg-orange-500 hover:text-white hover:border-orange-500"
+          className="mt-4 mb-4 rounded-full cursor-pointer border border-indigo-200 bg-indigo-50 px-12 py-2.5 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-500 hover:text-white hover:border-indigo-500"
         >
           See more products →
         </button>
