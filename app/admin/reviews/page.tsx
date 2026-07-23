@@ -7,25 +7,6 @@ import { Review } from "@/types/review";
 import { reviewService } from "@/services/review-service";
 import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
 
-// type Review = {
-//   id: string;
-//   customer: string;
-//   product: string;
-//   rating: number;
-//   comment: string;
-//   status: "Published" | "Pending" | "Hidden";
-//   date: string;
-// };
-
-// const mockReviews: Review[] = [
-//   { id: "REV-501", customer: "Virak Chamreun", product: "Wireless Headphones Pro", rating: 5, comment: "Exceptional sound quality and very comfortable. Highly recommended!", status: "Published", date: "2026-07-02" },
-//   { id: "REV-502", customer: "Socheata Lim", product: "Running Shoes X500", rating: 2, comment: "Sizing is way off. Expected a 40 but received something closer to a 38.", status: "Pending", date: "2026-07-02" },
-//   { id: "REV-503", customer: "Dara Pich", product: "Mechanical Keyboard RGB", rating: 4, comment: "Great keyboard, the RGB lighting is gorgeous. Slightly loud for offices.", status: "Published", date: "2026-07-01" },
-//   { id: "REV-504", customer: "Bopha Keo", product: "Slim Fit Jeans", rating: 1, comment: "Terrible quality, fabric is very thin and tore on first wear.", status: "Hidden", date: "2026-06-30" },
-//   { id: "REV-505", customer: "Rathana Mao", product: "USB-C Hub 7-in-1", rating: 5, comment: "Works perfectly with my MacBook Pro. All ports function as expected.", status: "Published", date: "2026-06-29" },
-//   { id: "REV-506", customer: "Piseth Nhem", product: "Yoga Mat Pro", rating: 3, comment: "Decent mat, but gets slippery when sweating a lot during hot yoga.", status: "Pending", date: "2026-06-28" },
-// ];
-
 const statusStyle: Record<Review["status"], string> = {
   PUBLISHED: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   PENDING: "bg-amber-50 text-amber-700 ring-amber-200",
@@ -49,7 +30,7 @@ export default function ReviewsPage() {
   const published = reviews.filter(r => r.status === "PUBLISHED").length;
   const pending = reviews.filter(r => r.status === "PENDING").length;
   const hidden = reviews.filter(r => r.status === "HIDDEN").length;
-  const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+  const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length === 0 ? 1 : reviews.length;
 
 
   const handleFetchReviews = async () => {

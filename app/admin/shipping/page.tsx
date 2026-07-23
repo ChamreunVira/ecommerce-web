@@ -6,18 +6,21 @@ import { useEffect, useState } from "react";
 import { shipmentService } from "@/services/shipment-service";
 import { Shipment } from "@/types/shipment";
 import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
+import ShipmentModal from "@/components/ShipmentModal";
 
 const statusStyle: Record<Shipment["status"], string> = {
   PENDING: "bg-sky-50 text-sky-700 ring-sky-200",
-  IN_TRANSIT: "bg-indigo-50 text-indigo-700 ring-indigo-200",
+  IN_TRANSMIT: "bg-indigo-50 text-indigo-700 ring-indigo-200",
   CANCELLED: "bg-rose-50 text-rose-700 ring-rose-200",
   DELIVERED: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   DELAYED: "bg-rose-50 text-rose-700 ring-rose-200",
 };
 
 export default function ShippingPage() {
-  const [shipments , setShipments] = useState<Shipment[]>([]);
-  const inTransit = shipments?.filter(s => s.status === "IN_TRANSIT").length ?? 0;
+  const [shipments, setShipments] = useState<Shipment[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const inTransit = shipments?.filter(s => s.status === "IN_TRANSMIT").length ?? 0;
   const delivered = shipments?.filter(s => s.status === "DELIVERED").length ?? 0;
   const dispatched = shipments?.filter(s => s.status === "PENDING").length ?? 0;
   const delayed = shipments?.filter(s => s.status === "DELAYED").length ?? 0;
@@ -25,10 +28,10 @@ export default function ShippingPage() {
   const handleFetchShipments = async () => {
     try {
       const response = await shipmentService.getAll();
-      if(response.success) {
+      if (response.success) {
         setShipments(response.data);
       }
-    }catch(e: any) {
+    } catch (e: any) {
       console.log("Error fetching shipments: ", e.message);
     }
   }
@@ -36,7 +39,7 @@ export default function ShippingPage() {
   useEffect(() => {
     handleFetchShipments();
     return () => new AbortController().abort();
-  } , []);
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
@@ -90,6 +93,9 @@ export default function ShippingPage() {
           </TBody>
         </Table>
       </div>
+
+      {isModalOpen && (<ShipmentModal handleCloseAction={() => setIsModalOpen(!isModalOpen)} onCreateSuccessAction={() => { }} />)}
+
     </div>
   );
 }

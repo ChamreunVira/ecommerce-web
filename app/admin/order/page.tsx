@@ -60,22 +60,22 @@ const OrderAdminPage = () => {
       trend: +1,
     },
     {
-      icon: <Clock className="text-indigo-500" />,
-      accent: "bg-indigo-50",
+      icon: <Clock className="text-amber-500" />,
+      accent: "bg-amber-50",
       label: "Pending",
       value: orders.filter((o) => o.status === "PENDING").length,
       trend: +3
     },
     {
-      icon: <Truck className="text-indigo-500" />,
-      accent: "bg-indigo-50",
+      icon: <Truck className="text-mauve-50-500" />,
+      accent: "bg-mauve-50",
       label: "Delivered",
       value: orders.filter((o) => o.status === "DELIVERED").length,
       trend: +10
     },
     {
-      icon: <PackageMinusIcon className="text-indigo-500" />,
-      accent: "bg-indigo-50",
+      icon: <PackageMinusIcon className="text-rose-500" />,
+      accent: "bg-rose-50",
       label: "Cancelled",
       value: orders.filter((o) => o.status === "CANCELLED").length,
       trend: -1
@@ -101,6 +101,7 @@ const OrderAdminPage = () => {
         <div>
           <h1 className="text-2xl font-semibold text-slate-950">Orders List</h1>
           <p className="mt-1 text-sm text-slate-500">
+
             Here you can find all of your Orders
           </p>
         </div>

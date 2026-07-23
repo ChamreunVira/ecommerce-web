@@ -16,53 +16,133 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
       <Sidbar>
-        {/* Standalone */}
-        <SidebarItem icon={<LayoutDashboard size={18} />} label="Dashboard" active={is("/admin/dashboard")} path="/admin/dashboard" />
+        {/* Overview */}
+        <SidebarItem
+          icon={<LayoutDashboard size={18} />}
+          label="Dashboard"
+          active={is("/admin/dashboard")}
+          path="/admin/dashboard"
+        />
 
-        {/* Catalog group */}
+        {/* Sales */}
+        <SidebarItem
+          icon={<ShoppingCart size={18} />}
+          label="Orders"
+          active={is("/admin/order")}
+          path="/admin/order"
+        />
+
+        {/* Catalog */}
         <SidebarGroup
           label="Catalog"
-          icon={<BookOpen size={18} />}
-          defaultOpen={["/admin/user", "/admin/product", "/admin/inventory", "/admin/category"].includes(pathName)}
+          icon={<Package size={18} />}
+          defaultOpen={[
+            "/admin/product",
+            "/admin/category",
+            "/admin/inventory",
+          ].includes(pathName)}
         >
-          <SidebarItem icon={<Users size={18} />} label="Customers" active={is("/admin/user")} path="/admin/user" />
-          <SidebarItem icon={<Package size={18} />} label="Products" active={is("/admin/product")} path="/admin/product" />
-          <SidebarItem icon={<Warehouse size={18} />} label="Inventory" active={is("/admin/inventory")} path="/admin/inventory" />
-          <SidebarItem icon={<Tags size={18} />} label="Categories" active={is("/admin/category")} path="/admin/category" />
+          <SidebarItem
+            icon={<Package size={18} />}
+            label="Products"
+            active={is("/admin/product")}
+            path="/admin/product"
+          />
+
+          <SidebarItem
+            icon={<Tags size={18} />}
+            label="Categories"
+            active={is("/admin/category")}
+            path="/admin/category"
+          />
+
+          <SidebarItem
+            icon={<Warehouse size={18} />}
+            label="Inventory"
+            active={is("/admin/inventory")}
+            path="/admin/inventory"
+          />
         </SidebarGroup>
 
-        {/* Operations group */}
+        {/* Customers */}
+        <SidebarItem
+          icon={<Users size={18} />}
+          label="Customers"
+          active={is("/admin/user")}
+          path="/admin/user"
+        />
+
+        {/* Finance */}
+        <SidebarItem
+          icon={<CreditCard size={18} />}
+          label="Payments"
+          active={is("/admin/payment")}
+          path="/admin/payment"
+        />
+
+        {/* Logistics */}
         <SidebarGroup
-          label="Operations"
-          icon={<Briefcase size={18} />}
-          defaultOpen={["/admin/order", "/admin/payment", "/admin/shipping", "/admin/returns"].includes(pathName)}
+          label="Logistics"
+          icon={<Truck size={18} />}
+          defaultOpen={[
+            "/admin/shipping",
+            "/admin/returns",
+          ].includes(pathName)}
         >
-          <SidebarItem icon={<ShoppingCart size={18} />} label="Orders" active={is("/admin/order")} path="/admin/order" />
-          <SidebarItem icon={<CreditCard size={18} />} label="Payments" active={is("/admin/payment")} path="/admin/payment" />
-          <SidebarItem icon={<Truck size={18} />} label="Shipping" active={is("/admin/shipping")} path="/admin/shipping" />
-          <SidebarItem icon={<RotateCcw size={18} />} label="Returns" active={is("/admin/returns")} path="/admin/returns" />
+          <SidebarItem
+            icon={<Truck size={18} />}
+            label="Shipping"
+            active={is("/admin/shipping")}
+            path="/admin/shipping"
+          />
+
+          <SidebarItem
+            icon={<RotateCcw size={18} />}
+            label="Returns"
+            active={is("/admin/returns")}
+            path="/admin/returns"
+          />
         </SidebarGroup>
 
-        {/* Growth group */}
+        {/* Marketing */}
         <SidebarGroup
-          label="Growth"
+          label="Marketing"
           icon={<TrendingUp size={18} />}
-          defaultOpen={["/admin/promotions", "/admin/reports", "/admin/reviews"].includes(pathName)}
+          defaultOpen={[
+            "/admin/promotions",
+            "/admin/reports",
+            "/admin/reviews",
+          ].includes(pathName)}
         >
-          <SidebarItem icon={<Tag size={18} />} label="Promotions" active={is("/admin/promotions")} path="/admin/promotions" />
-          <SidebarItem icon={<BarChart2 size={18} />} label="Reports" active={is("/admin/reports")} path="/admin/reports" />
-          <SidebarItem icon={<Star size={18} />} label="Reviews" active={is("/admin/reviews")} path="/admin/reviews" />
+          <SidebarItem
+            icon={<Tag size={18} />}
+            label="Promotions"
+            active={is("/admin/promotions")}
+            path="/admin/promotions"
+          />
+
+          <SidebarItem
+            icon={<BarChart2 size={18} />}
+            label="Reports"
+            active={is("/admin/reports")}
+            path="/admin/reports"
+          />
+
+          <SidebarItem
+            icon={<Star size={18} />}
+            label="Reviews"
+            active={is("/admin/reviews")}
+            path="/admin/reviews"
+          />
         </SidebarGroup>
 
-        {/* System */}
-        <SidebarGroup
-          label="System"
-          icon={<Monitor size={18} />}
-          defaultOpen={["/admin/audit-log", "/admin/setting"].includes(pathName)}
-        >
-          <SidebarItem icon={<ClipboardList size={18} />} label="Audit Log" active={is("/admin/audit-log")} path="/admin/audit-log" />
-          <SidebarItem icon={<Settings size={18} />} label="Settings" active={is("/admin/setting")} path="/admin/setting" />
-        </SidebarGroup>
+        {/* Audit */}
+        <SidebarItem
+          icon={<ClipboardList size={18} />}
+          label="Audit Log"
+          active={is("/admin/audit-log")}
+          path="/admin/audit-log"
+        />
       </Sidbar>
 
       <main className="flex min-w-0 flex-1 flex-col bg-slate-50">

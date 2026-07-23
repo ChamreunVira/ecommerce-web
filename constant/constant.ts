@@ -20,6 +20,14 @@ export enum PaymentStatus {
     FAILED = "FAILED"
 }
 
+export enum ShipmentStatus {
+    PENDING = "PENDING",
+    IN_TRANSMIT = "IN_TRANSMIT",
+    DELAYED = "DELAYED",
+    DELIVERED = "DELIVERED",
+    CANCELLED = "CANCELLED",
+}
+
 export enum Currency {
     KM = "KHR",
     EN = "USD"
