@@ -1,5 +1,4 @@
 "use client";
-import AdminNavbar from "@/components/AdminNavbar";
 import Sidbar, { SidebarGroup, SidebarItem } from "@/components/Sidbar";
 import {
   LayoutDashboard, ClipboardList, Package, Settings,
@@ -7,6 +6,10 @@ import {
   RotateCcw, Tag, BarChart2, Star, BookOpen, Briefcase, TrendingUp, Monitor
 } from "lucide-react";
 import { usePathname } from "next/navigation";
+//how to import all
+import "@/styles/globals.css"
+import "@/styles/theme.css"
+import "@/styles/typography.css"
 import React from "react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -14,12 +17,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const is = (path: string) => pathName === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex min-h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
       <Sidbar>
         {/* Overview */}
         <SidebarItem
           icon={<LayoutDashboard size={18} />}
-          label="Dashboard"
+          label="Overview"
           active={is("/admin/dashboard")}
           path="/admin/dashboard"
         />
@@ -145,9 +148,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         />
       </Sidbar>
 
-      <main className="flex min-w-0 flex-1 flex-col bg-slate-50">
-        <AdminNavbar />
-        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-6 py-8 md:px-10 lg:px-12">
+      <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+        {/* Header if needed */}
+        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+          {/* header content */}
+        </header>
+
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6">
           {children}
         </div>
       </main>

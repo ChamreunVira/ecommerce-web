@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus, Pencil, Trash } from "lucide-react";
+import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import PromotionModal from "@/components/PromotionModal";
@@ -9,17 +9,18 @@ import { toast } from "react-toastify";
 import { promotionService } from "@/services/promotion-service";
 import { Promotion } from "@/types/promotion";
 import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
+import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
+import { Edit01, Trash01 } from "@untitledui/icons";
 
-const statusStyle: Record<Promotion["status"], string> = {
-  ACTIVE: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  EXPIRED: "bg-rose-50 text-rose-700 ring-rose-200",
-  SCHEDULED: "bg-sky-50 text-sky-700 ring-sky-200",
-  PAUSED: "bg-yellow-50 text-yellow-700 ring-yellow-200",
-  DISABLED: "bg-slate-50 text-slate-700 ring-slate-200",
+const statusMap: Record<Promotion["status"], { color: "success" | "error" | "blue" | "warning" | "gray"; label: string }> = {
+  ACTIVE: { color: "success", label: "Active" },
+  EXPIRED: { color: "error", label: "Expired" },
+  SCHEDULED: { color: "blue", label: "Scheduled" },
+  PAUSED: { color: "warning", label: "Paused" },
+  DISABLED: { color: "gray", label: "Disabled" },
 };
 
 export default function PromotionsPage() {
-
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
@@ -92,24 +93,24 @@ export default function PromotionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <nav className="flex items-center gap-1.5 text-sm text-slate-500">
-        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-slate-800 transition-colors"><Home size={14} /></Link>
-        <ChevronRight size={14} className="text-slate-300" />
-        <span className="font-medium text-slate-700">Promotions</span>
+      <nav className="flex items-center gap-1.5 text-sm text-tertiary">
+        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-primary transition-colors"><Home size={14} /></Link>
+        <ChevronRight size={14} className="text-quaternary" />
+        <span className="font-medium text-primary">Promotions</span>
       </nav>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-            <Tag className="text-indigo-500" size={24} /> Promotions & Coupons
+          <h1 className="text-2xl font-semibold text-primary flex items-center gap-2">
+            <Tag className="text-brand-secondary" size={24} /> Promotions & Coupons
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Create and manage discount codes, promotional offers, and flash sales.</p>
+          <p className="mt-1 text-sm text-tertiary">Create and manage discount codes, promotional offers, and flash sales.</p>
         </div>
 
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-brand-primary_hover"
         >
           <Plus size={16} />
           New promotion
@@ -123,64 +124,69 @@ export default function PromotionsPage() {
         <StatsCard icon={<Percent className="text-rose-500" />} accent="bg-rose-50" label="Expired" value={expired} trend={0} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
-        <Table>
-          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <THeading className="px-5 py-4 font-semibold">Code</THeading>
-            <THeading className="px-5 py-4 font-semibold">Type</THeading>
-            <THeading className="px-5 py-4 font-semibold text-center">Value</THeading>
-            <THeading className="px-5 py-4 font-semibold text-center">Min. Order</THeading>
-            <THeading className="px-5 py-4 font-semibold text-center">Used / Limit</THeading>
-            <THeading className="px-5 py-4 font-semibold">Expiry</THeading>
-            <THeading className="px-5 py-4 font-semibold">Status</THeading>
-            <THeading className="px-5 py-4 font-semibold text-right">Actions</THeading>
-          </Thead>
-          <TBody className="divide-y divide-slate-100">
-            {promotions?.map(p => (
-              <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                <TCell className="px-5 py-4">
-                  <span className="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded text-xs">{p.code}</span>
+      <Table>
+        <Thead>
+          <THeading>Code</THeading>
+          <THeading>Type</THeading>
+          <THeading className="text-center">Value</THeading>
+          <THeading className="text-center">Min. Order</THeading>
+          <THeading className="text-center">Used / Limit</THeading>
+          <THeading>Expiry</THeading>
+          <THeading>Status</THeading>
+          <THeading className="text-right">Actions</THeading>
+        </Thead>
+        <TBody>
+          {promotions?.map(p => {
+            const st = statusMap[p.status] ?? statusMap.ACTIVE;
+            return (
+              <tr key={p.id} className="hover:bg-secondary transition-colors">
+                <TCell>
+                  <Badge type="pill-color" color="brand" size="sm" className="font-mono font-bold">
+                    {p.code}
+                  </Badge>
                 </TCell>
-                <TCell className="px-5 py-4 text-slate-600">{p.type}</TCell>
-                <TCell className="px-5 py-4 text-center font-semibold text-slate-900">
+                <TCell className="text-tertiary capitalize">{p.type.toLowerCase().replace("_", " ")}</TCell>
+                <TCell className="text-center font-semibold text-primary font-mono">
                   {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
                 </TCell>
-                <TCell className="px-5 py-4 text-center text-slate-500">${p.minimumOrder}</TCell>
-                <TCell className="px-5 py-4 text-center">
-                  <div className="text-sm text-slate-700">{p.usageCount} / {p.usageLimit}</div>
-                  <div className="mt-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                    <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${Math.min((p.usageCount/p.usageLimit)*100, 100)}%` }} />
+                <TCell className="text-center text-tertiary font-mono">${p.minimumOrder}</TCell>
+                <TCell className="text-center">
+                  <div className="text-xs font-medium text-secondary">{p.usageCount} / {p.usageLimit}</div>
+                  <div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden w-20 mx-auto">
+                    <div className="h-full bg-brand-primary rounded-full" style={{ width: `${Math.min((p.usageCount / p.usageLimit) * 100, 100)}%` }} />
                   </div>
                 </TCell>
-                <TCell className="px-5 py-4 text-slate-500">{p.expiryAt}</TCell>
-                <TCell className="px-5 py-4">
-                  <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[p.status]}`}>{p.status}</span>
+                <TCell className="text-tertiary">{p.expiryAt}</TCell>
+                <TCell>
+                  <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                    {st.label}
+                  </BadgeWithDot>
                 </TCell>
-                <TCell className="px-5 py-4 text-right">
-                  <div className="flex items-center justify-end gap-1.5">
+                <TCell className="text-right">
+                  <div className="flex items-center justify-end gap-1">
                     <button
                       type="button"
                       onClick={() => openEditModal(p)}
-                      className="flex h-7 w-7 items-center justify-center rounded-md text-amber-500 transition hover:bg-amber-50"
+                      className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
                       aria-label="Edit promotion"
                     >
-                      <Pencil size={15} />
+                      <Edit01 className="size-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(p)}
-                      className="flex h-7 w-7 items-center justify-center rounded-md text-rose-500 transition hover:bg-rose-50"
+                      className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
                       aria-label="Delete promotion"
                     >
-                      <Trash size={15} />
+                      <Trash01 className="size-4" />
                     </button>
                   </div>
                 </TCell>
               </tr>
-            ))}
-          </TBody>
-        </Table>
-      </div>
+            );
+          })}
+        </TBody>
+      </Table>
 
       {isModalOpen ? (
         <PromotionModal
@@ -195,7 +201,7 @@ export default function PromotionsPage() {
           title="Delete promotion"
           message={
             <>
-              Are you sure you want to delete <span className="font-semibold text-slate-900">{deleteTarget.code}</span>? This will remove the promotion permanently.
+              Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.code}</span>? This will remove the promotion permanently.
             </>
           }
           onCancel={() => setDeleteTarget(null)}
@@ -206,3 +212,4 @@ export default function PromotionsPage() {
     </div>
   );
 }
+

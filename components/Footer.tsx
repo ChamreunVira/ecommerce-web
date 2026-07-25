@@ -34,7 +34,7 @@ const Footer = () => {
       <div className="app-container py-10">
         <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <Image className="w-20 object-contain" src={assets.brand} alt="brand" />
+            <Image className="w-32 object-contain" src={assets.brand} alt="brand" />
             <p className="mt-4 max-w-md text-sm leading-6 text-slate-500">
               Clean shopping for everyday tech, accessories, and essentials with
               simple checkout and reliable local delivery.

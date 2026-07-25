@@ -62,7 +62,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
           aria-label="Go to homepage"
         >
           <Image
-            className="w-16 object-contain"
+            className="w-30 object-contain"
             src={assets.brand}
             alt="brand"
           />

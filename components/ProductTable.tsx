@@ -1,15 +1,17 @@
 "use client";
+
 import { Product } from "@/types/product";
 import Image from "next/image";
 import React from "react";
 import Table, { Column } from "./Table";
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
+import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 
 interface ProductTableProps {
   products: Product[];
   handleDelete: (id: number) => void;
   handleUpdate?: (product: Product) => void;
-  option?: React.ReactNode
+  option?: React.ReactNode;
 }
 
 const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
@@ -18,7 +20,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   products,
   handleDelete,
   handleUpdate,
-  option
+  option,
 }) => {
   const columns: Column<Product>[] = [
     {
@@ -28,27 +30,27 @@ const ProductTable: React.FC<ProductTableProps> = ({
         const img = product.images?.[0];
         return (
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 shrink-0 overflow-hidden rounded-sm">
+            <div className="size-12 shrink-0 overflow-hidden rounded-lg border border-secondary bg-tertiary">
               {img ? (
                 <Image
                   src={`${BASE_IMG}/${img}`}
                   alt={product.name}
-                  width={40}
-                  height={40}
+                  width={48}
+                  height={48}
                   className="h-full w-full object-cover"
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-[10px] text-slate-400">
+                <div className="flex h-full w-full items-center justify-center text-[10px] text-quaternary font-medium">
                   IMG
                 </div>
               )}
             </div>
             <div className="min-w-0">
-              <p className="max-w-48 truncate text-sm font-semibold text-slate-800">
+              <p className="max-w-48 truncate text-sm font-semibold text-primary">
                 {product.name}
               </p>
-              <p className="mt-0.5 max-w-48 truncate text-xs text-slate-400">
+              <p className="mt-0.5 max-w-48 truncate text-xs text-tertiary">
                 {product.description}
               </p>
             </div>
@@ -60,16 +62,16 @@ const ProductTable: React.FC<ProductTableProps> = ({
       header: "Category",
       key: "categoryName",
       render: (value) => (
-        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+        <Badge type="pill-color" color="gray" size="sm">
           {String(value)}
-        </span>
+        </Badge>
       ),
     },
     {
       header: "Price",
       key: "price",
       render: (value) => (
-        <span className="text-sm font-semibold text-slate-900">
+        <span className="text-sm font-semibold text-primary font-mono">
           ${Number(value).toFixed(2)}
         </span>
       ),
@@ -77,25 +79,27 @@ const ProductTable: React.FC<ProductTableProps> = ({
     {
       header: "Discount",
       key: "discount",
-      render: (value) => (
-        <span
-          className={`text-sm font-medium ${Number(value) > 0 ? "text-rose-600" : "text-slate-400"}`}
-        >
-          {Number(value) > 0 ? `-${Number(value)}%` : "—"}
-        </span>
-      ),
+      render: (value) => {
+        const disc = Number(value);
+        return disc > 0 ? (
+          <Badge type="pill-color" color="error" size="sm">
+            -{disc}%
+          </Badge>
+        ) : (
+          <span className="text-quaternary">—</span>
+        );
+      },
     },
     {
       header: "Stock",
       key: "qty",
       render: (value) => {
         const qty = Number(value);
+        const color = qty <= 0 ? "error" : qty < 10 ? "warning" : "success";
         return (
-          <span
-            className={`text-sm font-medium ${qty <= 0 ? "text-rose-600" : qty < 10 ? "text-amber-600" : "text-slate-700"}`}
-          >
-            {qty}
-          </span>
+          <BadgeWithDot type="pill-color" color={color} size="sm">
+            {qty <= 0 ? "Out of stock" : `${qty} in stock`}
+          </BadgeWithDot>
         );
       },
     },
@@ -104,7 +108,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
       key: "updatedAt",
       render: (value) =>
         value ? (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-tertiary">
             {new Date(value as string).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -112,31 +116,38 @@ const ProductTable: React.FC<ProductTableProps> = ({
             })}
           </span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-quaternary">—</span>
         ),
     },
     {
       header: "Action",
       key: "actions",
-      className: "w-28",
+      className: "w-28 text-right",
+      cellClassName: "text-right",
       render: (_, item) => (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex items-center justify-end gap-1">
           <button
+            type="button"
             onClick={() => handleUpdate?.(item)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-amber-500 transition hover:bg-amber-50"
+            className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
             aria-label="Edit product"
           >
-            <Edit size={15} />
+            <Edit01 className="size-4" />
           </button>
           <button
+            type="button"
             onClick={() => handleDelete(Number(item.id))}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-rose-500 transition hover:bg-rose-50"
+            className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
             aria-label="Delete product"
           >
-            <Trash size={15} />
+            <Trash01 className="size-4" />
           </button>
-          <button className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100">
-            <MoreHorizontal size={15} />
+          <button
+            type="button"
+            className="flex size-8 items-center justify-center rounded-lg text-quaternary transition hover:bg-secondary hover:text-primary"
+            aria-label="More options"
+          >
+            <DotsVertical className="size-4" />
           </button>
         </div>
       ),

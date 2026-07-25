@@ -7,6 +7,7 @@ import { AuditModule } from "@/constant/constant";
 import { http } from "@/lib/axios";
 import { PageResponse } from "@/types/page-response";
 import LegacyTable, { Column } from "@/components/Table";
+import { BadgeWithDot } from "@/components/base/badges/badges";
 
 export enum AuditAction {
   CREATE = "CREATE",
@@ -78,31 +79,31 @@ export default function AuditLogPage() {
     return () => controller.abort();
   }, [handleFetchAuditLogs]);
 
-  const getActionColor = (action: string) => {
-    switch (action) {
-      case "CREATE": return "bg-emerald-100 text-emerald-700 ring-emerald-200";
-      case "UPDATE": return "bg-sky-100 text-sky-700 ring-sky-200";
-      case "DELETE": return "bg-rose-100 text-rose-700 ring-rose-200";
-      case "LOGIN": return "bg-indigo-100 text-indigo-700 ring-indigo-200";
-      default: return "bg-slate-100 text-slate-700 ring-slate-200";
-    }
+  const actionColorMap: Record<string, "success" | "blue" | "error" | "indigo" | "gray"> = {
+    CREATE: "success",
+    UPDATE: "blue",
+    DELETE: "error",
+    LOGIN: "indigo",
   };
 
   const columns: Column<AuditLogs>[] = [
     {
       header: "Log ID",
       key: "id",
-      cellClassName: "font-mono text-xs text-slate-500",
+      cellClassName: "font-mono text-xs text-primary font-semibold",
       render: (_, log) => <span>{log.id}</span>
     },
     {
       header: "Action",
       key: "action",
-      render: (_, log) => (
-        <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] uppercase font-bold ring-1 ${getActionColor(log.action)}`}>
-          {log.action}
-        </span>
-      )
+      render: (_, log) => {
+        const color = actionColorMap[log.action] ?? "gray";
+        return (
+          <BadgeWithDot type="pill-color" color={color} size="sm">
+            {log.action}
+          </BadgeWithDot>
+        );
+      }
     },
     {
       header: "Module & ID",

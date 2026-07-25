@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import Table, { Column } from "./Table";
 import { Category } from "@/types/category";
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
+import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 
 interface CategoryTableProps {
   categories: Category[];
@@ -19,13 +22,13 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       header: "ID",
       key: "id",
       className: "w-16",
-      cellClassName: "text-xs font-semibold text-slate-500",
+      cellClassName: "text-xs font-semibold text-quaternary",
     },
     {
       header: "Name",
       key: "name",
       render: (value) => (
-        <span className="text-sm font-semibold text-slate-800">
+        <span className="text-sm font-semibold text-primary">
           {String(value)}
         </span>
       ),
@@ -34,7 +37,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       header: "Description",
       key: "description",
       render: (value) => (
-        <p className="max-w-md truncate text-sm text-slate-500">
+        <p className="max-w-md truncate text-sm text-tertiary">
           {String(value)}
         </p>
       ),
@@ -45,9 +48,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       render: (value) => {
         const count = Array.isArray(value) ? value.length : 0;
         return (
-          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+          <Badge type="pill-color" color="gray" size="sm">
             {count} product{count !== 1 ? "s" : ""}
-          </span>
+          </Badge>
         );
       },
     },
@@ -56,7 +59,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       key: "createdAt",
       render: (value) =>
         value ? (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-tertiary">
             {new Date(value as string).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -64,17 +67,21 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
             })}
           </span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-quaternary">—</span>
         ),
     },
     {
       header: "Status",
-      key: 'status',
+      key: "status",
       render: (_, item) => (
-        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${item.status ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}`}>
+        <BadgeWithDot
+          type="pill-color"
+          color={item.status ? "success" : "error"}
+          size="sm"
+        >
           {item.status ? "Active" : "Inactive"}
-        </span>
-      )
+        </BadgeWithDot>
+      ),
     },
     {
       header: "Action",
@@ -82,25 +89,29 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       className: "w-28 text-right",
       cellClassName: "text-right",
       render: (_, item) => (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex items-center justify-end gap-1">
           <button
             type="button"
             onClick={() => handleEdit?.(item)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-amber-500 transition hover:bg-amber-50"
+            className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
             aria-label="Edit category"
           >
-            <Edit size={15} />
+            <Edit01 className="size-4" />
           </button>
           <button
             type="button"
             onClick={() => handleDelete(item.id)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-rose-500 transition hover:bg-rose-50"
+            className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
             aria-label="Delete category"
           >
-            <Trash size={15} />
+            <Trash01 className="size-4" />
           </button>
-          <button className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100">
-            <MoreHorizontal size={15} />
+          <button
+            type="button"
+            className="flex size-8 items-center justify-center rounded-lg text-quaternary transition hover:bg-secondary hover:text-primary"
+            aria-label="More options"
+          >
+            <DotsVertical className="size-4" />
           </button>
         </div>
       ),
@@ -111,3 +122,4 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
 };
 
 export default CategoryTable;
+

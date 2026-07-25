@@ -1,8 +1,11 @@
+"use client";
+
 import React from "react";
 import Table, { Column } from "./Table";
 import { User } from "@/types/user";
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
 import Profile from "./Profile";
+import { Badge } from "@/components/base/badges/badges";
 
 type UserTableType = {
   users: User[];
@@ -15,7 +18,7 @@ const UserTable: React.FC<UserTableType> = ({
   users,
   handleDelete,
   handleUpdate,
-  option
+  option,
 }) => {
   const columns: Column<User>[] = [
     {
@@ -25,10 +28,10 @@ const UserTable: React.FC<UserTableType> = ({
         <div className="flex items-center gap-3">
           <Profile fullName={item.fullName} />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-800">
+            <p className="text-sm font-semibold text-primary">
               {item.fullName}
             </p>
-            <p className="truncate text-xs text-slate-400">{item.email}</p>
+            <p className="truncate text-xs text-tertiary">{item.email}</p>
           </div>
         </div>
       ),
@@ -38,14 +41,20 @@ const UserTable: React.FC<UserTableType> = ({
       key: "roles",
       render: (value) => (
         <div className="flex flex-wrap gap-1.5">
-          {(Array.isArray(value) ? value : []).map((role) => (
-            <span
-              key={role}
-              className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600"
-            >
-              {String(role).replace("ROLE_", "")}
-            </span>
-          ))}
+          {(Array.isArray(value) ? value : []).map((role) => {
+            const roleName = String(role).replace("ROLE_", "");
+            const isBrand = roleName === "ADMIN";
+            return (
+              <Badge
+                key={role}
+                type="pill-color"
+                color={isBrand ? "brand" : "slate"}
+                size="sm"
+              >
+                {roleName}
+              </Badge>
+            );
+          })}
         </div>
       ),
     },
@@ -54,7 +63,7 @@ const UserTable: React.FC<UserTableType> = ({
       key: "updatedAt",
       render: (value) =>
         value ? (
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-tertiary">
             {new Date(value as string).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -62,7 +71,7 @@ const UserTable: React.FC<UserTableType> = ({
             })}
           </span>
         ) : (
-          <span className="text-slate-400">—</span>
+          <span className="text-quaternary">—</span>
         ),
     },
     {
@@ -71,23 +80,29 @@ const UserTable: React.FC<UserTableType> = ({
       className: "w-28 text-right",
       cellClassName: "text-right",
       render: (_, item) => (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex items-center justify-end gap-1">
           <button
+            type="button"
             onClick={() => handleUpdate?.(item)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-amber-500 transition hover:bg-amber-50"
+            className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
             aria-label="Edit user"
           >
-            <Edit size={15} />
+            <Edit01 className="size-4" />
           </button>
           <button
+            type="button"
             onClick={() => handleDelete(item.id)}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-rose-500 transition hover:bg-rose-50"
+            className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
             aria-label="Delete user"
           >
-            <Trash size={15} />
+            <Trash01 className="size-4" />
           </button>
-          <button className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100">
-            <MoreHorizontal size={15} />
+          <button
+            type="button"
+            className="flex size-8 items-center justify-center rounded-lg text-quaternary transition hover:bg-secondary hover:text-primary"
+            aria-label="More options"
+          >
+            <DotsVertical className="size-4" />
           </button>
         </div>
       ),
@@ -98,3 +113,4 @@ const UserTable: React.FC<UserTableType> = ({
 };
 
 export default UserTable;
+

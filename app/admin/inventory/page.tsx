@@ -1,38 +1,17 @@
 "use client";
 import Link from "next/link";
-import { ChevronRight, Home, Warehouse, AlertTriangle, PackageX, TrendingDown, Package } from "lucide-react";
+import { ChevronRight, Home, Warehouse, PackageX, TrendingDown, Package } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
 import { StockItem } from "@/types/stock-item";
 import { useEffect, useState } from "react";
 import { inventoryService } from "@/services/inventory-service";
 import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
+import { BadgeWithDot } from "@/components/base/badges/badges";
 
-// type StockItem = {
-//   id: number;
-//   sku: string;
-//   name: string;
-//   category: string;
-//   qty: number;
-//   reserved: number;
-//   reorderPoint: number;
-//   status: "In Stock" | "Low Stock" | "Out of Stock";
-// };
-
-// const mockInventory: StockItem[] = [
-//   { id: 1, sku: "SKU-001", name: "Wireless Headphones Pro", category: "Electronics", qty: 142, reserved: 12, reorderPoint: 20, status: "In Stock" },
-//   { id: 2, sku: "SKU-002", name: "Running Shoes X500", category: "Footwear", qty: 3, reserved: 1, reorderPoint: 10, status: "Low Stock" },
-//   { id: 3, sku: "SKU-003", name: "Slim Fit Jeans", category: "Clothing", qty: 0, reserved: 0, reorderPoint: 15, status: "Out of Stock" },
-//   { id: 4, sku: "SKU-004", name: "Mechanical Keyboard RGB", category: "Electronics", qty: 58, reserved: 5, reorderPoint: 10, status: "In Stock" },
-//   { id: 5, sku: "SKU-005", name: "Yoga Mat Pro", category: "Sports", qty: 4, reserved: 2, reorderPoint: 10, status: "Low Stock" },
-//   { id: 6, sku: "SKU-006", name: "leather Wallet Slim", category: "Accessories", qty: 0, reserved: 0, reorderPoint: 5, status: "Out of Stock" },
-//   { id: 7, sku: "SKU-007", name: "USB-C Hub 7-in-1", category: "Electronics", qty: 89, reserved: 14, reorderPoint: 20, status: "In Stock" },
-//   { id: 8, sku: "SKU-008", name: "Cotton Polo Shirt", category: "Clothing", qty: 2, reserved: 0, reorderPoint: 15, status: "Low Stock" },
-// ];
-
-const statusStyle: Record<StockItem["status"], string> = {
-  "IN_STOCK": "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  "LOW_STOCK": "bg-amber-50 text-amber-700 ring-amber-200",
-  "OUT_OF_STOCK": "bg-rose-50 text-rose-700 ring-rose-200",
+const statusMap: Record<StockItem["status"], { color: "success" | "warning" | "error"; label: string }> = {
+  IN_STOCK: { color: "success", label: "In Stock" },
+  LOW_STOCK: { color: "warning", label: "Low Stock" },
+  OUT_OF_STOCK: { color: "error", label: "Out of Stock" },
 };
 
 export default function InventoryPage() {
@@ -45,33 +24,35 @@ export default function InventoryPage() {
   const handleFetchInventories = async () => {
     try {
       const response = await inventoryService.getAll();
-      if(response.success) {
+      if (response.success) {
         setInventories(response.data);
       }
-    }catch(e: any) {
+    } catch (e: any) {
       console.log("Error fetching inventories: ", e.message);
     }
-  }
+  };
 
   useEffect(() => {
     handleFetchInventories();
     return () => new AbortController().abort();
-  } , []);
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
-      <nav className="flex items-center gap-1.5 text-sm text-slate-500">
-        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-slate-800 transition-colors"><Home size={14} /></Link>
-        <ChevronRight size={14} className="text-slate-300" />
-        <span className="font-medium text-slate-700">Inventory</span>
+      <nav className="flex items-center gap-1.5 text-sm text-tertiary">
+        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-primary transition-colors">
+          <Home size={14} />
+        </Link>
+        <ChevronRight size={14} className="text-quaternary" />
+        <span className="font-medium text-primary">Inventory</span>
       </nav>
 
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
-            <Warehouse className="text-indigo-500" size={24} /> Inventory Management
+          <h1 className="text-2xl font-semibold text-primary flex items-center gap-2">
+            <Warehouse className="text-brand-secondary" size={24} /> Inventory Management
           </h1>
-          <p className="mt-1 text-sm text-slate-500">Track stock levels, reserve units, and manage reorder points.</p>
+          <p className="mt-1 text-sm text-tertiary">Track stock levels, reserve units, and manage reorder points.</p>
         </div>
       </div>
 
@@ -82,36 +63,36 @@ export default function InventoryPage() {
         <StatsCard icon={<PackageX className="text-rose-500" />} accent="bg-rose-50" label="Out of Stock" value={outOfStock} trend={-2} />
       </div>
 
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
-        <Table>
-          <Thead className="bg-slate-50 text-xs uppercase text-slate-500">
-            <THeading className="px-5 py-4 font-semibold">#</THeading>
-            <THeading className="px-5 py-4 font-semibold">Product</THeading>
-            <THeading className="px-5 py-4 font-semibold">Category</THeading>
-            <THeading className="px-5 py-4 font-semibold text-center">Qty</THeading>
-            {/* <THeading className="px-5 py-4 font-semibold text-center">Reserved</THeading> */}
-            <THeading className="px-5 py-4 font-semibold text-center">Reorder At</THeading>
-            <THeading className="px-5 py-4 font-semibold">Status</THeading>
-          </Thead>
-          <TBody className="divide-y divide-slate-100">
-            {inventories.map(item => (
-              <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                <TCell className="px-5 py-4 font-semibold text-slate-900">{"INV" + "-" + item.id.toString().padStart(4, "0")}</TCell>
-                <TCell className="px-5 py-4 font-semibold text-slate-900">{item.name}</TCell>
-                <TCell className="px-5 py-4 text-slate-500">{item.category}</TCell>
-                <TCell className="px-5 py-4 text-center font-bold text-slate-800">{item.qty}</TCell>
-                {/* <TCell className="px-5 py-4 text-center text-slate-500">{item.reserved}</TCell> */}
-                <TCell className="px-5 py-4 text-center text-slate-500">{item.reorderPoint}</TCell>
-                <TCell className="px-5 py-4">
-                  <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[item.status]}`}>
-                    {item.status}
-                  </span>
+      <Table>
+        <Thead>
+          <THeading>SKU</THeading>
+          <THeading>Product</THeading>
+          <THeading>Category</THeading>
+          <THeading className="text-center">Qty</THeading>
+          <THeading className="text-center">Reorder At</THeading>
+          <THeading>Status</THeading>
+        </Thead>
+        <TBody>
+          {inventories.map(item => {
+            const st = statusMap[item.status] ?? statusMap.IN_STOCK;
+            return (
+              <tr key={item.id} className="hover:bg-secondary transition-colors">
+                <TCell className="font-mono text-xs font-semibold text-primary">{"INV-" + item.id.toString().padStart(4, "0")}</TCell>
+                <TCell className="font-semibold text-primary">{item.name}</TCell>
+                <TCell className="text-tertiary">{item.category}</TCell>
+                <TCell className="text-center font-bold text-primary font-mono">{item.qty}</TCell>
+                <TCell className="text-center text-tertiary font-mono">{item.reorderPoint}</TCell>
+                <TCell>
+                  <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                    {st.label}
+                  </BadgeWithDot>
                 </TCell>
               </tr>
-            ))}
-          </TBody>
-        </Table>
-      </div>
+            );
+          })}
+        </TBody>
+      </Table>
     </div>
   );
 }
+

@@ -1,10 +1,13 @@
+"use client";
+
 import React from "react";
 import Table, { Column } from "./Table";
 import { Order } from "@/types/order";
 import Image from "next/image";
 import Link from "next/link";
-import { MoreHorizontal } from "lucide-react";
 import { PrintInvoiceButton } from "./PrintInvoiceButton";
+import { BadgeWithDot } from "@/components/base/badges/badges";
+import { Avatar } from "@/components/base/avatar/avatar";
 
 type OrderTableType = {
   order: Order[];
@@ -23,7 +26,7 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
         const imgSrc = first?.imageUrl ? `${BASE_IMG}/${first.imageUrl}` : null;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+            <div className="size-10 shrink-0 overflow-hidden rounded-lg border border-secondary bg-tertiary">
               {imgSrc ? (
                 <Image
                   src={imgSrc}
@@ -34,16 +37,16 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
                   unoptimized
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center text-[10px] text-slate-400">
+                <div className="flex h-full w-full items-center justify-center text-[10px] text-quaternary font-medium">
                   IMG
                 </div>
               )}
             </div>
             <div className="min-w-0">
-              <p className="max-w-40 truncate text-sm font-semibold text-slate-800">
+              <p className="max-w-40 truncate text-sm font-semibold text-primary">
                 {first?.productName ?? "—"}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tertiary">
                 {item.orderItems?.length ?? 0} item
                 {(item.orderItems?.length ?? 0) !== 1 ? "s" : ""}
               </p>
@@ -57,22 +60,14 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
       key: "shippingAddress",
       render: (_, item) => {
         const name = item.shippingAddress?.fullName ?? "—";
-        const initials = name
-          .split(" ")
-          .slice(0, 2)
-          .map((w: string) => w[0])
-          .join("")
-          .toUpperCase();
         return (
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600">
-              {initials}
-            </div>
+            <Avatar size="sm" alt={name} />
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-slate-800">
+              <p className="truncate text-sm font-medium text-primary">
                 {name}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-tertiary">
                 {item.shippingAddress?.phone ?? ""}
               </p>
             </div>
@@ -85,10 +80,10 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
       key: "orderCode",
       render: (_, item) => (
         <div>
-          <p className="text-sm font-semibold text-slate-700">
+          <p className="text-sm font-semibold text-primary font-mono">
             #{item.orderCode}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">
+          <p className="mt-0.5 text-xs text-tertiary">
             {formatDate(item.createdAt)}
           </p>
         </div>
@@ -99,11 +94,11 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
       key: "totalAmount",
       render: (_, item) => (
         <div>
-          <p className="text-sm font-semibold text-slate-900">
+          <p className="text-sm font-semibold text-primary font-mono">
             ${Number(item.totalAmount).toFixed(2)}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">
-            {String(item.paymentMethod ?? "").replaceAll("_", " ")}
+          <p className="mt-0.5 text-xs text-tertiary capitalize">
+            {String(item.paymentMethod ?? "").replaceAll("_", " ").toLowerCase()}
           </p>
         </div>
       ),
@@ -116,13 +111,13 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
     {
       header: "Action",
       key: "actions",
-      className: "w-32 text-right",
+      className: "w-36 text-right",
       cellClassName: "text-right",
       render: (_, item) => (
         <div className="flex items-center justify-end gap-2">
           <Link
             href={`/admin/order/${item.orderId}`}
-            className="rounded-md px-3 py-1.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50"
+            className="rounded-lg border border-secondary bg-primary px-3 py-1.5 text-xs font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary"
           >
             Details
           </Link>
@@ -137,60 +132,24 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
 
 export default OrderTable;
 
-
 function OrderStatusBadge({ status }: { status: string }) {
-  const map: Record<string, { dot: string; pill: string; label: string }> = {
-    PENDING_PAYMENT: {
-      dot: "bg-amber-400",
-      pill: "bg-amber-50  text-amber-700  ring-amber-200",
-      label: "Pending Payment",
-    },
-    PENDING: {
-      dot: "bg-amber-400",
-      pill: "bg-amber-50  text-amber-700  ring-amber-200",
-      label: "Pending",
-    },
-    PROCESSING: {
-      dot: "bg-sky-400",
-      pill: "bg-sky-50    text-sky-700    ring-sky-200",
-      label: "Processing",
-    },
-    PRESESSING: {
-      dot: "bg-sky-400",
-      pill: "bg-sky-50    text-sky-700    ring-sky-200",
-      label: "Processing",
-    },
-    SHIPPED: {
-      dot: "bg-indigo-400",
-      pill: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-      label: "Shipped",
-    },
-    DELIVERED: {
-      dot: "bg-emerald-400",
-      pill: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-      label: "Delivered",
-    },
-    CANCELLED: {
-      dot: "bg-rose-400",
-      pill: "bg-rose-50   text-rose-700   ring-rose-200",
-      label: "Cancelled",
-    },
-    REFUNDED: {
-      dot: "bg-slate-400",
-      pill: "bg-slate-100 text-slate-600  ring-slate-200",
-      label: "Refunded",
-    },
+  const map: Record<string, { color: "warning" | "indigo" | "success" | "error" | "gray" | "blue"; label: string }> = {
+    PENDING_PAYMENT: { color: "warning", label: "Pending Payment" },
+    PENDING: { color: "warning", label: "Pending" },
+    PROCESSING: { color: "blue", label: "Processing" },
+    PRESESSING: { color: "blue", label: "Processing" },
+    SHIPPED: { color: "indigo", label: "Shipped" },
+    DELIVERED: { color: "success", label: "Delivered" },
+    CANCELLED: { color: "error", label: "Cancelled" },
+    REFUNDED: { color: "gray", label: "Refunded" },
   };
 
   const style = map[status] ?? map.PENDING;
 
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${style.pill}`}
-    >
-      <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+    <BadgeWithDot type="pill-color" color={style.color} size="sm">
       {style.label}
-    </span>
+    </BadgeWithDot>
   );
 }
 
@@ -202,3 +161,4 @@ function formatDate(value: string | null | undefined) {
     year: "numeric",
   });
 }
+

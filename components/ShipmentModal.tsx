@@ -11,7 +11,7 @@ type ShipmentModalType = {
 
 export interface CreateShipment {
     status: ShipmentStatus;
-    distination: string;
+    destination: string;
     trackingNumber: string;
     estimatedDelivery: string;
     carrier: string;
@@ -20,7 +20,7 @@ export interface CreateShipment {
 const ShipmentModal: React.FC<ShipmentModalType> = ({ handleCloseAction, onCreateSuccessAction }) => {
     const [shipmentData, setShipmentData] = useState<CreateShipment>({
         status: ShipmentStatus.IN_TRANSMIT,
-        distination: "",
+        destination: "",
         trackingNumber: "",
         estimatedDelivery: "",
         carrier: ""
@@ -38,7 +38,7 @@ const ShipmentModal: React.FC<ShipmentModalType> = ({ handleCloseAction, onCreat
         }
     }
 
-    const handleShipmentFieldChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleShipmentFieldChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setShipmentData((prev) => ({ ...prev, [name]: value }));
     }
@@ -46,8 +46,8 @@ const ShipmentModal: React.FC<ShipmentModalType> = ({ handleCloseAction, onCreat
 
     return (
         <AdminModal
-            title="Create user"
-            description="Add a customer, seller, or admin account."
+            title="Create shipment"
+            description="Add a status, carrier, or estemated account."
             onClose={handleCloseAction}
             maxWidth="max-w-xl"
             footer={
@@ -77,12 +77,12 @@ const ShipmentModal: React.FC<ShipmentModalType> = ({ handleCloseAction, onCreat
                         Distination
                     </label>
                     <input
-                        id="distination"
+                        id="destination"
                         type="text"
                         onChange={handleShipmentFieldChange}
                         placeholder="Preveng"
-                        name="distination"
-                        value={shipmentData.distination}
+                        name="destination"
+                        value={shipmentData.destination}
                         className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
                         required
                     />
@@ -105,12 +105,19 @@ const ShipmentModal: React.FC<ShipmentModalType> = ({ handleCloseAction, onCreat
                 </div>
 
                 <div>
-                    <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
+                    <label className="text-sm font-medium text-slate-700" htmlFor="status">
                         Status
                     </label>
-                    <select>
+                    <select
+                        id="status"
+                        name="status"
+                        value={shipmentData.status}
+                        onChange={handleShipmentFieldChange}
+                        className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                        required
+                    >
+                        <option defaultValue={ShipmentStatus.IN_TRANSMIT}>In Transmit</option>
                         <option value={ShipmentStatus.PENDING}>Pending</option>
-                        <option value={ShipmentStatus.IN_TRANSMIT}>In Transmit</option>
                         <option value={ShipmentStatus.DELAYED}>Delayed</option>
                         <option value={ShipmentStatus.CANCELLED}>Canceled</option>
                     </select>
@@ -122,7 +129,7 @@ const ShipmentModal: React.FC<ShipmentModalType> = ({ handleCloseAction, onCreat
                     </label>
                     <input
                         id="estimatedDelivery"
-                        type="date"
+                        type="datetime-local"
                         onChange={handleShipmentFieldChange}
                         name="estimatedDelivery"
                         value={shipmentData.estimatedDelivery}

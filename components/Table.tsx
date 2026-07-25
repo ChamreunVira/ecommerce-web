@@ -1,44 +1,43 @@
+"use client";
+
 import { ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Table as AriaTable, TableCard } from "@/components/application/table/table";
+import { cx } from "@/utils/cx";
 
-function cn(...classes: Array<string | undefined | false>) {
-  return classes.filter(Boolean).join(" ");
-}
-
-
-interface TableProps {
+export interface TableProps {
   children: ReactNode;
   className?: string;
 }
+
 export const Table: React.FC<TableProps> = ({ children, className = "" }) => (
-  <div className={cn("w-full overflow-x-auto overscroll-x-contain", className)}>
-    <table className="w-full min-w-[720px] border-separate border-spacing-0 text-left text-sm">
+  <div className={cx("overflow-hidden rounded-xl bg-primary shadow-xs ring-1 ring-secondary w-full overflow-x-auto", className)}>
+    <table className="w-full text-left text-sm border-collapse">
       {children}
     </table>
   </div>
 );
 
-interface TheadProps {
+export interface TheadProps {
   children: ReactNode;
   className?: string;
 }
+
 export const Thead: React.FC<TheadProps> = ({ children, className = "" }) => (
-  <thead className={cn("bg-slate-50 text-xs text-slate-500 dark:bg-slate-900/70 dark:text-slate-400", className)}>
+  <thead className={cx("border-b border-secondary bg-secondary h-11", className)}>
     <tr>{children}</tr>
   </thead>
 );
 
-interface THeadingProps {
+export interface THeadingProps {
   children: ReactNode;
   className?: string;
 }
-export const THeading: React.FC<THeadingProps> = ({
-  children,
-  className = "",
-}) => (
+
+export const THeading: React.FC<THeadingProps> = ({ children, className = "" }) => (
   <th
-    className={cn(
-      "whitespace-nowrap border-b border-slate-200 px-5 py-3 text-left text-xs font-medium first:pl-6 last:pr-6 dark:border-slate-800",
+    className={cx(
+      "px-6 py-3 text-xs font-semibold text-quaternary uppercase tracking-wider whitespace-nowrap",
       className,
     )}
   >
@@ -46,22 +45,26 @@ export const THeading: React.FC<THeadingProps> = ({
   </th>
 );
 
-interface TBodyProps {
+export interface TBodyProps {
   children: ReactNode;
   className?: string;
 }
+
 export const TBody: React.FC<TBodyProps> = ({ children, className = "" }) => (
-  <tbody className={cn("divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-950", className)}>{children}</tbody>
+  <tbody className={cx("divide-y divide-secondary bg-primary", className)}>
+    {children}
+  </tbody>
 );
 
-interface TCellProps {
+export interface TCellProps {
   children: ReactNode;
   className?: string;
 }
+
 export const TCell: React.FC<TCellProps> = ({ children, className = "" }) => (
   <td
-    className={cn(
-      "border-b-0 px-5 py-4 align-middle text-sm text-slate-700 first:pl-6 last:pr-6 dark:text-slate-300",
+    className={cx(
+      "px-6 py-4 text-sm text-tertiary align-middle",
       className,
     )}
   >
@@ -123,56 +126,60 @@ export const Pagination: React.FC<PaginationProps> = ({
   const endRecord = totalElements === 0 ? 0 : Math.min(currentPage * pageSize, totalElements);
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-4 border-t border-slate-200 bg-slate-50/50 px-5 py-3.5 sm:flex-row sm:px-6">
-      <span className="text-xs text-slate-500">
-        Showing <span className="font-semibold text-slate-700">{startRecord}</span> to{" "}
-        <span className="font-semibold text-slate-700">{endRecord}</span> of{" "}
-        <span className="font-semibold text-slate-700">{totalElements}</span> records
+    <div className="flex w-full flex-col items-center justify-between gap-4 border-t border-secondary bg-primary px-6 py-3.5 sm:flex-row">
+      <span className="text-sm text-tertiary">
+        Showing <span className="font-semibold text-primary">{startRecord}</span> to{" "}
+        <span className="font-semibold text-primary">{endRecord}</span> of{" "}
+        <span className="font-semibold text-primary">{totalElements}</span> results
       </span>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1 || totalPages === 0}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          className="inline-flex h-9 items-center justify-center gap-1 rounded-lg border border-secondary bg-primary px-3 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
           type="button"
           aria-label="Previous page"
         >
           <ChevronLeft size={16} />
+          <span>Previous</span>
         </button>
 
-        {pages.map((p, idx) => {
-          if (typeof p === "string") {
+        <div className="hidden items-center gap-1 sm:flex">
+          {pages.map((p, idx) => {
+            if (typeof p === "string") {
+              return (
+                <span key={`ellipsis-${idx}`} className="px-2 text-sm text-quaternary">
+                  ...
+                </span>
+              );
+            }
             return (
-              <span key={`ellipsis-${idx}`} className="px-2 text-slate-400 leading-none">
-                ...
-              </span>
+              <button
+                key={p}
+                onClick={() => onPageChange(p)}
+                className={cx(
+                  "flex h-9 min-w-9 items-center justify-center rounded-lg text-sm font-semibold transition",
+                  currentPage === p
+                    ? "bg-secondary text-primary font-bold shadow-xs ring-1 ring-secondary"
+                    : "text-tertiary hover:bg-secondary hover:text-primary"
+                )}
+                type="button"
+              >
+                {p}
+              </button>
             );
-          }
-          return (
-            <button
-              key={p}
-              onClick={() => onPageChange(p)}
-              className={cn(
-                "flex h-8 min-w-8 items-center justify-center rounded-lg border px-2.5 text-xs font-semibold shadow-sm transition-colors",
-                currentPage === p
-                  ? "border-indigo-500 bg-indigo-500 text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-              )}
-              type="button"
-            >
-              {p}
-            </button>
-          );
-        })}
+          })}
+        </div>
 
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages || totalPages === 0}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+          className="inline-flex h-9 items-center justify-center gap-1 rounded-lg border border-secondary bg-primary px-3 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
           type="button"
           aria-label="Next page"
         >
+          <span>Next</span>
           <ChevronRight size={16} />
         </button>
       </div>
@@ -202,60 +209,51 @@ export default function LegacyTable<T>({
   pagination,
 }: LegacyTableProps<T>) {
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-950/[0.02] dark:border-slate-800 dark:bg-slate-950",
-        className,
-      )}
-    >
-
-      {/* top search & filtering */}
-      {option && (<div>
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+    <TableCard.Root className={cx("shadow-xs ring-1 ring-secondary bg-primary", className)}>
+      {/* Option bar */}
+      {option && (
+        <div className="border-b border-secondary bg-primary px-6 py-4">
           {option}
         </div>
-      </div>)}
+      )}
 
-      {/* table */}
-      <Table>
-        <Thead>
+      {/* Main Untitled UI Table */}
+      <AriaTable aria-label="Data Table">
+        <AriaTable.Header>
           {columns.map((col) => (
-            <THeading key={String(col.key)} className={col.className}>
-              {col.header}
-            </THeading>
+            <AriaTable.Head
+              key={String(col.key)}
+              id={String(col.key)}
+              label={col.header}
+              className={col.className}
+            />
           ))}
-        </Thead>
+        </AriaTable.Header>
 
-
-        {/* dynamic data pasted from parent */}
-        <TBody>
+        <AriaTable.Body>
           {data.length > 0 ? (
             data.map((item, index) => (
-              <tr
+              <AriaTable.Row
                 key={getRowKey(item, index, rowKey)}
-                className="transition-colors duration-150 hover:bg-indigo-50/60 dark:hover:bg-indigo-500/10"
+                className="transition-colors hover:bg-secondary"
               >
-
-                {/* map data from parent */}
                 {columns.map((col) => {
                   const value = item[col.key as keyof T];
                   return (
-                    <TCell key={String(col.key)} className={col.cellClassName}>
+                    <AriaTable.Cell key={String(col.key)} className={col.cellClassName}>
                       {col.render
                         ? col.render(value, item)
                         : formatCellValue(value)}
-                    </TCell>
+                    </AriaTable.Cell>
                   );
                 })}
-
-              </tr>
+              </AriaTable.Row>
             ))
           ) : (
-            // if no data it's will show this content
-            <tr>
-              <td colSpan={columns.length} className="px-5 py-16 text-center">
+            <AriaTable.Row key="empty">
+              <AriaTable.Cell colSpan={columns.length} className="px-6 py-16 text-center">
                 <div className="mx-auto flex max-w-xs flex-col items-center">
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-100 bg-indigo-50 text-indigo-500">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-brand-secondary">
                     <svg
                       aria-hidden="true"
                       className="h-5 w-5"
@@ -267,20 +265,20 @@ export default function LegacyTable<T>({
                       <path d="M4 7h16M4 12h16M4 17h10" />
                     </svg>
                   </div>
-                  <p className="text-sm font-semibold text-slate-800">
+                  <p className="text-sm font-semibold text-primary">
                     {emptyTitle}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-tertiary">
                     {emptyDescription}
                   </p>
                 </div>
-              </td>
-            </tr>
+              </AriaTable.Cell>
+            </AriaTable.Row>
           )}
-        </TBody>
-      </Table>
+        </AriaTable.Body>
+      </AriaTable>
 
-     {/* footer */}
+      {/* Footer / Pagination */}
       {pagination ? (
         <Pagination
           currentPage={pagination.currentPage}
@@ -290,15 +288,13 @@ export default function LegacyTable<T>({
           onPageChange={pagination.onPageChange}
         />
       ) : (
-        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-6 py-3.5">
-          <span className="text-xs text-slate-500">
-            Showing{" "}
-            <span className="font-semibold text-slate-700">{data.length}</span>{" "}
-            record{data.length !== 1 ? "s" : ""}
+        <div className="flex items-center justify-between border-t border-secondary bg-primary px-6 py-3.5">
+          <span className="text-xs text-tertiary">
+            Showing <span className="font-semibold text-primary">{data.length}</span> record{data.length !== 1 ? "s" : ""}
           </span>
         </div>
       )}
-    </div>
+    </TableCard.Root>
   );
 }
 
@@ -315,11 +311,11 @@ function getRowKey<T>(
   return index;
 }
 
-// like empty field show like this '-'
 function formatCellValue(value: unknown) {
   if (value === null || value === undefined || value === "")
-    return <span className="text-slate-400">—</span>;
+    return <span className="text-quaternary">—</span>;
   if (value instanceof Date) return value.toLocaleDateString();
   if (Array.isArray(value)) return value.join(", ");
   return String(value);
 }
+
