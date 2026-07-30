@@ -113,7 +113,7 @@ const SignInPage: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => window.location.href = "http://localhost:8081/oauth2/authorization/google"}
+            onClick={() => window.location.href = "http://localhost:8081/api/v1/oauth2/authorization/google"}
             className="w-full flex justify-center items-center py-3.5 px-4 mb-2 border border-gray-300 rounded-lg text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-all transform hover:-translate-y-0.5"
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

@@ -6,7 +6,6 @@ import {
   RotateCcw, Tag, BarChart2, Star, BookOpen, Briefcase, TrendingUp, Monitor
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-//how to import all
 import "@/styles/globals.css"
 import "@/styles/theme.css"
 import "@/styles/typography.css"
@@ -17,7 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const is = (path: string) => pathName === path;
 
   return (
-    <div className="flex min-h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen overflow-hidden bg-white dark:bg-slate-950">
       <Sidbar>
         {/* Overview */}
         <SidebarItem

@@ -1,12 +1,13 @@
 "use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ChevronRight, Home, CreditCard, CheckCircle2, Clock, XCircle, DollarSign } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
 import { paymentService } from "@/services/payment-service";
 import { Payment } from "@/types/payment";
-import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
+import { Table, TableCard } from "@/components/application/table/table";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 
 const statusMap: Record<Payment["status"], { color: "success" | "warning" | "error" | "gray"; label: string }> = {
@@ -18,10 +19,10 @@ const statusMap: Record<Payment["status"], { color: "success" | "warning" | "err
 
 export default function PaymentPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
-  const totalRevenue = payments.filter(p => p.status === "PAID").reduce((a, p) => a + p.amount, 0);
-  const pending = payments.filter(p => p.status === "PENDING").length;
-  const failed = payments.filter(p => p.status === "FAILED").length;
-  const completed = payments.filter(p => p.status === "PAID").length;
+  const totalRevenue = payments.filter((p) => p.status === "PAID").reduce((a, p) => a + p.amount, 0);
+  const pending = payments.filter((p) => p.status === "PENDING").length;
+  const failed = payments.filter((p) => p.status === "FAILED").length;
+  const completed = payments.filter((p) => p.status === "PAID").length;
 
   const handleFetchPayments = async () => {
     try {
@@ -43,7 +44,7 @@ export default function PaymentPage() {
   return (
     <div className="flex flex-col gap-6">
       <nav className="flex items-center gap-1.5 text-sm text-tertiary">
-        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-primary transition-colors">
+        <Link href="/admin/dashboard" className="flex items-center gap-1 transition-colors hover:text-primary">
           <Home size={14} />
         </Link>
         <ChevronRight size={14} className="text-quaternary" />
@@ -51,7 +52,7 @@ export default function PaymentPage() {
       </nav>
 
       <div>
-        <h1 className="text-2xl font-semibold text-primary flex items-center gap-2">
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-primary">
           <CreditCard className="text-brand-secondary" size={24} /> Payment Transactions
         </h1>
         <p className="mt-1 text-sm text-tertiary">Monitor all transaction records, statuses, and payment methods.</p>
@@ -64,38 +65,58 @@ export default function PaymentPage() {
         <StatsCard icon={<XCircle className="text-rose-500" />} accent="bg-rose-50" label="Failed" value={failed} trend={-1} />
       </div>
 
-      <Table>
-        <Thead>
-          <THeading>Payment ID</THeading>
-          <THeading>Order</THeading>
-          <THeading>Customer</THeading>
-          <THeading>Method</THeading>
-          <THeading className="text-right">Amount</THeading>
-          <THeading>Status</THeading>
-          <THeading>Date</THeading>
-        </Thead>
-        <TBody>
-          {payments.map(p => {
-            const st = statusMap[p.status] ?? statusMap.PENDING;
-            return (
-              <tr key={p.paymentId} className="hover:bg-secondary transition-colors">
-                <TCell className="font-mono text-xs font-semibold text-primary">{"PAY-" + p.paymentId.toString().padStart(4, '0')}</TCell>
-                <TCell className="font-semibold text-primary font-mono">{p.orderCode}</TCell>
-                <TCell className="text-primary">{p.customer}</TCell>
-                <TCell className="text-tertiary">{p.method}</TCell>
-                <TCell className="text-right font-semibold text-primary font-mono">${p.amount.toFixed(2)}</TCell>
-                <TCell>
-                  <BadgeWithDot type="pill-color" color={st.color} size="sm">
-                    {st.label}
-                  </BadgeWithDot>
-                </TCell>
-                <TCell className="text-tertiary">{p.updatedAt}</TCell>
-              </tr>
-            );
-          })}
-        </TBody>
-      </Table>
+      <TableCard.Root>
+        <Table aria-label="Payments table">
+          <Table.Header>
+            <Table.Head id="id" label="Payment ID" isRowHeader allowsSorting />
+            <Table.Head id="order" label="Order" allowsSorting />
+            <Table.Head id="customer" label="Customer" allowsSorting />
+            <Table.Head id="method" label="Method" />
+            <Table.Head id="amount" label="Amount" allowsSorting />
+            <Table.Head id="status" label="Status" />
+            <Table.Head id="date" label="Date" allowsSorting />
+          </Table.Header>
+
+          <Table.Body items={payments}>
+            {(p) => {
+              const st = statusMap[p.status] ?? statusMap.PENDING;
+              return (
+                <Table.Row id={p.paymentId}>
+                  <Table.Cell className="font-mono text-xs font-semibold text-primary">
+                    {"PAY-" + p.paymentId.toString().padStart(4, "0")}
+                  </Table.Cell>
+                  <Table.Cell className="font-mono font-semibold text-primary">{p.orderCode}</Table.Cell>
+                  <Table.Cell className="text-primary">{p.customer}</Table.Cell>
+                  <Table.Cell className="text-tertiary">{p.method}</Table.Cell>
+                  <Table.Cell className="font-mono font-semibold text-primary">${p.amount.toFixed(2)}</Table.Cell>
+                  <Table.Cell>
+                    <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                      {st.label}
+                    </BadgeWithDot>
+                  </Table.Cell>
+                  <Table.Cell className="text-tertiary">{p.updatedAt}</Table.Cell>
+                </Table.Row>
+              );
+            }}
+          </Table.Body>
+        </Table>
+
+        {payments.length === 0 && (
+          <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
+              <CreditCard className="size-5" />
+            </div>
+            <p className="text-sm font-semibold text-primary">No payment transactions</p>
+            <p className="text-xs text-tertiary">Transactions will appear here automatically.</p>
+          </div>
+        )}
+
+        <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
+          <span className="text-xs text-tertiary">
+            Showing <span className="font-semibold text-primary">{payments.length}</span> {payments.length !== 1 ? "payments" : "payment"}
+          </span>
+        </div>
+      </TableCard.Root>
     </div>
   );
 }
-

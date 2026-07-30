@@ -1,11 +1,12 @@
 "use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ChevronRight, Home, Star, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
-import { useEffect, useState } from "react";
 import { Review } from "@/types/review";
 import { reviewService } from "@/services/review-service";
-import { Table, Thead, THeading, TBody, TCell } from "@/components/Table";
+import { Table, TableCard } from "@/components/application/table/table";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 
 const statusMap: Record<Review["status"], { color: "success" | "warning" | "error"; label: string }> = {
@@ -17,8 +18,8 @@ const statusMap: Record<Review["status"], { color: "success" | "warning" | "erro
 function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map(s => (
-        <Star key={s} size={13} className={s <= rating ? "fill-amber-400 text-amber-400" : "text-slate-200 fill-slate-200"} />
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star key={s} size={13} className={s <= rating ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200"} />
       ))}
     </div>
   );
@@ -27,9 +28,9 @@ function StarRating({ rating }: { rating: number }) {
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
 
-  const published = reviews.filter(r => r.status === "PUBLISHED").length;
-  const pending = reviews.filter(r => r.status === "PENDING").length;
-  const hidden = reviews.filter(r => r.status === "HIDDEN").length;
+  const published = reviews.filter((r) => r.status === "PUBLISHED").length;
+  const pending = reviews.filter((r) => r.status === "PENDING").length;
+  const hidden = reviews.filter((r) => r.status === "HIDDEN").length;
   const avgRating = reviews.reduce((s, r) => s + r.rating, 0) / (reviews.length === 0 ? 1 : reviews.length);
 
   const handleFetchReviews = async () => {
@@ -51,14 +52,16 @@ export default function ReviewsPage() {
   return (
     <div className="flex flex-col gap-6">
       <nav className="flex items-center gap-1.5 text-sm text-tertiary">
-        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-primary transition-colors"><Home size={14} /></Link>
+        <Link href="/admin/dashboard" className="flex items-center gap-1 transition-colors hover:text-primary">
+          <Home size={14} />
+        </Link>
         <ChevronRight size={14} className="text-quaternary" />
         <span className="font-medium text-primary">Reviews</span>
       </nav>
 
       <div>
-        <h1 className="text-2xl font-semibold text-primary flex items-center gap-2">
-          <Star className="text-amber-400 fill-amber-400" size={24} /> Customer Reviews
+        <h1 className="flex items-center gap-2 text-2xl font-semibold text-primary">
+          <Star className="fill-amber-400 text-amber-400" size={24} /> Customer Reviews
         </h1>
         <p className="mt-1 text-sm text-tertiary">Manage product reviews, approve or hide customer feedback.</p>
       </div>
@@ -70,36 +73,56 @@ export default function ReviewsPage() {
         <StatsCard icon={<ThumbsDown className="text-rose-500" />} accent="bg-rose-50" label="Hidden" value={hidden} trend={0} />
       </div>
 
-      <Table>
-        <Thead>
-          <THeading>Customer</THeading>
-          <THeading>Product</THeading>
-          <THeading>Rating</THeading>
-          <THeading>Comment</THeading>
-          <THeading>Status</THeading>
-          <THeading>Date</THeading>
-        </Thead>
-        <TBody>
-          {reviews.map(r => {
-            const st = statusMap[r.status] ?? statusMap.PENDING;
-            return (
-              <tr key={r.id} className="hover:bg-secondary transition-colors">
-                <TCell className="font-semibold text-primary">{r.customer.name}</TCell>
-                <TCell className="text-secondary max-w-40 truncate">{r.product.name}</TCell>
-                <TCell><StarRating rating={r.rating} /></TCell>
-                <TCell className="text-tertiary italic max-w-65 truncate">"{r.comment}"</TCell>
-                <TCell>
-                  <BadgeWithDot type="pill-color" color={st.color} size="sm">
-                    {st.label}
-                  </BadgeWithDot>
-                </TCell>
-                <TCell className="text-tertiary">{r.createdAt}</TCell>
-              </tr>
-            );
-          })}
-        </TBody>
-      </Table>
+      <TableCard.Root>
+        <Table aria-label="Reviews table">
+          <Table.Header>
+            <Table.Head id="customer" label="Customer" isRowHeader allowsSorting />
+            <Table.Head id="product" label="Product" allowsSorting />
+            <Table.Head id="rating" label="Rating" allowsSorting />
+            <Table.Head id="comment" label="Comment" />
+            <Table.Head id="status" label="Status" />
+            <Table.Head id="date" label="Date" allowsSorting />
+          </Table.Header>
+
+          <Table.Body items={reviews}>
+            {(r) => {
+              const st = statusMap[r.status] ?? statusMap.PENDING;
+              return (
+                <Table.Row id={r.id}>
+                  <Table.Cell className="font-semibold text-primary">{r.customer.name}</Table.Cell>
+                  <Table.Cell className="max-w-40 truncate text-secondary">{r.product.name}</Table.Cell>
+                  <Table.Cell>
+                    <StarRating rating={r.rating} />
+                  </Table.Cell>
+                  <Table.Cell className="max-w-65 truncate italic text-tertiary">"{r.comment}"</Table.Cell>
+                  <Table.Cell>
+                    <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                      {st.label}
+                    </BadgeWithDot>
+                  </Table.Cell>
+                  <Table.Cell className="text-tertiary">{r.createdAt}</Table.Cell>
+                </Table.Row>
+              );
+            }}
+          </Table.Body>
+        </Table>
+
+        {reviews.length === 0 && (
+          <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
+              <Star className="size-5" />
+            </div>
+            <p className="text-sm font-semibold text-primary">No customer reviews</p>
+            <p className="text-xs text-tertiary">Product reviews will appear here once submitted.</p>
+          </div>
+        )}
+
+        <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
+          <span className="text-xs text-tertiary">
+            Showing <span className="font-semibold text-primary">{reviews.length}</span> {reviews.length !== 1 ? "reviews" : "review"}
+          </span>
+        </div>
+      </TableCard.Root>
     </div>
   );
 }
-
