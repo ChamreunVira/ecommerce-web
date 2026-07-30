@@ -11,13 +11,11 @@ type CreateCategoryModalProps = {
   handleClose: () => void;
 };
 
-type CategoryFormData = Omit<Category, "id" | "createdAt" | "updatedAt">;
+type CategoryFormData = Omit<Category, "id" | "products" | "status" | "createdAt" | "updatedAt">;
 
 const initialCategory: CategoryFormData = {
   name: "",
-  description: "",
-  status: true,
-  products: [],
+  description: ""
 };
 
 export default function CreateCategoryModal({ handleClose }: CreateCategoryModalProps) {

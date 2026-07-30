@@ -12,7 +12,6 @@ import { Promotion } from "@/types/promotion";
 import { Table, TableCard, TableRowActionsDropdown } from "@/components/application/table/table";
 import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 import { Edit01, Trash01 } from "@untitledui/icons";
-import { Avatar } from "@/components/base/avatar/avatar";
 
 const statusMap: Record<Promotion["status"], { color: "success" | "error" | "blue" | "warning" | "gray"; label: string }> = {
   ACTIVE: { color: "success", label: "Active" },
@@ -93,7 +92,6 @@ export default function PromotionsPage() {
     };
   }, []);
 
-  const [currentPage , setCurrentPage] = useState(0)
 
   return (
     <div className="flex flex-col gap-6">
@@ -130,216 +128,90 @@ export default function PromotionsPage() {
         <StatsCard icon={<Percent className="text-rose-500" />} accent="bg-rose-50" label="Expired" value={expired} trend={0} />
       </div>
 
-      return (
       <div className="p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-6">
-        <TableCard.Root>
-          <TableCard.Header
-            title="Team members"
-            badge="100 users"
-            contentTrailing={<TableRowActionsDropdown />}
-          />
 
-          <Table aria-label="Team members table" selectionMode="multiple">
+        <TableCard.Root>
+          <Table aria-label="Promotions table">
             <Table.Header>
-              <Table.Head id="name" label="Name" isRowHeader allowsSorting />
-              <Table.Head id="status" label="Status" allowsSorting />
-              <Table.Head id="role" label="Role" allowsSorting tooltip="Member job position or title" />
-              <Table.Head id="email" label="Email address" allowsSorting />
-              <Table.Head id="teams" label="Teams" />
+              <Table.Head id="code" label="Code" isRowHeader allowsSorting />
+              <Table.Head id="type" label="Type" allowsSorting />
+              <Table.Head id="value" label="Value" allowsSorting />
+              <Table.Head id="minOrder" label="Min. Order" />
+              <Table.Head id="usage" label="Used / Limit" />
+              <Table.Head id="expiry" label="Expiry" allowsSorting />
+              <Table.Head id="status" label="Status" />
               <Table.Head id="actions" />
             </Table.Header>
 
-            <Table.Body items={mockMembers}>
-              {(item) => (
-                <Table.Row id={item.id}>
-                  <Table.Cell>
-                    <div className="flex items-center gap-3">
-                      <Avatar src={item.avatar} alt={item.name} size="md" />
-                      <div className="whitespace-nowrap">
-                        <p className="text-sm font-semibold text-primary">{item.name}</p>
-                        <p className="text-sm text-tertiary">{item.username}</p>
+            <Table.Body items={promotions}>
+              {(p) => {
+                const st = statusMap[p.status] ?? statusMap.ACTIVE;
+                return (
+                  <Table.Row id={p.id}>
+                    <Table.Cell>
+                      <Badge type="pill-color" color="brand" size="sm" className="font-mono font-bold">
+                        {p.code}
+                      </Badge>
+                    </Table.Cell>
+                    <Table.Cell className="capitalize text-tertiary">{p.type.toLowerCase().replace("_", " ")}</Table.Cell>
+                    <Table.Cell className="font-mono font-semibold text-primary">
+                      {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
+                    </Table.Cell>
+                    <Table.Cell className="font-mono text-tertiary">${p.minimumOrder}</Table.Cell>
+                    <Table.Cell>
+                      <div className="text-xs font-medium text-secondary">{p.usageCount} / {p.usageLimit}</div>
+                      <div className="mt-1 h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
+                        <div className="h-full rounded-full bg-brand-primary" style={{ width: `${Math.min((p.usageCount / p.usageLimit) * 100, 100)}%` }} />
                       </div>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <BadgeWithDot size="sm" color={item.status === "Active" ? "success" : "gray"} type="modern">
-                      {item.status}
-                    </BadgeWithDot>
-                  </Table.Cell>
-                  <Table.Cell className="whitespace-nowrap text-secondary font-medium">
-                    {item.role}
-                  </Table.Cell>
-                  <Table.Cell className="whitespace-nowrap text-tertiary">
-                    {item.email}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div className="flex items-center gap-1.5">
-                      {item.teams.map((t) => (
-                        <Badge key={t.name} type="pill-color" color={t.color} size="sm">
-                          {t.name}
-                        </Badge>
-                      ))}
-                      {item.extraTeamsCount > 0 && (
-                        <Badge color="gray" size="sm" type="modern">
-                          +{item.extraTeamsCount}
-                        </Badge>
-                      )}
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
-                        title="Delete member"
-                      >
-                        <Trash01 className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
-                        title="Edit member"
-                      >
-                        <Edit01 className="size-4" />
-                      </button>
-                    </div>
-                  </Table.Cell>
-                </Table.Row>
-              )}
+                    </Table.Cell>
+                    <Table.Cell className="text-tertiary">{p.expiryAt}</Table.Cell>
+                    <Table.Cell>
+                      <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                        {st.label}
+                      </BadgeWithDot>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(p)}
+                          className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
+                          aria-label="Edit promotion"
+                        >
+                          <Edit01 className="size-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(p)}
+                          className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
+                          aria-label="Delete promotion"
+                        >
+                          <Trash01 className="size-4" />
+                        </button>
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              }}
             </Table.Body>
           </Table>
 
-          {/* Untitled UI Pagination Bar */}
-          <div className="flex items-center justify-between border-t border-secondary bg-primary px-4 py-3 md:px-6">
-            <button
-              type="button"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary"
-            >
-              <ArrowLeft className="size-4" />
-              <span>Previous</span>
-            </button>
-
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((page) => (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => setCurrentPage(page)}
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition ${currentPage === page
-                      ? "bg-secondary text-primary font-bold shadow-xs"
-                      : "text-tertiary hover:bg-secondary hover:text-primary"
-                    }`}
-                >
-                  {page}
-                </button>
-              ))}
-              <span className="px-1 text-sm text-tertiary">...</span>
-              <button
-                type="button"
-                onClick={() => setCurrentPage(10)}
-                className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition ${currentPage === 10
-                    ? "bg-secondary text-primary font-bold shadow-xs"
-                    : "text-tertiary hover:bg-secondary hover:text-primary"
-                  }`}
-              >
-                10
-              </button>
+          {promotions.length === 0 && (
+            <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
+                <Tag className="size-5" />
+              </div>
+              <p className="text-sm font-semibold text-primary">No promotions found</p>
+              <p className="text-xs text-tertiary">Create a new promotion to offer discounts to customers.</p>
             </div>
+          )}
 
-            <button
-              type="button"
-              onClick={() => setCurrentPage((p) => Math.min(10, p + 1))}
-              className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary"
-            >
-              <span>Next</span>
-              <ArrowRight className="size-4" />
-            </button>
+          <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
+            <span className="text-xs text-tertiary">
+              Showing <span className="font-semibold text-primary">{promotions.length}</span> {promotions.length !== 1 ? "promotions" : "promotion"}
+            </span>
           </div>
         </TableCard.Root>
-
-        {/* <TableCard.Root>
-        <Table aria-label="Promotions table">
-          <Table.Header>
-            <Table.Head id="code" label="Code" isRowHeader allowsSorting />
-            <Table.Head id="type" label="Type" allowsSorting />
-            <Table.Head id="value" label="Value" allowsSorting />
-            <Table.Head id="minOrder" label="Min. Order" />
-            <Table.Head id="usage" label="Used / Limit" />
-            <Table.Head id="expiry" label="Expiry" allowsSorting />
-            <Table.Head id="status" label="Status" />
-            <Table.Head id="actions" />
-          </Table.Header>
-
-          <Table.Body items={promotions}>
-            {(p) => {
-              const st = statusMap[p.status] ?? statusMap.ACTIVE;
-              return (
-                <Table.Row id={p.id}>
-                  <Table.Cell>
-                    <Badge type="pill-color" color="brand" size="sm" className="font-mono font-bold">
-                      {p.code}
-                    </Badge>
-                  </Table.Cell>
-                  <Table.Cell className="capitalize text-tertiary">{p.type.toLowerCase().replace("_", " ")}</Table.Cell>
-                  <Table.Cell className="font-mono font-semibold text-primary">
-                    {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
-                  </Table.Cell>
-                  <Table.Cell className="font-mono text-tertiary">${p.minimumOrder}</Table.Cell>
-                  <Table.Cell>
-                    <div className="text-xs font-medium text-secondary">{p.usageCount} / {p.usageLimit}</div>
-                    <div className="mt-1 h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
-                      <div className="h-full rounded-full bg-brand-primary" style={{ width: `${Math.min((p.usageCount / p.usageLimit) * 100, 100)}%` }} />
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell className="text-tertiary">{p.expiryAt}</Table.Cell>
-                  <Table.Cell>
-                    <BadgeWithDot type="pill-color" color={st.color} size="sm">
-                      {st.label}
-                    </BadgeWithDot>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(p)}
-                        className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
-                        aria-label="Edit promotion"
-                      >
-                        <Edit01 className="size-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDeleteTarget(p)}
-                        className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
-                        aria-label="Delete promotion"
-                      >
-                        <Trash01 className="size-4" />
-                      </button>
-                    </div>
-                  </Table.Cell>
-                </Table.Row>
-              );
-            }}
-          </Table.Body>
-        </Table>
-
-        {promotions.length === 0 && (
-          <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
-              <Tag className="size-5" />
-            </div>
-            <p className="text-sm font-semibold text-primary">No promotions found</p>
-            <p className="text-xs text-tertiary">Create a new promotion to offer discounts to customers.</p>
-          </div>
-        )}
-
-        <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
-          <span className="text-xs text-tertiary">
-            Showing <span className="font-semibold text-primary">{promotions.length}</span> {promotions.length !== 1 ? "promotions" : "promotion"}
-          </span>
-        </div>
-      </TableCard.Root> */}
 
         {isModalOpen ? (
           <PromotionModal
@@ -363,5 +235,6 @@ export default function PromotionsPage() {
           />
         ) : null}
       </div>
-      );
+    </div>
+  );
 }

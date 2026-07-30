@@ -18,7 +18,7 @@ class CategoryService {
   }
 
   async create(
-    category: Omit<Category, "id" | "createdAt" | "updatedAt">,
+    category: Omit<Category, "id" | "products" | "status" | "createdAt" | "updatedAt">,
   ): Promise<ApiResponse<Category>> {
     const response = await http.post(this.endPoint, category);
     return response.data;

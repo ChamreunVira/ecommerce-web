@@ -2,11 +2,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { isAxiosError } from "axios";
-import { ArrowDownAZ, ChevronRight, Home, ShieldAlert, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowDownAZ, ChevronRight, Home, ShieldAlert, AlertCircle, RefreshCw, ArrowLeft, ArrowRight } from "lucide-react";
 import { AuditModule } from "@/constant/constant";
 import { http } from "@/lib/axios";
 import { PageResponse } from "@/types/page-response";
-import LegacyTable, { Column } from "@/components/Table";
+import { Table, TableCard } from "@/components/application/table/table";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 
 export enum AuditAction {
@@ -32,6 +32,13 @@ export interface AuditLogs {
   newValues: string | null;
 }
 
+const actionColorMap: Record<string, "success" | "blue" | "error" | "indigo" | "gray"> = {
+  CREATE: "success",
+  UPDATE: "blue",
+  DELETE: "error",
+  LOGIN: "indigo",
+};
+
 export default function AuditLogPage() {
   const [auditLogs, setAuditLogs] = useState<AuditLogs[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,13 +55,7 @@ export default function AuditLogPage() {
     setError(null);
     try {
       const response = await http.get<PageResponse<AuditLogs>>("/audit", {
-        params: {
-          // The API is zero-indexed; the UI pagination is one-indexed.
-          page: currentPage - 1,
-          size: pageSize,
-          sortBy,
-          ascending,
-        },
+        params: { page: currentPage - 1, size: pageSize, sortBy, ascending },
         signal,
       });
       if (response.status === 200) {
@@ -74,188 +75,158 @@ export default function AuditLogPage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- this effect synchronizes the table with its server query.
     void handleFetchAuditLogs(controller.signal);
     return () => controller.abort();
   }, [handleFetchAuditLogs]);
 
-  const actionColorMap: Record<string, "success" | "blue" | "error" | "indigo" | "gray"> = {
-    CREATE: "success",
-    UPDATE: "blue",
-    DELETE: "error",
-    LOGIN: "indigo",
-  };
-
-  const columns: Column<AuditLogs>[] = [
-    {
-      header: "Log ID",
-      key: "id",
-      cellClassName: "font-mono text-xs text-primary font-semibold",
-      render: (_, log) => <span>{log.id}</span>
-    },
-    {
-      header: "Action",
-      key: "action",
-      render: (_, log) => {
-        const color = actionColorMap[log.action] ?? "gray";
-        return (
-          <BadgeWithDot type="pill-color" color={color} size="sm">
-            {log.action}
-          </BadgeWithDot>
-        );
-      }
-    },
-    {
-      header: "Module & ID",
-      key: "module",
-      render: (_, log) => (
-        <>
-          <p className="font-semibold text-slate-700">{log.module}</p>
-          <p className="text-xs text-slate-400">ID: {log.entityId}</p>
-        </>
-      )
-    },
-    {
-      header: "Performed By",
-      key: "performedBy",
-      render: (_, log) => (
-        <>
-          <div className="flex items-center gap-2 text-sm font-medium text-slate-900">
-            {log.performedBy}
-          </div>
-          <p className="text-xs text-slate-400">{log.ipAddress}</p>
-        </>
-      )
-    },
-    {
-      header: "Reason / Why",
-      key: "details",
-      className: "w-1/4",
-      render: (_, log) => (
-        <>
-          <p className="text-sm font-medium text-slate-800">{log.details}</p>
-          {log.reason && (
-            <p className="mt-0.5 text-xs text-slate-500 italic flex items-center gap-1 font-normal">
-              <AlertCircle size={12} className="text-indigo-400 shrink-0" />
-              {log.reason}
-            </p>
-          )}
-        </>
-      )
-    },
-    {
-      header: "Timestamp",
-      key: "timestamp",
-      className: "text-right",
-      cellClassName: "text-right whitespace-nowrap text-slate-500 text-xs",
-      render: (_, log) => <span>{new Date(log.timestamp).toLocaleString()}</span>
-    }
-  ];
-
   return (
     <div className="flex flex-col gap-6">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-slate-500">
-        <Link
-          href="/admin/dashboard"
-          className="flex items-center gap-1 hover:text-slate-800 transition-colors"
-        >
-          <Home size={14} />
-        </Link>
-        <ChevronRight size={14} className="text-slate-300" />
-        <span className="font-medium text-slate-700">Audit Log</span>
+      <nav className="flex items-center gap-1.5 text-sm text-tertiary">
+        <Link href="/admin/dashboard" className="flex items-center gap-1 transition-colors hover:text-primary"><Home size={14} /></Link>
+        <ChevronRight size={14} className="text-quaternary" />
+        <span className="font-medium text-primary">Audit Log</span>
       </nav>
 
-      {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-950 flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-2xl font-semibold text-primary">
             <ShieldAlert className="text-indigo-500" size={24} />
-            System Audit & Activity Logs
+            System Audit &amp; Activity Logs
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            A secure trail tracking who did what, when, and why for compliance.
-          </p>
+          <p className="mt-1 text-sm text-tertiary">A secure trail tracking who did what, when, and why for compliance.</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-slate-600">
-          <ArrowDownAZ size={16} className="text-indigo-500" />
-          <span className="font-medium">Audit log controls</span>
+      {error && (
+        <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
+      )}
+
+      <TableCard.Root>
+        {/* Controls bar */}
+        <div className="flex flex-col gap-3 border-b border-secondary bg-primary px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-6">
+          <div className="flex items-center gap-2 text-sm text-secondary">
+            <ArrowDownAZ size={16} className="text-brand-secondary" />
+            <span className="font-medium">Audit log controls</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+              className="h-9 rounded-lg border border-secondary bg-primary px-3 text-sm font-medium text-secondary outline-none focus:border-brand-primary"
+            >
+              <option value="id">Sort by ID</option>
+              <option value="timestamp">Sort by time</option>
+              <option value="action">Sort by action</option>
+              <option value="module">Sort by module</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => { setAscending((v) => !v); setCurrentPage(1); }}
+              className="h-9 rounded-lg border border-secondary bg-primary px-3 text-sm font-medium text-secondary transition hover:border-brand-primary hover:bg-brand-primary/5 hover:text-brand-primary"
+            >
+              {ascending ? "Ascending ↑" : "Descending ↓"}
+            </button>
+            <select
+              value={pageSize}
+              onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+              className="h-9 rounded-lg border border-secondary bg-primary px-3 text-sm font-medium text-secondary outline-none focus:border-brand-primary"
+            >
+              <option value={10}>10 per page</option>
+              <option value={25}>25 per page</option>
+              <option value={50}>50 per page</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => handleFetchAuditLogs()}
+              disabled={isLoading}
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand-primary px-3 text-sm font-semibold text-white transition hover:bg-brand-primary_hover disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <RefreshCw size={15} className={isLoading ? "animate-spin" : ""} />
+              Refresh
+            </button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="sr-only" htmlFor="audit-sort">Sort audit logs</label>
-          <select
-            id="audit-sort"
-            value={sortBy}
-            onChange={(event) => {
-              setSortBy(event.target.value);
-              setCurrentPage(1);
+
+        <Table aria-label="Audit logs table">
+          <Table.Header>
+            <Table.Head id="id" label="Log ID" isRowHeader allowsSorting />
+            <Table.Head id="action" label="Action" />
+            <Table.Head id="module" label="Module & ID" />
+            <Table.Head id="performedBy" label="Performed By" />
+            <Table.Head id="details" label="Reason / Why" />
+            <Table.Head id="timestamp" label="Timestamp" allowsSorting />
+          </Table.Header>
+
+          <Table.Body items={isLoading ? [] : auditLogs}>
+            {(log) => {
+              const color = actionColorMap[log.action] ?? "gray";
+              return (
+                <Table.Row id={log.id}>
+                  <Table.Cell className="font-mono text-xs font-semibold text-primary">
+                    #{log.id}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <BadgeWithDot type="pill-color" color={color} size="sm">{log.action}</BadgeWithDot>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <p className="font-semibold text-primary">{log.module}</p>
+                    <p className="text-xs text-tertiary">ID: {log.entityId ?? "—"}</p>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <p className="text-sm font-medium text-primary">{log.performedBy ?? "—"}</p>
+                    <p className="text-xs text-tertiary">{log.ipAddress ?? ""}</p>
+                  </Table.Cell>
+                  <Table.Cell className="max-w-xs">
+                    <p className="text-sm font-medium text-primary">{log.details ?? "—"}</p>
+                    {log.reason && (
+                      <p className="mt-0.5 flex items-center gap-1 text-xs italic text-tertiary">
+                        <AlertCircle size={12} className="shrink-0 text-indigo-400" />
+                        {log.reason}
+                      </p>
+                    )}
+                  </Table.Cell>
+                  <Table.Cell className="whitespace-nowrap text-xs text-tertiary">
+                    {new Date(log.timestamp).toLocaleString()}
+                  </Table.Cell>
+                </Table.Row>
+              );
             }}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-          >
-            <option value="id">Sort by ID</option>
-            <option value="timestamp">Sort by time</option>
-            <option value="action">Sort by action</option>
-            <option value="module">Sort by module</option>
-          </select>
+          </Table.Body>
+        </Table>
+
+        {!isLoading && auditLogs.length === 0 && (
+          <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary"><ShieldAlert size={20} /></div>
+            <p className="text-sm font-semibold text-primary">No audit logs found</p>
+            <p className="text-xs text-tertiary">There are no audit logs for this page.</p>
+          </div>
+        )}
+        {isLoading && <div className="px-6 py-12 text-center text-sm text-tertiary">Loading audit logs…</div>}
+
+        {/* Server-side pagination */}
+        <div className="flex items-center justify-between border-t border-secondary bg-primary px-4 py-3 md:px-6">
           <button
             type="button"
-            onClick={() => {
-              setAscending((value) => !value);
-              setCurrentPage(1);
-            }}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary disabled:opacity-40"
           >
-            {ascending ? "Ascending" : "Descending"}
+            <ArrowLeft className="size-4" /> Previous
           </button>
-          <label className="sr-only" htmlFor="audit-page-size">Audit logs per page</label>
-          <select
-            id="audit-page-size"
-            value={pageSize}
-            onChange={(event) => {
-              setPageSize(Number(event.target.value));
-              setCurrentPage(1);
-            }}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
-          >
-            <option value={10}>10 per page</option>
-            <option value={25}>25 per page</option>
-            <option value={50}>50 per page</option>
-          </select>
+          <span className="text-xs text-tertiary">
+            Page <span className="font-semibold text-primary">{currentPage}</span> of{" "}
+            <span className="font-semibold text-primary">{totalPages}</span> · <span className="font-semibold text-primary">{totalElements}</span> entries
+          </span>
           <button
             type="button"
-            onClick={() => handleFetchAuditLogs()}
-            disabled={isLoading}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage >= totalPages}
+            className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary disabled:opacity-40"
           >
-            <RefreshCw size={15} className={isLoading ? "animate-spin" : ""} />
-            Refresh
+            Next <ArrowRight className="size-4" />
           </button>
         </div>
-      </div>
-
-      {error ? (
-        <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {error}
-        </div>
-      ) : null}
-
-      <LegacyTable
-        data={auditLogs}
-        columns={columns}
-        rowKey="id"
-        emptyTitle={isLoading ? "Loading audit logs" : "No audit logs found"}
-        emptyDescription={isLoading ? "Please wait while the latest activity is retrieved." : "There are no audit logs for this page."}
-        pagination={{
-          currentPage,
-          pageSize,
-          totalElements,
-          totalPages,
-          onPageChange: (page) => setCurrentPage(page)
-        }}
-      />
+      </TableCard.Root>
     </div>
   );
 }

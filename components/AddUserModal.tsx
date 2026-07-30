@@ -1,8 +1,10 @@
 "use client";
 
+import { roleService } from "@/services/role-service";
 import { userService } from "@/services/user-service";
+import { Role } from "@/types/role";
 import { CheckIcon } from "lucide-react";
-import { ChangeEvent, FormEvent, SubmitEventHandler, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import AdminModal from "./AdminModal";
 
@@ -18,12 +20,6 @@ type UserFormData = {
   roles: string[];
 };
 
-const roles = [
-  { label: "Admin", value: "ROLE_ADMIN" },
-  { label: "Seller", value: "ROLE_SELLER" },
-  { label: "Customer", value: "ROLE_CUSTOMER" },
-];
-
 export default function AddUserModal({
   handleCloseAction,
   onCreateSuccessAction,
@@ -34,18 +30,37 @@ export default function AddUserModal({
     password: "",
     roles: ["ROLE_CUSTOMER"],
   });
+  const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [loadingRoles, setLoadingRoles] = useState(true);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        setLoadingRoles(true);
+        const res = await roleService.getAllRoles();
+        if (res.success && res.data) {
+          setAvailableRoles(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load roles:", err);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+    fetchRoles();
+  }, []);
 
   const handleUserFieldsChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setUserData((current) => ({ ...current, [name]: value }));
   };
 
-  const handleRoleChange = (role: string, checked: boolean) => {
+  const handleRoleChange = (roleName: string, checked: boolean) => {
     setUserData((current) => {
       const nextRoles = checked
-        ? [...new Set([...current.roles, role])]
-        : current.roles.filter((item) => item !== role);
+        ? [...new Set([...current.roles, roleName])]
+        : current.roles.filter((item) => item !== roleName);
 
       return { ...current, roles: nextRoles };
     });
@@ -72,7 +87,7 @@ export default function AddUserModal({
   return (
     <AdminModal
       title="Create user"
-      description="Add a customer, seller, or admin account."
+      description="Add a customer, seller, or custom role account."
       onClose={handleCloseAction}
       maxWidth="max-w-xl"
       footer={
@@ -80,7 +95,7 @@ export default function AddUserModal({
           <button
             type="button"
             onClick={handleCloseAction}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             Cancel
           </button>
@@ -98,7 +113,7 @@ export default function AddUserModal({
     >
       <form id="create-user-form" onSubmit={handleCreateUser} className="space-y-4">
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="fullName">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="fullName">
             Full name
           </label>
           <input
@@ -108,12 +123,12 @@ export default function AddUserModal({
             placeholder="Chamreun Vira"
             name="fullName"
             value={userData.fullName}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
             required
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="email">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="email">
             Email
           </label>
           <input
@@ -123,12 +138,12 @@ export default function AddUserModal({
             placeholder="user@example.com"
             name="email"
             value={userData.email}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
             required
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-slate-700" htmlFor="password">
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="password">
             Password
           </label>
           <input
@@ -138,29 +153,33 @@ export default function AddUserModal({
             placeholder="Minimum 8 characters"
             name="password"
             value={userData.password}
-            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+            className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
             required
           />
         </div>
 
         <fieldset>
-          <legend className="text-sm font-medium text-slate-700">Roles</legend>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {roles.map((role) => (
-              <label
-                key={role.value}
-                className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700"
-              >
-                <input
-                  type="checkbox"
-                  checked={userData.roles.includes(role.value)}
-                  onChange={(event) => handleRoleChange(role.value, event.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-500"
-                />
-                {role.label}
-              </label>
-            ))}
-          </div>
+          <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Assign Roles</legend>
+          {loadingRoles ? (
+            <p className="mt-2 text-xs text-slate-400">Loading dynamic roles...</p>
+          ) : (
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              {availableRoles.map((role) => (
+                <label
+                  key={role.id}
+                  className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700 dark:border-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                >
+                  <input
+                    type="checkbox"
+                    checked={userData.roles.includes(role.name)}
+                    onChange={(event) => handleRoleChange(role.name, event.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-indigo-500 focus:ring-indigo-500"
+                  />
+                  <span className="font-mono text-xs font-bold truncate">{role.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
         </fieldset>
       </form>
     </AdminModal>

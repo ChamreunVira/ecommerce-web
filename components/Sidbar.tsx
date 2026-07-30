@@ -336,6 +336,7 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
   const hasMatchingChild = React.Children.toArray(children).some(
     (child) =>
       React.isValidElement<SidebarItemProps>(child) &&
+      typeof child.props.label === "string" &&
       child.props.label.toLowerCase().includes(query.toLowerCase()),
   );
   const matchesGroup =
