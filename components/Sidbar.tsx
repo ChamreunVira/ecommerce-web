@@ -119,7 +119,7 @@ const Sidbar: React.FC<SidebarProps> = ({ children }) => {
       )}
       <aside
         aria-label="Admin navigation"
-        className={`fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl shadow-slate-950/5 transition-transform duration-200 motion-reduce:transition-none dark:border-slate-800 dark:bg-slate-950 md:sticky md:top-0 md:z-30 md:h-screen md:shadow-none md:transition-[width] md:duration-200 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 ${collapsed ? "w-18 md:w-18" : "w-[280px] md:w-[280px]"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl shadow-slate-950/5 transition-transform duration-200 motion-reduce:transition-none dark:border-slate-800 dark:bg-slate-950 md:sticky md:top-0 md:z-30 md:h-screen md:shadow-none md:transition-[width] md:duration-200 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 ${collapsed ? "w-18 md:w-18" : "w-70 md:w-70"}`}
       >
         <header className="sticky top-0 z-10 shrink-0 border-b border-slate-100 bg-white px-3.5 py-3.5 dark:border-slate-800 dark:bg-slate-950">
           <div className="flex items-center gap-2.5">
@@ -129,7 +129,7 @@ const Sidbar: React.FC<SidebarProps> = ({ children }) => {
               className="flex min-w-0 flex-1 items-center gap-3 rounded-xl outline-none transition hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-600 dark:hover:bg-slate-900"
               aria-label="ViraDev workspace dashboard"
             >
-              <Image width={120} height={0} src={assets.brand} alt="brand"/>
+              <Image width={120} height={0} src={assets.brand} alt="brand" />
             </Link>
             <button
               type="button"
@@ -327,15 +327,15 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
     return saved === null ? defaultOpen : saved === "true";
   });
   const contentId = useId();
-  
+
   const toggle = () =>
     setOpen((previous) => {
       const next = !previous;
       window.localStorage.setItem(groupStorageKey(label), String(next));
       return next;
     });
-  
-    const hasMatchingChild = React.Children.toArray(children).some(
+
+  const hasMatchingChild = React.Children.toArray(children).some(
     (child) =>
       React.isValidElement<SidebarItemProps>(child) &&
       typeof child.props.label === "string" &&

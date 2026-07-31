@@ -4,7 +4,7 @@ import HasPermission from "@/components/HasPermission";
 import {
   LayoutDashboard, ClipboardList, Package, Settings,
   ShoppingCart, Tags, Users, Warehouse, CreditCard, Truck,
-  RotateCcw, Tag, BarChart2, Star, ShieldCheck, TrendingUp
+  RotateCcw, Tag, BarChart2, Star, ShieldCheck, TrendingUp, LayoutTemplate
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import "@/styles/globals.css";
@@ -180,6 +180,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           icon={<TrendingUp size={18} />}
           defaultOpen={[
             "/admin/promotions",
+            "/admin/banner",
             "/admin/reports",
             "/admin/reviews",
           ].includes(pathName)}
@@ -192,6 +193,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               path="/admin/promotions"
             />
           </HasPermission>
+
+          {/* Banners — admin only */}
+          <SidebarItem
+            icon={<LayoutTemplate size={18} />}
+            label="Banners"
+            active={is("/admin/banner")}
+            path="/admin/banner"
+          />
 
           <HasPermission name="REPORT_READ">
             <SidebarItem
