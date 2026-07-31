@@ -6,6 +6,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState,
 } from "react";
@@ -21,9 +22,35 @@ import { authService } from "@/services/auth-service";
 import { cartService } from "@/services/cart-service";
 import { categoryService } from "@/services/category-service";
 
+async function safe<T>(promise: Promise<T>, errorLabel?: string): Promise<T | null> {
+  try {
+    return await promise;
+  } catch (err) {
+    if (errorLabel) console.error(`${errorLabel}:`, err);
+    return null;
+  }
+}
+
+type CartState = { cart: Partial<Cart> | null; cartItems: CartItem[] };
+type CartAction = { type: "SET"; payload: Partial<Cart> } | { type: "CLEAR" };
+
+const initialCartState: CartState = { cart: null, cartItems: [] };
+
+function cartReducer(state: CartState, action: CartAction): CartState {
+  switch (action.type) {
+    case "SET":
+      return { cart: action.payload, cartItems: action.payload.cartItems ?? [] };
+    case "CLEAR":
+      return initialCartState;
+    default:
+      return state;
+  }
+}
+
 type AppContextType = {
   router: AppRouterInstance;
   user: Partial<User> | null;
+  setUser: React.Dispatch<React.SetStateAction<Partial<User> | null>>;
   cart: Partial<Cart> | null;
   cartItems: CartItem[];
   products: Product[];
@@ -31,23 +58,18 @@ type AppContextType = {
   isInitializing: boolean;
   sessionReady: boolean;
   getTotalCart: () => number;
+  refreshUser: () => Promise<Partial<User> | null>;
   refreshCart: () => Promise<void>;
-  handleAddProductToCart: (
-    productId: number,
-    quantity?: number,
-  ) => Promise<void>;
-  handleMinusProductFromCart: (
-    cartId: number,
-    quantity: number,
-  ) => Promise<void>;
+  logout: () => void;
+  handleAddProductToCart: (productId: number, quantity?: number) => Promise<void>;
+  handleMinusProductFromCart: (cartId: number, quantity: number) => Promise<void>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
 
 export const useAppContext = (): AppContextType => {
   const ctx = useContext(AppContext);
-  if (!ctx)
-    throw new Error("useAppContext must be used within AppContextProvider");
+  if (!ctx) throw new Error("useAppContext must be used within AppContextProvider");
   return ctx;
 };
 
@@ -58,34 +80,56 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const isMounted = useRef(true);
 
   const [user, setUser] = useState<Partial<User> | null>(null);
-  const [cart, setCart] = useState<Partial<Cart> | null>(null);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartState, dispatchCart] = useReducer(cartReducer, initialCartState);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [isInitializing, setIsInitializing] = useState(true);
 
   const applyCart = useCallback((data: Partial<Cart>) => {
-    setCart(data);
-    setCartItems(data.cartItems ?? []);
+    dispatchCart({ type: "SET", payload: data });
   }, []);
 
   const getTotalCart = useCallback(
-    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    [cartItems],
+    () => cartState.cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartState.cartItems],
   );
 
   const refreshCart = useCallback(async () => {
-    const response = await cartService.getAll().catch(() => null);
+    const response = await safe(cartService.getAll());
     if (response?.success && response.data) applyCart(response.data);
   }, [applyCart]);
 
+  const refreshUser = useCallback(async () => {
+    const loggedIn = await safe(authService.isAuthenticated());
+    if (!loggedIn) {
+      setUser(null);
+      return null;
+    }
+
+    const meRes = await safe(authService.me());
+    if (meRes?.success && meRes.data) {
+      setUser(meRes.data);
+      const cartRes = await safe(cartService.getAll());
+      if (cartRes?.success && cartRes.data) applyCart(cartRes.data);
+      return meRes.data;
+    }
+
+    setUser(null);
+    return null;
+  }, [applyCart]);
+
+  const logout = useCallback(() => {
+    authService.logout();
+    setUser(null);
+    dispatchCart({ type: "CLEAR" });
+  }, []);
+
   const handleAddProductToCart = useCallback(
     async (productId: number, quantity = 1) => {
-      const response = await cartService.addToCart(productId, quantity)
-        .catch((e) => {
-          console.error("addToCart:", e);
-          return null;
-        });
+      const response = await safe(
+        cartService.addToCart(productId, quantity),
+        "addToCart",
+      );
       if (response?.success && response.data) applyCart(response.data);
     },
     [applyCart],
@@ -93,12 +137,10 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const handleMinusProductFromCart = useCallback(
     async (cartId: number, quantity: number) => {
-      const response = await cartService
-        .updateCart(cartId, quantity)
-        .catch((e) => {
-          console.error("updateCart:", e);
-          return null;
-        });
+      const response = await safe(
+        cartService.updateCart(cartId, quantity),
+        "updateCart",
+      );
       if (response?.success && response.data) applyCart(response.data);
     },
     [applyCart],
@@ -109,12 +151,12 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const init = async () => {
       try {
-        const loggedIn = await authService.isAuthenticated().catch(() => false);
+        const loggedIn = await safe(authService.isAuthenticated());
 
         const [categoryRes, cartRes, meRes] = await Promise.all([
-          categoryService.getAll().catch(() => null),
-          loggedIn ? cartService.getAll().catch(() => null) : null,
-          loggedIn ? authService.me().catch(() => null) : null,
+          safe(categoryService.getAll()),
+          loggedIn ? safe(cartService.getAll()) : null,
+          loggedIn ? safe(authService.me()) : null,
         ]);
 
         if (!isMounted.current) return;
@@ -142,27 +184,31 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       router,
       user,
-      cart,
-      cartItems,
+      setUser,
+      cart: cartState.cart,
+      cartItems: cartState.cartItems,
       products,
       categories,
       isInitializing,
       sessionReady: !isInitializing,
       getTotalCart,
+      refreshUser,
       refreshCart,
+      logout,
       handleAddProductToCart,
       handleMinusProductFromCart,
     }),
     [
       router,
       user,
-      cart,
-      cartItems,
+      cartState,
       products,
       categories,
       isInitializing,
       getTotalCart,
+      refreshUser,
       refreshCart,
+      logout,
       handleAddProductToCart,
       handleMinusProductFromCart,
     ],

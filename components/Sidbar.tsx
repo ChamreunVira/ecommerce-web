@@ -119,17 +119,17 @@ const Sidbar: React.FC<SidebarProps> = ({ children }) => {
       )}
       <aside
         aria-label="Admin navigation"
-        className={`fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl shadow-slate-950/5 transition-transform duration-200 motion-reduce:transition-none dark:border-slate-800 dark:bg-slate-950 md:sticky md:top-0 md:z-30 md:h-screen md:shadow-none md:transition-[width] md:duration-200 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 ${collapsed ? "w-[72px] md:w-[72px]" : "w-[280px] md:w-[280px]"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl shadow-slate-950/5 transition-transform duration-200 motion-reduce:transition-none dark:border-slate-800 dark:bg-slate-950 md:sticky md:top-0 md:z-30 md:h-screen md:shadow-none md:transition-[width] md:duration-200 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 ${collapsed ? "w-18 md:w-18" : "w-[280px] md:w-[280px]"}`}
       >
         <header className="sticky top-0 z-10 shrink-0 border-b border-slate-100 bg-white px-3.5 py-3.5 dark:border-slate-800 dark:bg-slate-950">
           <div className="flex items-center gap-2.5">
             <Link
               href="/admin/dashboard"
               onClick={closeMobile}
-              className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-1.5 outline-none transition hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-600 dark:hover:bg-slate-900"
+              className="flex min-w-0 flex-1 items-center gap-3 rounded-xl outline-none transition hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-blue-600 dark:hover:bg-slate-900"
               aria-label="ViraDev workspace dashboard"
             >
-              <Image width={100} height={32} src={assets.brand} alt="brand"/>
+              <Image width={120} height={0} src={assets.brand} alt="brand"/>
             </Link>
             <button
               type="button"
@@ -327,25 +327,30 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
     return saved === null ? defaultOpen : saved === "true";
   });
   const contentId = useId();
+  
   const toggle = () =>
     setOpen((previous) => {
       const next = !previous;
       window.localStorage.setItem(groupStorageKey(label), String(next));
       return next;
     });
-  const hasMatchingChild = React.Children.toArray(children).some(
+  
+    const hasMatchingChild = React.Children.toArray(children).some(
     (child) =>
       React.isValidElement<SidebarItemProps>(child) &&
       typeof child.props.label === "string" &&
       child.props.label.toLowerCase().includes(query.toLowerCase()),
   );
+
   const matchesGroup =
     !query ||
     label.toLowerCase().includes(query.toLowerCase()) ||
     hasMatchingChild;
+
   const childQuery = label.toLowerCase().includes(query.toLowerCase())
     ? ""
     : query;
+
   const groupIsOpen = query ? true : open;
 
   if (collapsed)
@@ -365,7 +370,7 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
         {/* Flyout */}
         <div
           id={contentId}
-          className={`absolute left-[calc(100%+8px)] top-0 z-[100] w-56 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-950/10 transition-all duration-200 dark:border-slate-700 dark:bg-slate-900 ${groupIsOpen ? "visible translate-x-0 opacity-100" : "invisible pointer-events-none -translate-x-1 opacity-0"}`}
+          className={`absolute left-[calc(100%+8px)] top-0 z-100 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white p-2 shadow-xl shadow-slate-950/10 transition-all duration-200 dark:border-slate-700 dark:bg-slate-900 ${groupIsOpen ? "visible translate-x-0 opacity-100" : "invisible pointer-events-none -translate-x-1 opacity-0"}`}
         >
           <p className="whitespace-nowrap px-2 pb-1.5 pt-1 text-[11px] font-bold uppercase tracking-wider text-slate-500">
             {label}
@@ -385,7 +390,7 @@ export const SidebarGroup: React.FC<SidebarGroupProps> = ({
       <button
         type="button"
         onClick={toggle}
-        className="flex h-9 w-full items-center justify-between gap-3 rounded-lg px-2.5 text-left text-[13px] font-bold uppercase tracking-wider text-slate-500 outline-none transition duration-200 hover:bg-slate-100/70 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-indigo-600 motion-reduce:transition-none dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        className="flex h-9 w-full text-[14px] font-semibold text-slate-700 hover:text-slate-950 items-center justify-between gap-3 rounded-lg px-2.5 text-left outline-none transition duration-200 hover:bg-slate-100/70 focus-visible:ring-2 focus-visible:ring-indigo-600 motion-reduce:transition-none dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
         aria-expanded={groupIsOpen}
         aria-controls={contentId}
       >

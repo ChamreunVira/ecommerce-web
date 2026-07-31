@@ -9,7 +9,7 @@ import PromotionModal from "@/components/PromotionModal";
 import { toast } from "react-toastify";
 import { promotionService } from "@/services/promotion-service";
 import { Promotion } from "@/types/promotion";
-import { Table, TableCard, TableRowActionsDropdown } from "@/components/application/table/table";
+import { Table, TableCard } from "@/components/application/table/table";
 import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 import { Edit01, Trash01 } from "@untitledui/icons";
 
@@ -235,6 +235,7 @@ export default function PromotionsPage() {
           />
         ) : null}
       </div>
+
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
   User2,
   FileText,
   Package,
+  ShoppingBag,
 } from "lucide-react";
 
 import { orderService } from "@/services/order-service";
@@ -20,48 +21,48 @@ import { Order } from "@/types/order";
 const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 
 const STATUS_MAP: Record<string, { dot: string; pill: string; label: string }> =
-  {
-    PENDING_PAYMENT: {
-      dot: "bg-amber-400",
-      pill: "bg-amber-50 text-amber-700 ring-amber-200",
-      label: "Pending Payment",
-    },
-    PENDING: {
-      dot: "bg-amber-400",
-      pill: "bg-amber-50 text-amber-700 ring-amber-200",
-      label: "Pending",
-    },
-    PRESESSING: {
-      dot: "bg-sky-400",
-      pill: "bg-sky-50 text-sky-700 ring-sky-200",
-      label: "Processing",
-    },
-    PROCESSING: {
-      dot: "bg-sky-400",
-      pill: "bg-sky-50 text-sky-700 ring-sky-200",
-      label: "Processing",
-    },
-    SHIPPED: {
-      dot: "bg-indigo-400",
-      pill: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-      label: "Shipped",
-    },
-    DELIVERED: {
-      dot: "bg-emerald-400",
-      pill: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-      label: "Delivered",
-    },
-    CANCELLED: {
-      dot: "bg-rose-400",
-      pill: "bg-rose-50 text-rose-700 ring-rose-200",
-      label: "Cancelled",
-    },
-    REFUNDED: {
-      dot: "bg-slate-400",
-      pill: "bg-slate-100 text-slate-600 ring-slate-200",
-      label: "Refunded",
-    },
-  };
+{
+  PENDING_PAYMENT: {
+    dot: "bg-amber-400",
+    pill: "bg-amber-50 text-amber-700 ring-amber-200",
+    label: "Pending Payment",
+  },
+  PENDING: {
+    dot: "bg-amber-400",
+    pill: "bg-amber-50 text-amber-700 ring-amber-200",
+    label: "Pending",
+  },
+  PRESESSING: {
+    dot: "bg-sky-400",
+    pill: "bg-sky-50 text-sky-700 ring-sky-200",
+    label: "Processing",
+  },
+  PROCESSING: {
+    dot: "bg-sky-400",
+    pill: "bg-sky-50 text-sky-700 ring-sky-200",
+    label: "Processing",
+  },
+  SHIPPED: {
+    dot: "bg-indigo-400",
+    pill: "bg-indigo-50 text-indigo-700 ring-indigo-200",
+    label: "Shipped",
+  },
+  DELIVERED: {
+    dot: "bg-emerald-400",
+    pill: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    label: "Delivered",
+  },
+  CANCELLED: {
+    dot: "bg-rose-400",
+    pill: "bg-rose-50 text-rose-700 ring-rose-200",
+    label: "Cancelled",
+  },
+  REFUNDED: {
+    dot: "bg-slate-400",
+    pill: "bg-slate-100 text-slate-600 ring-slate-200",
+    label: "Refunded",
+  },
+};
 
 function StatusBadge({ status }: { status: string }) {
   const s = STATUS_MAP[status] ?? STATUS_MAP["PENDING"];
@@ -165,7 +166,7 @@ export default function ViewOrderPage() {
           {/* Main Details */}
           <div className="md:col-span-2 space-y-6">
             {/* Items */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-md border border-slate-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-100">
                 <h2 className="text-base font-semibold text-slate-800">
                   Order Items
@@ -180,7 +181,7 @@ export default function ViewOrderPage() {
                     item.subtotal ?? item.finalPrice * item.quantity;
                   return (
                     <div key={index} className="flex items-center gap-4 px-6 py-4">
-                      <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-xl overflow-hidden shrink-0">
+                      <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-md overflow-hidden shrink-0">
                         {imgSrc ? (
                           <Image
                             src={imgSrc}
@@ -219,7 +220,7 @@ export default function ViewOrderPage() {
             </div>
 
             {/* Shipping */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div className="bg-white p-6 rounded-md border border-slate-200">
               <h2 className="text-base font-semibold text-slate-800 mb-4">
                 Shipping Info
               </h2>
@@ -265,7 +266,7 @@ export default function ViewOrderPage() {
           {/* Sidebar */}
           <div className="space-y-4">
             {/* Status */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div className="bg-white p-6 rounded-md border border-slate-200">
               <h2 className="text-base font-semibold text-slate-800 mb-3">
                 Order Status
               </h2>
@@ -281,7 +282,7 @@ export default function ViewOrderPage() {
             </div>
 
             {/* Summary */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-sm text-slate-600">
+            <div className="bg-white rounded-md p-6 border border-slate-200 text-sm text-slate-600">
               <h2 className="text-base font-semibold text-slate-800 mb-4">
                 Summary
               </h2>
@@ -316,9 +317,10 @@ export default function ViewOrderPage() {
             {/* Back to shop */}
             <Link
               href="/"
-              className="block text-center w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
+              className="flex items-center justify-center gap-2 text-center w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition"
             >
-              ← Back to Shop
+              <ShoppingBag size={16} />
+              Back to Shop
             </Link>
           </div>
         </div>

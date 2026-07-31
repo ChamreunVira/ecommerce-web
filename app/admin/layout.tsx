@@ -12,9 +12,50 @@ import "@/styles/theme.css";
 import "@/styles/typography.css";
 import React from "react";
 
+import { useAppContext } from "@/context/AppContext";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { user, isInitializing, router } = useAppContext();
   const pathName = usePathname();
   const is = (path: string) => pathName === path;
+
+  // Check if user has admin or staff roles
+  const isStaffOrAdmin = Boolean(
+    user?.roles?.some(
+      (role) =>
+        ["ROLE_ADMIN", "ROLE_STAFF", "ROLE_MANAGER", "ROLE_EMPLOYEE"].includes(role) ||
+        role !== "ROLE_CUSTOMER",
+    ),
+  );
+
+  useEffect(() => {
+    if (!isInitializing) {
+      if (!user) {
+        toast.error("Please sign in to access the admin area.");
+        router.replace("/sign-in");
+      } else if (!isStaffOrAdmin) {
+        toast.error("Access denied. Admin or Staff privileges required.");
+        router.replace("/");
+      }
+    }
+  }, [isInitializing, user, isStaffOrAdmin, router]);
+
+  if (isInitializing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-slate-950">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent"></div>
+          <p className="text-sm font-medium text-slate-500">Checking permissions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || !isStaffOrAdmin) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen overflow-hidden bg-white dark:bg-slate-950">

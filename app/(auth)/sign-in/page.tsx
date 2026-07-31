@@ -24,7 +24,7 @@ const SignInPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { router } = useAppContext();
+  const { router, refreshUser } = useAppContext();
 
   const handleSignIn = async (data: SignInType) => {
     tokenManager.removeToken();
@@ -33,8 +33,16 @@ const SignInPage: React.FC = () => {
       const response = await authService.signIn(data);
       if (response.success) {
         toast.success("Welcome back!");
-        tokenManager.setToken(response.data.accessToken);
-        if (response.data.roles.includes("ROLE_ADMIN")) {
+        if (response.data?.accessToken) {
+          tokenManager.setToken(response.data.accessToken);
+        }
+        await refreshUser();
+        const isStaffOrAdmin = response.data?.roles?.some(
+          (role) =>
+            ["ROLE_ADMIN", "ROLE_STAFF", "ROLE_MANAGER", "ROLE_EMPLOYEE"].includes(role) ||
+            role !== "ROLE_CUSTOMER",
+        );
+        if (isStaffOrAdmin) {
           router.push("/admin/dashboard");
         } else {
           router.push("/");

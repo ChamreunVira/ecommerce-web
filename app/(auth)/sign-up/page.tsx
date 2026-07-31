@@ -27,7 +27,7 @@ const SignUpPage: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const { router } = useAppContext();
+  const { router, refreshUser } = useAppContext();
 
   const handleSignUp = async (data: SignUpType) => {
     const newData = { ...data, roles: ['ROLE_CUSTOMER'] };
@@ -36,7 +36,10 @@ const SignUpPage: React.FC = () => {
       const response = await authService.signUp(newData);
       if (response.success) {
         toast.success("Account created successfully!");
-        tokenManager.setToken(response.data.accessToken);
+        if (response.data?.accessToken) {
+          tokenManager.setToken(response.data.accessToken);
+        }
+        await refreshUser();
         router.push("/");
       } else {
         toast.error(response.message || "Sign up failed");

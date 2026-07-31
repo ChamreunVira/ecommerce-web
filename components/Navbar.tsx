@@ -21,7 +21,7 @@ type NavbarType = {
 };
 
 const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
-  const { router, user, getTotalCart } = useAppContext();
+  const { router, user, getTotalCart, logout } = useAppContext();
   const pathname = usePathname();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarType> = ({ toggleCart }) => {
   }, []);
 
   const handleSignOut = () => {
-    tokenManager.removeToken();
+    logout();
     setIsUserMenuOpen(false);
     router.push("/sign-in");
   };

@@ -471,7 +471,7 @@ const ProductDetail = () => {
               </div>
               <button
                 type="button"
-                onClick={() => router.push("/all-product")}
+                onClick={() => router.push("/products")}
                 className="self-start rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 md:self-auto"
               >
                 View all products

@@ -11,7 +11,7 @@ export interface TableProps {
 }
 
 export const Table: React.FC<TableProps> = ({ children, className = "" }) => (
-  <div className={cx("overflow-hidden rounded-xl bg-primary shadow-xs ring-1 ring-secondary w-full overflow-x-auto", className)}>
+  <div className={cx("overflow-hidden rounded-md bg-primary shadow-xs ring-1 ring-secondary w-full overflow-x-auto", className)}>
     <table className="w-full text-left text-sm border-collapse">
       {children}
     </table>
