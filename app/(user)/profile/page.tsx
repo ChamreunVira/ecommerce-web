@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import Profile from "@/components/Profile";
-import { Mail, Calendar, Settings, ShoppingBag, ShieldCheck, Phone } from "lucide-react";
+import { Mail, Calendar, Settings, ShoppingBag, ShieldCheck, Phone, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
@@ -41,21 +41,28 @@ const ProfilePage = () => {
           <div className="h-32 sm:h-40 bg-linear-to-r from-indigo-400 to-rose-500"></div>
           <div className="relative px-6 pb-8">
             <div className="relative -mt-16 sm:-mt-20 flex justify-center sm:justify-start">
-              <div className="h-32 w-32 rounded-full border-4 border-white bg-white flex items-center justify-center overflow-hidden z-10 shadow-md">
+              <div className="relative h-32 w-32 rounded-full border-4 border-white bg-white flex items-center justify-center shadow-md">
                 <Profile className="scale-[2.8] origin-center" fullName={user?.fullName || "User"} />
+                <div className="absolute bottom-1 right-2 w-4 h-4 bg-emerald-500 rounded-full">
+                </div>
               </div>
             </div>
 
             <div className="mt-4 sm:mt-6 text-center sm:text-left">
-              <h1 className="text-2xl mb-4 sm:text-3xl font-bold text-slate-900">
-                {user?.fullName}
-                {user?.bio && (
-                  <span className="block text-sm font-medium text-slate-500 mt-1">
-                    {user.bio}
-                  </span>
-                )}
-              </h1>
-              
+              <div className="relative max-w-fit md:mx-0 mx-auto">
+                <button className="cursor-pointer">
+                  <Pencil size={15} className="absolute top-6 -right-4.5"/>
+                </button>
+                <h1 className="text-2xl mb-4 sm:text-3xl font-bold text-slate-900">
+                  {user?.fullName}
+                  {user?.bio && (
+                    <span className="block text-sm font-medium text-slate-500 mt-1">
+                      {user.bio}
+                    </span>
+                  )}
+                </h1>
+              </div>
+
               <p className="text-sm font-medium text-slate-500 mt-1 flex items-center justify-center sm:justify-start gap-1.5">
                 <ShieldCheck size={16} className="text-emerald-500" />
                 {user?.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User'}
@@ -65,7 +72,7 @@ const ProfilePage = () => {
                 <Phone size={16} className="text-emerald-500" />
                 {user?.phoneNumber || 'No phone number available'}
               </p>
-              
+
               <p className="text-sm font-medium text-slate-500 mt-1 flex items-center justify-center sm:justify-start gap-1.5">
                 <Calendar size={16} className="text-emerald-500" />
                 {user?.dateOfBirth || 'No date of birth available'}

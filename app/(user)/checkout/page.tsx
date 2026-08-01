@@ -13,12 +13,18 @@ import { Payment } from "@/types/payment";
 import QrCodeModal from "@/components/QrCodeModal";
 import { PaymentStatus } from "@/constant/constant";
 import { Trash } from "lucide-react";
+import { promotionService } from "@/services/promotion-service";
 
 export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("KHQR_BAKONG");
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
   const [payment, setPayment] = useState<Payment | null>(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [freeShipping, setFreeShipping] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
 
   const { cartItems, router } = useAppContext();
 
@@ -37,17 +43,53 @@ export default function CheckoutPage() {
     isDefault: false,
   });
 
-  const shippingFee = 0.0;
+  const shippingFee = freeShipping ? 0.0 : 0.0;
 
   const subtotal = cartItems.reduce((total, item) => {
-    const finalPrice = item.unitPrice * (1 - item.discountRate/100);
+    const finalPrice = item.unitPrice * (1 - item.discountRate / 100);
     return total + finalPrice * item.quantity;
   }, 0);
 
-  const totalAmount = subtotal + shippingFee;
+  const totalAmount = subtotal + shippingFee - promoDiscount;
+
+  const handleApplyPromotion = async () => {
+    if (!promoCode.trim()) {
+      toast.warning("Please enter a promotion code.");
+      return;
+    }
+    if (subtotal <= 0) {
+      toast.warning("Your cart is empty.");
+      return;
+    }
+    try {
+      setPromoLoading(true);
+      const response = await promotionService.validate(promoCode.trim(), subtotal);
+      if (response.success && response.data) {
+        const { discountAmount, freeShipping: fs } = response.data;
+        setPromoDiscount(discountAmount);
+        setFreeShipping(fs);
+        setPromoApplied(true);
+        if (fs) {
+          toast.success(`🚚 FREE SHIPPING applied!`);
+        } else {
+          toast.success(`Promotion applied — you save $${Number(discountAmount).toFixed(2)}`);
+        }
+      }
+    } catch (error: unknown) {
+      setPromoApplied(false);
+      setPromoDiscount(0);
+      setFreeShipping(false);
+      const msg =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        "Invalid or expired promotion code.";
+      toast.error(msg);
+    } finally {
+      setPromoLoading(false);
+    }
+  };
 
   const orderItems = cartItems.map((item) => {
-    const finalPrice = item.unitPrice * (1 - item.discountRate/100);
+    const finalPrice = item.unitPrice * (1 - item.discountRate / 100);
     return {
       productId: item.productId,
       productName: item.productName,
@@ -74,13 +116,13 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (cartItems.length === 0) {
-      toast.warning("Your cart is empty!" , {
+      toast.warning("Your cart is empty!", {
         position: "bottom-right",
       });
       return;
     }
 
-  
+
     let resolvedAddressId = selectedAddressId;
     if (!resolvedAddressId) {
       const defaultAddr = savedAddresses.find((a) => a.default === true);
@@ -104,6 +146,7 @@ export default function CheckoutPage() {
         shippingAddressId: selectedAddress.addressId,
         paymentMethod: paymentMethod,
         note: note,
+        couponCode: promoApplied ? promoCode.trim() : undefined,
       });
       if (response.success) {
         handleGenerateQrCode(response.data.orderId);
@@ -139,9 +182,16 @@ export default function CheckoutPage() {
       setLoading(true);
       const response = await shippingAddressService.create(newAddress);
       if (response.success) {
-        handleFetchShippingAddress();
-        setIsCreatingAddress(true);
-        toast.success("Success to create shipping address.");
+        const listResponse = await shippingAddressService.getAll();
+        if (listResponse.success && listResponse.data) {
+          setSavedAddresses(listResponse.data);
+          const newAddr = listResponse.data[listResponse.data.length - 1];
+          if (newAddr) {
+            setSelectedAddressId(newAddr.addressId);
+          }
+        }
+        setIsCreatingAddress(false);
+        toast.success("Address saved and selected.");
       }
     } catch (e: unknown) {
       console.log("Failed to create shipping address:", e);
@@ -331,7 +381,7 @@ export default function CheckoutPage() {
                         value={newAddress.fullName}
                         onChange={handleShippingAddressChange}
                         className="form-control w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded focus:outline-indigo-500"
-                        placeholder="ឆុន ប៊ុនឈាន"
+                        placeholder="ចំរើន វីរ៉ា"
                         required
                       />
                     </div>
@@ -506,6 +556,44 @@ export default function CheckoutPage() {
                 })}
               </div>
 
+              {/* Promotion Code */}
+              <div className="mb-4">
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">
+                  Promotion Code
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => {
+                      setPromoCode(e.target.value);
+                      if (promoApplied) {
+                        setPromoApplied(false);
+                        setPromoDiscount(0);
+                        setFreeShipping(false);
+                      }
+                    }}
+                    placeholder="Enter code..."
+                    className="flex-1 border border-slate-200 bg-slate-50 rounded-md px-3 py-2 text-sm focus:outline-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyPromotion}
+                    disabled={promoLoading}
+                    className="px-3 py-2 text-sm font-medium text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition whitespace-nowrap disabled:opacity-60"
+                  >
+                    {promoLoading ? "Checking..." : "Apply"}
+                  </button>
+                </div>
+                {promoApplied && (
+                  <p className="text-xs text-green-600 mt-1">
+                    {freeShipping
+                      ? "✓ FREE SHIPPING applied!"
+                      : `✓ Promotion applied — you save $${promoDiscount.toFixed(2)}`}
+                  </p>
+                )}
+              </div>
+
               <div className="space-y-2 border-t border-slate-100 pt-4 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
@@ -516,9 +604,19 @@ export default function CheckoutPage() {
                 <div className="flex justify-between">
                   <span>Shipping Fee</span>
                   <span className="font-medium text-slate-800">
-                    ${shippingFee.toFixed(2)}
+                    {freeShipping ? (
+                      <span className="text-green-600 font-semibold">FREE</span>
+                    ) : (
+                      `$${shippingFee.toFixed(2)}`
+                    )}
                   </span>
                 </div>
+                {promoApplied && promoDiscount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Promotion</span>
+                    <span className="font-medium">-${promoDiscount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-base font-bold text-gray-900 border-t border-slate-100 pt-2">
                   <span>Total</span>
                   <span className="text-indigo-600">

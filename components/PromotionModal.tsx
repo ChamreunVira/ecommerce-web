@@ -73,18 +73,13 @@ export default function PromotionModal({ promotion, onClose, onSaved }: Promotio
 
   const isEditing = useMemo(() => Boolean(promotion), [promotion]);
 
-  const handleChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = event.target;
+const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const { name, value } = event.target;
 
-    setFormData((current) => ({
-      ...current,
-      [name]: name === "value" || name === "minimumOrder" || name === "usageLimit"
-        ? Number(value)
-        : value,
-    }));
-  };
+  const numericFields = ["value", "minimumOrder", "usageLimit"];
+
+  setFormData((current) => ({...current, [name]: numericFields.includes(name) ? value === "" ? "" : Number(value) : value,}));
+};
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -32,6 +32,13 @@ class CategoryService {
     return response.data;
   }
 
+  async updateStatus(id: number, status: boolean): Promise<ApiResponse<Category>> {
+    const response = await http.put(`${this.endPoint}/${id}/status`, null, {
+      params: { status },
+    });
+    return response.data;
+  }
+
   async delete(id: number): Promise<ApiResponse<null>> {
     const response = await http.delete(`${this.endPoint}/${id}`);
     return response.data;

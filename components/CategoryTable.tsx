@@ -4,18 +4,20 @@ import React from "react";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Category } from "@/types/category";
 import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
-import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
+import { Badge } from "@/components/base/badges/badges";
 
 interface CategoryTableProps {
   categories: Category[];
   handleDelete: (id: number) => void;
   handleEdit?: (category: Category) => void;
+  handleStatusChange?: (id: number, status: boolean) => void;
 }
 
 const CategoryTable: React.FC<CategoryTableProps> = ({
   categories,
   handleDelete,
   handleEdit,
+  handleStatusChange,
 }) => {
   return (
     <TableCard.Root>
@@ -66,9 +68,22 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                 )}
               </Table.Cell>
               <Table.Cell>
-                <BadgeWithDot type="pill-color" color={item.status ? "success" : "error"} size="sm">
-                  {item.status ? "Active" : "Inactive"}
-                </BadgeWithDot>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={item.status}
+                  onClick={() => handleStatusChange?.(item.id, !item.status)}
+                  className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors focus:outline-none ${
+                    item.status ? "bg-success-solid" : "bg-quaternary"
+                  }`}
+                  aria-label={`Toggle status for ${item.name}`}
+                >
+                  <span
+                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                      item.status ? "translate-x-4.5" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
               </Table.Cell>
               <Table.Cell>
                 <div className="flex items-center justify-end gap-1">

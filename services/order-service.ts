@@ -9,6 +9,7 @@ type OrderRequest = {
     shippingAddressId: number;
     paymentMethod: string;
     note: string;
+    couponCode?: string;
 }
 
 class OrderService {

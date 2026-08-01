@@ -1,6 +1,6 @@
 "use client";
 import Sidbar, { SidebarItem } from "@/components/Sidbar";
-import {SidebarGroup} from "@/components/SidebarGroup";
+import { SidebarGroup } from "@/components/SidebarGroup";
 import HasPermission from "@/components/HasPermission";
 import {
   LayoutDashboard, ClipboardList, Package, Settings,
@@ -165,14 +165,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             />
           </HasPermission>
 
-          <HasPermission name="ORDER_READ">
-            <SidebarItem
-              icon={<RotateCcw size={18} />}
-              label="Returns"
-              active={is("/admin/returns")}
-              path="/admin/returns"
-            />
-          </HasPermission>
+          {/* <HasPermission name="ORDER_READ">
+              <SidebarItem
+                icon={<RotateCcw size={18} />}
+                label="Returns"
+                active={is("/admin/returns")}
+                path="/admin/returns"
+              />
+          </HasPermission> */}
         </SidebarGroup>
 
         {/* Marketing */}

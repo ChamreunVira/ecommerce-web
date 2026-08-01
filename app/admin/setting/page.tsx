@@ -70,7 +70,7 @@ export default function SettingAdminPage() {
     try {
       const response = await http.get(process.env.NEXT_PUBLIC_BASE_URL + "/settings");
       if (response) {
-        setSettings(response.data.data[0]);
+        setSettings(response.data.data[response.data.data.length - 1]);
       }
     } catch (err: any) {
       console.log("Failed to fetch settings", err);
@@ -81,9 +81,9 @@ export default function SettingAdminPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await http.get(process.env.NEXT_PUBLIC_BASE_URL + "/settings");
+      const response = await http.post("/settings", settings);
       if (response) {
-        setSettings(response.data.data[0]);
+        handleFetchSettings();
         toast.success("Settings saved successfully!");
       }
     } catch (err: any) {
@@ -134,13 +134,12 @@ export default function SettingAdminPage() {
           <div className="space-y-6">
 
             {/* Personal Profile */}
-            <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
+            {/* <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<UserCircle size={20} />} title="Personal Profile" description="Your personal account details and public-facing info." />
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <Input label="Full Name" name="fullName" value={profile.fullName} onChange={updateProfile} />
                 <Input label="Email" name="personalEmail" type="email" value={profile.personalEmail} onChange={updateProfile} />
                 <Input label="Phone Number" name="phoneNumber" value={profile.phoneNumber} onChange={updateProfile} />
-                {/* Date of Birth with styled date picker */}
                 <label className="block">
                   <span className="text-sm font-medium text-slate-700 flex items-center gap-1.5">
                     <Calendar size={14} className="text-indigo-500" />
@@ -170,12 +169,12 @@ export default function SettingAdminPage() {
                   </label>
                 </div>
               </div>
-            </section>
+            </section> */}
 
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Store size={20} />} title="Store profile" description="Public business information." />
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <Input label="Store name" name="storeName" value={settings?.name || ""} onChange={updateField} />
+                <Input label="Store name" name="name" value={settings?.name || ""} onChange={updateField} />
                 <Input label="Support email" name="supportEmail" type="email" value={settings?.supportEmail || ""} onChange={updateField} />
                 <Input label="Phone" name="phone" value={settings?.phone || ""} onChange={updateField} />
                 <Input label="Address" name="address" value={settings?.address || ""} onChange={updateField} />

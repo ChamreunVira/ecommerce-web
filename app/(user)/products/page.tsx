@@ -55,7 +55,6 @@ const AllProduct = () => {
     }));
   }, [products]);
 
-  // Up to 6 product name suggestions matching the current search term
   const suggestions = useMemo(() => {
     if (!searchTerm.trim()) return [];
     const query = searchTerm.trim().toLowerCase();

@@ -67,10 +67,12 @@ export default function CreateProductPage() {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
+
     const numericFields = ["categoryId", "price", "discount", "qty"];
+
     setProductData((prev) => ({
-      ...prev,
-      [name]: numericFields.includes(name) ? Number(value) : value,
+      ...prev, [name]:
+        numericFields.includes(name) ? value === "" ? "" : Number(value) : value,
     }));
   };
 
