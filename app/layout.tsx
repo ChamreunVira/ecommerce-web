@@ -20,6 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <script src="https://js.puter.com/v2/"></script>
       <body className={`min-h-full antialiased text-gray-700 ${inter.className}`}>
         <Providers>
           {children}

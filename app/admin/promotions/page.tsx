@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus, ArrowRight, ArrowLeft } from "lucide-react";
+import { ChevronRight, Home, Tag, TicketCheck, Percent, Clock, CheckCircle2, Plus } from "lucide-react";
 import StatsCard from "@/components/StatsCard";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import PromotionModal from "@/components/PromotionModal";
@@ -128,113 +128,110 @@ export default function PromotionsPage() {
         <StatsCard icon={<Percent className="text-rose-500" />} accent="bg-rose-50" label="Expired" value={expired} trend={0} />
       </div>
 
-      <div className="p-6 md:p-10 max-w-7xl mx-auto flex flex-col gap-6">
+      <TableCard.Root>
+        <Table aria-label="Promotions table">
+          <Table.Header>
+            <Table.Head id="code" label="Code" isRowHeader allowsSorting />
+            <Table.Head id="type" label="Type" allowsSorting />
+            <Table.Head id="value" label="Value" allowsSorting />
+            <Table.Head id="minOrder" label="Min. Order" />
+            <Table.Head id="usage" label="Used / Limit" />
+            <Table.Head id="expiry" label="Expiry" allowsSorting />
+            <Table.Head id="status" label="Status" />
+            <Table.Head id="actions" />
+          </Table.Header>
 
-        <TableCard.Root>
-          <Table aria-label="Promotions table">
-            <Table.Header>
-              <Table.Head id="code" label="Code" isRowHeader allowsSorting />
-              <Table.Head id="type" label="Type" allowsSorting />
-              <Table.Head id="value" label="Value" allowsSorting />
-              <Table.Head id="minOrder" label="Min. Order" />
-              <Table.Head id="usage" label="Used / Limit" />
-              <Table.Head id="expiry" label="Expiry" allowsSorting />
-              <Table.Head id="status" label="Status" />
-              <Table.Head id="actions" />
-            </Table.Header>
+          <Table.Body items={promotions}>
+            {(p) => {
+              const st = statusMap[p.status] ?? statusMap.ACTIVE;
+              return (
+                <Table.Row id={p.id}>
+                  <Table.Cell>
+                    <Badge type="pill-color" color="brand" size="sm" className="font-mono font-bold">
+                      {p.code}
+                    </Badge>
+                  </Table.Cell>
+                  <Table.Cell className="capitalize text-tertiary">{p.type.toLowerCase().replace("_", " ")}</Table.Cell>
+                  <Table.Cell className="font-mono font-semibold text-primary">
+                    {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
+                  </Table.Cell>
+                  <Table.Cell className="font-mono text-tertiary">${p.minimumOrder}</Table.Cell>
+                <Table.Cell>
+                    <div className="text-xs font-medium text-secondary">{p.usageCount} / {p.usageLimit}</div>
+                    <div className="mt-1 h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
+                      <div className="h-full rounded-full bg-brand-primary" style={{ width: `${Math.min((p.usageCount / p.usageLimit) * 100, 100)}%` }} />
+                    </div>
+                  </Table.Cell>
+                  <Table.Cell className="text-tertiary">{p.expiryAt}</Table.Cell>
+                  <Table.Cell>
+                    <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                      {st.label}
+                    </BadgeWithDot>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(p)}
+                        className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
+                        aria-label="Edit promotion"
+                      >
+                        <Edit01 className="size-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(p)}
+                        className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
+                        aria-label="Delete promotion"
+                      >
+                        <Trash01 className="size-4" />
+                      </button>
+                    </div>
+                  </Table.Cell>
+                </Table.Row>
+              );
+            }}
+          </Table.Body>
+        </Table>
 
-            <Table.Body items={promotions}>
-              {(p) => {
-                const st = statusMap[p.status] ?? statusMap.ACTIVE;
-                return (
-                  <Table.Row id={p.id}>
-                    <Table.Cell>
-                      <Badge type="pill-color" color="brand" size="sm" className="font-mono font-bold">
-                        {p.code}
-                      </Badge>
-                    </Table.Cell>
-                    <Table.Cell className="capitalize text-tertiary">{p.type.toLowerCase().replace("_", " ")}</Table.Cell>
-                    <Table.Cell className="font-mono font-semibold text-primary">
-                      {p.type === "PERCENTAGE" ? `${p.value}%` : p.type === "FIXED_AMOUNT" ? `$${p.value}` : "Free"}
-                    </Table.Cell>
-                    <Table.Cell className="font-mono text-tertiary">${p.minimumOrder}</Table.Cell>
-                    <Table.Cell>
-                      <div className="text-xs font-medium text-secondary">{p.usageCount} / {p.usageLimit}</div>
-                      <div className="mt-1 h-1.5 w-20 overflow-hidden rounded-full bg-secondary">
-                        <div className="h-full rounded-full bg-brand-primary" style={{ width: `${Math.min((p.usageCount / p.usageLimit) * 100, 100)}%` }} />
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell className="text-tertiary">{p.expiryAt}</Table.Cell>
-                    <Table.Cell>
-                      <BadgeWithDot type="pill-color" color={st.color} size="sm">
-                        {st.label}
-                      </BadgeWithDot>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(p)}
-                          className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
-                          aria-label="Edit promotion"
-                        >
-                          <Edit01 className="size-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(p)}
-                          className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
-                          aria-label="Delete promotion"
-                        >
-                          <Trash01 className="size-4" />
-                        </button>
-                      </div>
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              }}
-            </Table.Body>
-          </Table>
-
-          {promotions.length === 0 && (
-            <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
-                <Tag className="size-5" />
-              </div>
-              <p className="text-sm font-semibold text-primary">No promotions found</p>
-              <p className="text-xs text-tertiary">Create a new promotion to offer discounts to customers.</p>
+        {promotions.length === 0 && (
+          <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
+              <Tag className="size-5" />
             </div>
-          )}
-
-          <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
-            <span className="text-xs text-tertiary">
-              Showing <span className="font-semibold text-primary">{promotions.length}</span> {promotions.length !== 1 ? "promotions" : "promotion"}
-            </span>
+            <p className="text-sm font-semibold text-primary">No promotions found</p>
+            <p className="text-xs text-tertiary">Create a new promotion to offer discounts to customers.</p>
           </div>
-        </TableCard.Root>
+        )}
 
-        {isModalOpen ? (
-          <PromotionModal
-            promotion={selectedPromotion}
-            onClose={closeModal}
-            onSaved={handleFetchPromotions}
-          />
-        ) : null}
+        <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
+          <span className="text-xs text-tertiary">
+            Showing <span className="font-semibold text-primary">{promotions.length}</span> {promotions.length !== 1 ? "promotions" : "promotion"}
+          </span>
+        </div>
+      </TableCard.Root>
 
-        {deleteTarget ? (
-          <DeleteConfirmationModal
-            title="Delete promotion"
-            message={
-              <>
-                Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.code}</span>? This will remove the promotion permanently.
-              </>
-            }
-            onCancel={() => setDeleteTarget(null)}
-            onConfirm={() => handleDeletePromotion(deleteTarget.id)}
-            isDeleting={isDeleting}
-          />
-        ) : null}
-      </div>
+      {isModalOpen ? (
+        <PromotionModal
+          promotion={selectedPromotion}
+          onClose={closeModal}
+          onSaved={handleFetchPromotions}
+        />
+      ) : null}
+
+      {deleteTarget ? (
+        <DeleteConfirmationModal
+          title="Delete promotion"
+          message={
+            <>
+              Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.code}</span>? This will remove the promotion permanently.
+            </>
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => handleDeletePromotion(deleteTarget.id)}
+          isDeleting={isDeleting}
+        />
+      ) : null}
 
     </div>
   );

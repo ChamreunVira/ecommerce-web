@@ -35,6 +35,25 @@ export default function BannerAdminPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
 
+  const openBannerModal = (banner: Banner | null = null) => {
+    setEditingBanner(banner
+      ? {
+        ...banner,
+        title: banner.title ?? "",
+        subtitle: banner.subtitle ?? "",
+        buttonLabel: banner.buttonLabel ?? "Shop Now",
+        buttonLink: banner.buttonLink ?? "/products",
+      }
+      : null,
+    );
+    setModalOpen(true);
+  };
+
+  const closeBannerModal = () => {
+    setModalOpen(false);
+    setEditingBanner(null);
+  };
+
   const fetchBanners = async () => {
     try {
       const response = await bannerService.getAll();
@@ -106,7 +125,7 @@ export default function BannerAdminPage() {
           </p>
         </div>
         <button
-          onClick={() => { setEditingBanner(null); setModalOpen(true); }}
+          onClick={() => openBannerModal(null)}
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-indigo-600"
         >
           <Plus size={16} />
@@ -159,7 +178,7 @@ export default function BannerAdminPage() {
                     {item.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={item.imageUrl}
+                        src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.imageUrl}`}
                         alt={item.title}
                         className="h-full w-full object-cover object-center"
                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
@@ -213,7 +232,7 @@ export default function BannerAdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setEditingBanner(item); setModalOpen(true); }}
+                      onClick={() => openBannerModal(item)}
                       className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary"
                       aria-label="Edit banner"
                     >
@@ -276,8 +295,9 @@ export default function BannerAdminPage() {
       {/* Modal */}
       {modalOpen && (
         <BannerModal
+          key={editingBanner?.id ?? "new-banner-modal"}
           banner={editingBanner}
-          onClose={() => setModalOpen(false)}
+          onClose={closeBannerModal}
           onSaved={fetchBanners}
         />
       )}

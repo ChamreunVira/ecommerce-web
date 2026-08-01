@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/context/AppContext";
 import Profile from "@/components/Profile";
-import { Mail, Calendar, Settings, ShoppingBag, ShieldCheck } from "lucide-react";
+import { Mail, Calendar, Settings, ShoppingBag, ShieldCheck, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
@@ -35,24 +35,40 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        
+
         {/* Profile Header */}
         <div className="bg-white rounded-md shadow-sm border border-slate-200 overflow-hidden">
           <div className="h-32 sm:h-40 bg-linear-to-r from-indigo-400 to-rose-500"></div>
           <div className="relative px-6 pb-8">
             <div className="relative -mt-16 sm:-mt-20 flex justify-center sm:justify-start">
               <div className="h-32 w-32 rounded-full border-4 border-white bg-white flex items-center justify-center overflow-hidden z-10 shadow-md">
-                  <Profile className="scale-[2.8] origin-center" fullName={user?.fullName || "User"} />
+                <Profile className="scale-[2.8] origin-center" fullName={user?.fullName || "User"} />
               </div>
             </div>
 
             <div className="mt-4 sm:mt-6 text-center sm:text-left">
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              <h1 className="text-2xl mb-4 sm:text-3xl font-bold text-slate-900">
                 {user?.fullName}
+                {user?.bio && (
+                  <span className="block text-sm font-medium text-slate-500 mt-1">
+                    {user.bio}
+                  </span>
+                )}
               </h1>
+              
               <p className="text-sm font-medium text-slate-500 mt-1 flex items-center justify-center sm:justify-start gap-1.5">
                 <ShieldCheck size={16} className="text-emerald-500" />
                 {user?.roles && user.roles.length > 0 ? user.roles.join(', ') : 'User'}
+              </p>
+
+              <p className="text-sm font-medium text-slate-500 mt-1 flex items-center justify-center sm:justify-start gap-1.5">
+                <Phone size={16} className="text-emerald-500" />
+                {user?.phoneNumber || 'No phone number available'}
+              </p>
+              
+              <p className="text-sm font-medium text-slate-500 mt-1 flex items-center justify-center sm:justify-start gap-1.5">
+                <Calendar size={16} className="text-emerald-500" />
+                {user?.dateOfBirth || 'No date of birth available'}
               </p>
             </div>
           </div>
@@ -60,7 +76,7 @@ const ProfilePage = () => {
 
         {/* Profile Details & Actions */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-         
+
           {/* Main Info */}
           <div className="md:col-span-2 space-y-6">
             <div className="bg-white rounded-md shadow-sm border border-slate-200 p-6">
@@ -120,10 +136,10 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-      
-      <ChangePasswordModal 
-        isOpen={isPasswordModalOpen} 
-        onClose={() => setIsPasswordModalOpen(false)} 
+
+      <ChangePasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
       />
     </div>
   );

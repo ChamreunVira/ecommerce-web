@@ -1,5 +1,6 @@
 "use client";
-import Sidbar, { SidebarGroup, SidebarItem } from "@/components/Sidbar";
+import Sidbar, { SidebarItem } from "@/components/Sidbar";
+import {SidebarGroup} from "@/components/SidebarGroup";
 import HasPermission from "@/components/HasPermission";
 import {
   LayoutDashboard, ClipboardList, Package, Settings,

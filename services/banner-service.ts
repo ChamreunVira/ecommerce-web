@@ -1,31 +1,38 @@
 import { http } from "@/lib/axios";
 import { ApiResponse } from "@/types/api-response";
 import { Banner } from "@/types/banner";
+import axios from "axios";
 
 type BannerPayload = Omit<Banner, "id" | "imageUrl" | "createdAt" | "updatedAt"> & { image: any };
 
 class BannerService {
   private endpoint = "/banners";
 
-  /** All banners (admin) */
   async getAll(): Promise<ApiResponse<Banner[]>> {
     const response = await http.get(this.endpoint);
     return response.data;
   }
 
-  /** Active banners only (public storefront) */
   async getAllActive(): Promise<ApiResponse<Banner[]>> {
     const response = await http.get(`${this.endpoint}/active`);
     return response.data;
   }
 
-  async create(payload: BannerPayload): Promise<ApiResponse<Banner>> {
-    const response = await http.post(this.endpoint, payload);
+  async create(payload: FormData): Promise<ApiResponse<Banner>> {
+    const response = await http.post(this.endpoint, payload , {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return response.data;
   }
 
-  async update(id: number, payload: BannerPayload): Promise<ApiResponse<Banner>> {
-    const response = await http.put(`${this.endpoint}/${id}`, payload);
+  async update(id: number, payload: FormData): Promise<ApiResponse<Banner>> {
+    const response = await http.put(`${this.endpoint}/${id}`, payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return response.data;
   }
 

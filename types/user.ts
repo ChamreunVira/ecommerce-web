@@ -3,6 +3,9 @@ export interface User {
     fullName: string;
     email: string;
     password?: string;
+    bio?: string;
+    phoneNumber?: string;
+    dateOfBirth?: string;
     refreshToken?: string;
     accessToken?: string;
     roles: string[];
