@@ -8,93 +8,79 @@ import {
   Settings,
   Store,
   Truck,
-  UserCircle,
-  Calendar,
 } from "lucide-react";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import ChangePasswordModal from "@/components/ChangePasswordModal";
-import { http } from "@/lib/axios";
-
-type StoreSettings = {
-  id: number,
-  name: string,
-  supportEmail: string,
-  phone: string,
-  address: string,
-  currency: string,
-  timeZone: string,
-  lowStockAlert: number,
-  freeShippingMinimum: number,
-  taxRate: number,
-  notificationNewOrders: boolean,
-  notificationLowStock: boolean,
-  notificationWeeklyReport: boolean,
-  paymentCod: boolean,
-  paymentKhqr: boolean,
-  paymentCard: boolean
-};
-
-type PersonalProfile = {
-  fullName: string;
-  personalEmail: string;
-  phoneNumber: string;
-  bio: string;
-  dateOfBirth: string;
-};
-
-const defaultProfile: PersonalProfile = {
-  fullName: "Admin Virak",
-  personalEmail: "virak@vst4rekh.com",
-  phoneNumber: "+855 12 345 678",
-  bio: "Store administrator responsible for managing products, orders, and customers.",
-  dateOfBirth: "1995-06-15",
-};
+import { settingService } from "@/services/setting-service";
+import { StoreSetting, StoreSettingRequest } from "@/types/setting";
 
 export default function SettingAdminPage() {
-  const [settings, setSettings] = useState<StoreSettings | null>(null);
-  const [profile, setProfile] = useState<PersonalProfile>(defaultProfile);
+  const [settings, setSettings] = useState<StoreSetting | null>(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-
-  const updateProfile = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
-  };
+  const [isSaving, setIsSaving] = useState(false);
 
   const updateField = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = event.target;
-    setSettings((prev) => prev ? {...prev, [name]: type === "checkbox" ? (event.target as HTMLInputElement).checked : value } : null);
+    const nextValue = type === "checkbox"
+      ? (event.target as HTMLInputElement).checked
+      : type === "number"
+        ? Number(value)
+        : value;
+
+    setSettings((prev) => prev ? { ...prev, [name]: nextValue } : null);
   };
 
   const handleFetchSettings = async () => {
     try {
-      const response = await http.get(process.env.NEXT_PUBLIC_BASE_URL + "/settings");
-      if (response) {
-        setSettings(response.data.data[response.data.data.length - 1]);
+      const response = await settingService.get();
+      if (response.success) {
+        setSettings(response.data);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.log("Failed to fetch settings", err);
       toast.error("Failed to fetch settings.");
     }
-  }
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!settings) return;
+
+    const payload: StoreSettingRequest = {
+      name: settings.name,
+      supportEmail: settings.supportEmail,
+      phone: settings.phone,
+      address: settings.address,
+      currency: settings.currency,
+      timeZone: settings.timeZone,
+      lowStockAlert: settings.lowStockAlert,
+      freeShippingMinimum: settings.freeShippingMinimum,
+      taxRate: settings.taxRate,
+      notificationNewOrders: settings.notificationNewOrders,
+      notificationLowStock: settings.notificationLowStock,
+      notificationWeeklyReport: settings.notificationWeeklyReport,
+      paymentCod: settings.paymentCod,
+      paymentKhqr: settings.paymentKhqr,
+      paymentCard: settings.paymentCard,
+    };
+    setIsSaving(true);
     try {
-      const response = await http.post("/settings", settings);
-      if (response) {
-        handleFetchSettings();
+      const response = await settingService.update(payload);
+      if (response.success) {
+        setSettings(response.data);
         toast.success("Settings saved successfully!");
       }
-    } catch (err: any) {
+    } catch (err) {
       console.log("Failed to save settings", err);
       toast.error("Failed to save settings.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   useEffect(() => {
-    handleFetchSettings();
-    return () => new AbortController().abort();
+    void handleFetchSettings();
   }, []);
 
   return (
@@ -122,10 +108,11 @@ export default function SettingAdminPage() {
             </button>
             <button
               type="submit"
+              disabled={!settings || isSaving}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-600"
             >
               <Save size={18} />
-              Save settings
+              {isSaving ? "Saving..." : "Save settings"}
             </button>
           </div>
         </div>
@@ -185,16 +172,16 @@ export default function SettingAdminPage() {
               <SectionTitle icon={<Globe2 size={20} />} title="Localization" description="Currency, tax, and reporting defaults." />
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <Select label="Currency" name="currency" value={settings?.currency || "USD"} onChange={updateField} options={["USD", "KHR"]} />
-                <Select label="Timezone" name="timeZone" value={settings?.timeZone || "UTC"} onChange={updateField} options={["Asia/Phnom_Penh", "UTC"]} />
-                <Input label="Tax rate (%)" name="taxRate" type="number" value={settings?.taxRate || ""} onChange={updateField} />
+                <Select label="Timezone" name="timeZone" value={settings?.timeZone ?? "UTC"} onChange={updateField} options={["Asia/Phnom Penh", "UTC"]} />
+                <Input label="Tax rate (%)" name="taxRate" type="number" value={settings?.taxRate ?? ""} onChange={updateField} />
               </div>
             </section>
 
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Truck size={20} />} title="Shipping and stock" description="Operational thresholds for fulfillment." />
               <div className="mt-5 grid gap-4 md:grid-cols-2">
-                <Input label="Low stock alert" name="lowStockAlert" type="number" value={settings?.lowStockAlert || ""} onChange={updateField} />
-                <Input label="Free shipping minimum" name="freeShippingMinimum" type="number" value={settings?.freeShippingMinimum || ""} onChange={updateField} />
+                <Input label="Low stock alert" name="lowStockAlert" type="number" value={settings?.lowStockAlert ?? ""} onChange={updateField} />
+                <Input label="Free shipping minimum" name="freeShippingMinimum" type="number" value={settings?.freeShippingMinimum ?? ""} onChange={updateField} />
               </div>
             </section>
           </div>
@@ -203,18 +190,18 @@ export default function SettingAdminPage() {
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<CreditCard size={20} />} title="Payments" description="Enabled payment methods." />
               <div className="mt-5 space-y-3">
-                <Toggle label="Cash on delivery" checked={settings?.paymentCod || true} onChange={(checked) => setSettings(settings ? {...settings, paymentCod: checked} : null)} />
-                <Toggle label="KHQR Bakong" checked={settings?.paymentKhqr || true} onChange={(checked) => setSettings(settings ? {...settings, paymentKhqr: checked} : null)} />
-                <Toggle label="Card payment" checked={settings?.paymentCard || true} onChange={(checked) => setSettings(settings ? {...settings, paymentCard: checked} : null)} />
+                <Toggle label="Cash on delivery" checked={settings?.paymentCod ?? true} onChange={(checked) => setSettings(settings ? {...settings, paymentCod: checked} : null)} />
+                <Toggle label="KHQR Bakong" checked={settings?.paymentKhqr ?? true} onChange={(checked) => setSettings(settings ? {...settings, paymentKhqr: checked} : null)} />
+                <Toggle label="Card payment" checked={settings?.paymentCard ?? true} onChange={(checked) => setSettings(settings ? {...settings, paymentCard: checked} : null)} />
               </div>
             </section>
 
             <section className="rounded-lg bg-white p-5 shadow-sm ring-1 ring-slate-200">
               <SectionTitle icon={<Bell size={20} />} title="Notifications" description="Admin alert preferences." />
               <div className="mt-5 space-y-3">
-                <Toggle label="New order alerts" checked={settings?.notificationNewOrders || true} onChange={() => setSettings(settings ? {...settings, notificationNewOrders: !settings?.notificationNewOrders} : null)} />
-                <Toggle label="Low stock alerts" checked={settings?.notificationLowStock || true} onChange={(checked) => setSettings(settings ? {...settings, notificationLowStock: checked} : null)} />
-                <Toggle label="Weekly report" checked={settings?.notificationWeeklyReport || true} onChange={(checked) => setSettings(settings ? {...settings, notificationWeeklyReport: checked} : null)} />
+                <Toggle label="New order alerts" checked={settings?.notificationNewOrders ?? true} onChange={(checked) => setSettings(settings ? {...settings, notificationNewOrders: checked} : null)} />
+                <Toggle label="Low stock alerts" checked={settings?.notificationLowStock ?? true} onChange={(checked) => setSettings(settings ? {...settings, notificationLowStock: checked} : null)} />
+                <Toggle label="Weekly report" checked={settings?.notificationWeeklyReport ?? true} onChange={(checked) => setSettings(settings ? {...settings, notificationWeeklyReport: checked} : null)} />
               </div>
             </section>
           </div>

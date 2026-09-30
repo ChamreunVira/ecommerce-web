@@ -3,6 +3,7 @@ import AddUserModal from "@/components/AddUserModal";
 import UpdateCustomerModal from "@/components/UpdateCustomerModal";
 import Profile from "@/components/Profile";
 import StatsCard from "@/components/StatsCard";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useAppContext } from "@/context/AppContext";
 import { userService } from "@/services/user-service";
 import { User } from "@/types/user";
@@ -23,6 +24,8 @@ const UserAdminPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const PAGE_SIZE = 10;
 
   const handleFetchUser = async () => {
@@ -34,15 +37,21 @@ const UserAdminPage = () => {
     }
   };
 
-  const handleDeleteByUserId = async (id: number) => {
+  const handleDeleteByUserId = async () => {
+    if (!deleteTarget) return;
+
+    setIsDeleting(true);
     try {
-      const response = await userService.delete(id);
+      const response = await userService.delete(deleteTarget.id);
       if (response.success) {
         toast.success("User deleted successfully.");
-        handleFetchUser();
+        await handleFetchUser();
       }
     } catch {
       toast.error("Failed to delete user.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -184,7 +193,7 @@ const UserAdminPage = () => {
                     <button type="button" onClick={() => setEditUser(item)} className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary" aria-label="Edit user">
                       <Edit01 className="size-4" />
                     </button>
-                    <button type="button" onClick={() => handleDeleteByUserId(item.id)} className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary" aria-label="Delete user">
+                    <button type="button" onClick={() => setDeleteTarget(item)} className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary" aria-label="Delete user">
                       <Trash01 className="size-4" />
                     </button>
                     <button type="button" className="flex size-8 items-center justify-center rounded-lg text-quaternary transition hover:bg-secondary hover:text-primary" aria-label="More options">
@@ -247,6 +256,16 @@ const UserAdminPage = () => {
 
       {editUser && (
         <UpdateCustomerModal user={editUser} onClose={() => setEditUser(null)} onUpdated={handleFetchUser} />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete user"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.fullName}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDeleteByUserId}
+          isDeleting={isDeleting}
+        />
       )}
     </div>
   );

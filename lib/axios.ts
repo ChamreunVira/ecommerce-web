@@ -1,7 +1,7 @@
 import { tokenManager } from "@/utils/tokenManager";
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const BASE_URL = "http://localhost:8081/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8081/api/v1";
 
 export const http = axios.create({
   baseURL: BASE_URL,

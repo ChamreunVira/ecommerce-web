@@ -1,6 +1,7 @@
 "use client";
 import CreateCategoryModal from "@/components/CreateCategoryModal";
 import UpdateCategoryModal from "@/components/UpdateCategoryModal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import StatsCard from "@/components/StatsCard";
 import { useAppContext } from "@/context/AppContext";
 import { categoryService } from "@/services/category-service";
@@ -23,6 +24,8 @@ const CategoryAdminPage = () => {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleFetchCategory = async () => {
     try {
@@ -33,15 +36,21 @@ const CategoryAdminPage = () => {
     }
   };
 
-  const handleDeleteByCategory = async (id: number) => {
+  const handleDeleteByCategory = async () => {
+    if (!deleteTarget) return;
+
+    setIsDeleting(true);
     try {
-      const response = await categoryService.delete(id);
+      const response = await categoryService.delete(deleteTarget.id);
       if (response.success) {
         toast.success("Category deleted successfully.");
-        handleFetchCategory();
+        await handleFetchCategory();
       }
     } catch {
       toast.error("Failed to delete category.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -190,7 +199,7 @@ const CategoryAdminPage = () => {
                 <Table.Cell>
                   <div className="flex items-center justify-end gap-1">
                     <button type="button" onClick={() => setEditingCategory(item)} className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary" aria-label="Edit category"><Edit01 className="size-4" /></button>
-                    <button type="button" onClick={() => handleDeleteByCategory(item.id)} className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary" aria-label="Delete category"><Trash01 className="size-4" /></button>
+                    <button type="button" onClick={() => setDeleteTarget(item)} className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary" aria-label="Delete category"><Trash01 className="size-4" /></button>
                     <button type="button" className="flex size-8 items-center justify-center rounded-lg text-quaternary transition hover:bg-secondary hover:text-primary" aria-label="More options"><DotsVertical className="size-4" /></button>
                   </div>
                 </Table.Cell>
@@ -227,6 +236,16 @@ const CategoryAdminPage = () => {
 
       {editingCategory && (
         <UpdateCategoryModal category={editingCategory} onClose={() => setEditingCategory(null)} onUpdated={handleFetchCategory} />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete category"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.name}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDeleteByCategory}
+          isDeleting={isDeleting}
+        />
       )}
     </div>
   );

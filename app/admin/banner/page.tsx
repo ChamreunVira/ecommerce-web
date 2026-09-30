@@ -23,6 +23,7 @@ import { Table, TableCard } from "@/components/application/table/table";
 import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 import StatsCard from "@/components/StatsCard";
 import BannerModal from "@/components/BannerModal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 
 const PAGE_SIZE = 10;
 
@@ -34,6 +35,8 @@ export default function BannerAdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Banner | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const openBannerModal = (banner: Banner | null = null) => {
     setEditingBanner(banner
@@ -76,13 +79,18 @@ export default function BannerAdminPage() {
     load();
   }, [sessionReady]);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Delete this banner?")) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    setIsDeleting(true);
     try {
-      const res = await bannerService.delete(id);
-      if (res.success) { toast.success("Banner deleted."); fetchBanners(); }
+      const res = await bannerService.delete(deleteTarget.id);
+      if (res.success) { toast.success("Banner deleted."); await fetchBanners(); }
     } catch {
       toast.error("Failed to delete banner.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -240,7 +248,7 @@ export default function BannerAdminPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => setDeleteTarget(item)}
                       className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
                       aria-label="Delete banner"
                     >
@@ -299,6 +307,16 @@ export default function BannerAdminPage() {
           banner={editingBanner}
           onClose={closeBannerModal}
           onSaved={fetchBanners}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete banner"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.title}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDelete}
+          isDeleting={isDeleting}
         />
       )}
     </div>

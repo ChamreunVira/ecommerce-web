@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Role } from "@/types/role";
 import { roleService } from "@/services/role-service";
 import RoleModal from "@/components/RoleModal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import HasPermission from "@/components/HasPermission";
 import StatsCard from "@/components/StatsCard";
 import { Table, TableCard } from "@/components/application/table/table";
@@ -31,6 +32,8 @@ export default function RolesPage() {
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<Role | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const PAGE_SIZE = 10;
 
   const fetchRoles = async () => {
@@ -61,20 +64,25 @@ export default function RolesPage() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteRole = async (id: number, name: string) => {
-    if (name === "ROLE_ADMIN") {
+  const handleDeleteRole = async () => {
+    if (!deleteTarget) return;
+
+    if (deleteTarget.name === "ROLE_ADMIN") {
       toast.error("Default ADMIN role is a core system role and cannot be deleted.");
+      setDeleteTarget(null);
       return;
     }
 
-    if (!confirm(`Are you sure you want to delete role '${name}'?`)) return;
-
+    setIsDeleting(true);
     try {
-      await roleService.deleteRole(id);
-      toast.success(`Role '${name}' deleted successfully.`);
-      fetchRoles();
+      await roleService.deleteRole(deleteTarget.id);
+      toast.success(`Role '${deleteTarget.name}' deleted successfully.`);
+      await fetchRoles();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Failed to delete role.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -296,7 +304,7 @@ export default function RolesPage() {
                         <HasPermission name="ROLE_DELETE">
                           <button
                             type="button"
-                            onClick={() => handleDeleteRole(item.id, item.name)}
+                            onClick={() => setDeleteTarget(item)}
                             className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
                             aria-label="Delete role"
                           >
@@ -376,6 +384,16 @@ export default function RolesPage() {
         role={selectedRole}
         onSuccess={fetchRoles}
       />
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete role"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.name}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDeleteRole}
+          isDeleting={isDeleting}
+        />
+      )}
     </div>
   );
 }

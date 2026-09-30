@@ -91,6 +91,10 @@ const Sidbar: React.FC<SidebarProps> = ({ children }) => {
     <NavigationContext.Provider
       value={{ collapsed: isDesktop && collapsed, nested: false, query }}
     >
+      <div
+        aria-hidden="true"
+        className={`hidden shrink-0 md:block ${collapsed ? "w-18" : "w-70"}`}
+      />
       {!mobileOpen && (
         <button
           type="button"
@@ -111,7 +115,7 @@ const Sidbar: React.FC<SidebarProps> = ({ children }) => {
       )}
       <aside
         aria-label="Admin navigation"
-        className={`fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl shadow-slate-950/5 transition-transform duration-200 motion-reduce:transition-none dark:border-slate-800 dark:bg-slate-950 md:sticky md:top-0 md:z-30 md:h-screen md:shadow-none md:transition-[width] md:duration-200 ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 ${collapsed ? "w-18 md:w-18" : "w-70 md:w-70"}`}
+        className={`fixed inset-y-0 left-0 z-50 flex shrink-0 flex-col overflow-hidden border-r border-slate-200 bg-white shadow-xl shadow-slate-950/5 transition-[transform,width] duration-200 motion-reduce:transition-none dark:border-slate-800 dark:bg-slate-950 md:z-30 md:shadow-none ${mobileOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 ${collapsed ? "w-18" : "w-70"}`}
       >
         <header className="sticky top-0 z-10 shrink-0 border-b border-slate-100 bg-white px-3.5 py-3.5 dark:border-slate-800 dark:bg-slate-950">
           <div className="flex items-center gap-2.5">

@@ -6,10 +6,11 @@ import { Table, TableCard } from "@/components/application/table/table";
 import { Product } from "@/types/product";
 import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
 import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 
 interface ProductTableProps {
   products: Product[];
-  handleDelete: (id: number) => void;
+  handleDelete: (id: number) => void | Promise<void>;
   handleUpdate?: (product: Product) => void;
   option?: React.ReactNode;
 }
@@ -22,6 +23,21 @@ const ProductTable: React.FC<ProductTableProps> = ({
   handleUpdate,
   option,
 }) => {
+  const [deleteTarget, setDeleteTarget] = React.useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    setIsDeleting(true);
+    try {
+      await handleDelete(Number(deleteTarget.id));
+      setDeleteTarget(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <TableCard.Root>
       {option && (
@@ -123,7 +139,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleDelete(Number(product.id))}
+                      onClick={() => setDeleteTarget(product)}
                       className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
                       aria-label="Delete product"
                     >
@@ -161,6 +177,16 @@ const ProductTable: React.FC<ProductTableProps> = ({
           Showing <span className="font-semibold text-primary">{products.length}</span> {products.length !== 1 ? "products" : "product"}
         </span>
       </div>
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete product"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.name}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+          isDeleting={isDeleting}
+        />
+      )}
     </TableCard.Root>
   );
 };

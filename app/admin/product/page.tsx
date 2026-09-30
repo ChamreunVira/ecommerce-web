@@ -1,6 +1,7 @@
 "use client";
 import StatsCard from "@/components/StatsCard";
 import UpdateProductModal from "@/components/UpdateProductModal";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import { useAppContext } from "@/context/AppContext";
 import { productService } from "@/services/product-service";
 import { Product } from "@/types/product";
@@ -24,6 +25,8 @@ const ProductAdminPage = () => {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleFetchProduct = async () => {
     try {
@@ -37,15 +40,22 @@ const ProductAdminPage = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    setIsDeleting(true);
     try {
-      const response = await productService.delete(id);
+      const response = await productService.delete(Number(deleteTarget.id));
       if (response.success) {
         toast.success("Product deleted successfully");
-        handleFetchProduct();
+        await handleFetchProduct();
       }
     } catch (error) {
       console.error(error);
+      toast.error("Failed to delete product.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -176,7 +186,7 @@ const ProductAdminPage = () => {
                   <Table.Cell>
                     <div className="flex items-center justify-end gap-1">
                       <button type="button" onClick={() => setEditProduct(product)} className="flex size-8 items-center justify-center rounded-lg text-tertiary transition hover:bg-secondary hover:text-primary" aria-label="Edit product"><Edit01 className="size-4" /></button>
-                      <button type="button" onClick={() => handleDelete(Number(product.id))} className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary" aria-label="Delete product"><Trash01 className="size-4" /></button>
+                      <button type="button" onClick={() => setDeleteTarget(product)} className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary" aria-label="Delete product"><Trash01 className="size-4" /></button>
                       <button type="button" className="flex size-8 items-center justify-center rounded-lg text-quaternary transition hover:bg-secondary hover:text-primary" aria-label="More options"><DotsVertical className="size-4" /></button>
                     </div>
                   </Table.Cell>
@@ -210,6 +220,16 @@ const ProductAdminPage = () => {
 
       {editProduct && (
         <UpdateProductModal categories={[]} product={editProduct} onClose={() => setEditProduct(null)} onUpdated={handleFetchProduct} />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete product"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.name}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDelete}
+          isDeleting={isDeleting}
+        />
       )}
     </div>
   );

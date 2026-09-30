@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./Providers";
 
@@ -20,8 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <script src="https://js.puter.com/v2/"></script>
       <body className={`min-h-full antialiased text-gray-700 ${inter.className}`}>
+        <Script src="https://js.puter.com/v2/" strategy="beforeInteractive" />
         <Providers>
           {children}
         </Providers>

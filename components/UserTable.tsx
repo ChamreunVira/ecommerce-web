@@ -6,10 +6,11 @@ import { User } from "@/types/user";
 import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
 import Profile from "./Profile";
 import { Badge } from "@/components/base/badges/badges";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 
 type UserTableType = {
   users: User[];
-  handleDelete: (id: number) => void;
+  handleDelete: (id: number) => void | Promise<void>;
   handleUpdate?: (user: User) => void;
   option?: React.ReactNode;
 };
@@ -20,6 +21,21 @@ const UserTable: React.FC<UserTableType> = ({
   handleUpdate,
   option,
 }) => {
+  const [deleteTarget, setDeleteTarget] = React.useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+
+    setIsDeleting(true);
+    try {
+      await handleDelete(deleteTarget.id);
+      setDeleteTarget(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <TableCard.Root>
       {option && (
@@ -86,7 +102,7 @@ const UserTable: React.FC<UserTableType> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => setDeleteTarget(item)}
                     className="flex size-8 items-center justify-center rounded-lg text-error-primary transition hover:bg-error-secondary"
                     aria-label="Delete user"
                   >
@@ -123,6 +139,16 @@ const UserTable: React.FC<UserTableType> = ({
           Showing <span className="font-semibold text-primary">{users.length}</span> {users.length !== 1 ? "users" : "user"}
         </span>
       </div>
+
+      {deleteTarget && (
+        <DeleteConfirmationModal
+          title="Delete user"
+          message={<>Are you sure you want to delete <span className="font-semibold text-primary">{deleteTarget.fullName}</span>? This action cannot be undone.</>}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+          isDeleting={isDeleting}
+        />
+      )}
     </TableCard.Root>
   );
 };

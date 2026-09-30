@@ -25,7 +25,7 @@ class BannerService {
       }
     });
     return response.data;
-  }
+  }.............
 
   async update(id: number, payload: FormData): Promise<ApiResponse<Banner>> {
     const response = await http.put(`${this.endpoint}/${id}`, payload, {
