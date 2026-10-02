@@ -26,7 +26,7 @@ export default function CheckoutPage() {
   const [freeShipping, setFreeShipping] = useState(false);
   const [promoLoading, setPromoLoading] = useState(false);
 
-  const { cartItems, router } = useAppContext();
+  const { cartItems, router, refreshCart } = useAppContext();
 
   const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
@@ -149,13 +149,25 @@ export default function CheckoutPage() {
         couponCode: promoApplied ? promoCode.trim() : undefined,
       });
       if (response.success) {
-        handleGenerateQrCode(response.data.orderId);
+        await refreshCart();
+        if (paymentMethod === "CASH_ON_DELIVERY") {
+          toast.success("Order placed successfully! Cash on delivery selected.");
+          router.push(`/checkout/${response.data.orderId}/success?method=COD`);
+        } else {
+          handleGenerateQrCode(response.data.orderId);
+        }
       } else {
         toast.error("Failed to place order. Please try again.");
       }
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-      console.log(error);
+    } catch (error: unknown) {
+      console.error("Checkout error:", error);
+      const apiError = error as { response?: { data?: { message?: string; error?: string } }; message?: string };
+      const serverMsg =
+        apiError?.response?.data?.message ||
+        apiError?.response?.data?.error ||
+        apiError?.message ||
+        "Something went wrong. Please try again.";
+      toast.error(serverMsg);
     } finally {
       setLoading(false);
     }

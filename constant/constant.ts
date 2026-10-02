@@ -9,7 +9,7 @@ export enum OrderStatus {
 }
 
 export enum PaymentMethod {
-    CASH_0N_DELIVERY = "CASH_0N_DELIVERY",
+    CASH_ON_DELIVERY = "CASH_ON_DELIVERY",
     KHQR_BAKONG = "KHQR_BAKONG"
 }
 

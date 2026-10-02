@@ -3,7 +3,10 @@ import { ApiResponse } from "@/types/api-response";
 import { Banner } from "@/types/banner";
 import axios from "axios";
 
-type BannerPayload = Omit<Banner, "id" | "imageUrl" | "createdAt" | "updatedAt"> & { image: any };
+type BannerPayload = Omit<
+  Banner,
+  "id" | "imageUrl" | "createdAt" | "updatedAt"
+> & { image: any };
 
 class BannerService {
   private endpoint = "/banners";
@@ -19,19 +22,19 @@ class BannerService {
   }
 
   async create(payload: FormData): Promise<ApiResponse<Banner>> {
-    const response = await http.post(this.endpoint, payload , {
+    const response = await http.post(this.endpoint, payload, {
       headers: {
         "Content-Type": "multipart/form-data",
-      }
+      },
     });
     return response.data;
-  }.............
+  }
 
   async update(id: number, payload: FormData): Promise<ApiResponse<Banner>> {
     const response = await http.put(`${this.endpoint}/${id}`, payload, {
       headers: {
         "Content-Type": "multipart/form-data",
-      }
+      },
     });
     return response.data;
   }

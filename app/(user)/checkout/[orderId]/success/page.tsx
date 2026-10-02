@@ -1,11 +1,12 @@
 "use client";
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 
 export default function OrderSuccessPage() {
-
     const params = useParams();
+    const searchParams = useSearchParams();
     const orderId = params.orderId;
+    const isCod = searchParams.get('method') === 'COD';
 
     return (
         <div className="app-container min-h-[60vh] flex items-center justify-center py-12">
@@ -17,8 +18,15 @@ export default function OrderSuccessPage() {
                 </div>
                 
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800 mb-3">Payment Successful!</h1>
-                    <p className="text-slate-500 leading-relaxed">Thank you for your purchase. We've received your payment and your order is currently being processed.</p>
+                    <h1 className="text-3xl font-bold text-slate-800 mb-3">
+                        {isCod ? "Order Placed Successfully!" : "Payment Successful!"}
+                    </h1>
+                    <p className="text-slate-500 leading-relaxed">
+                        {isCod 
+                            ? "Thank you for your purchase! Your order has been placed and will be paid via Cash on Delivery when it arrives."
+                            : "Thank you for your purchase. We've received your payment and your order is currently being processed."
+                        }
+                    </p>
                 </div>
 
                 <div className="bg-slate-50 border border-slate-100 p-5 rounded-lg text-sm text-slate-600 space-y-3 mx-auto mt-6">
@@ -26,6 +34,12 @@ export default function OrderSuccessPage() {
                         <span>Order ID:</span>
                         <span className="font-bold text-slate-900">#{orderId}</span>
                     </div>
+                    {isCod && (
+                        <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-200">
+                            <span>Payment Method:</span>
+                            <span className="font-medium text-indigo-600">Cash on Delivery (COD)</span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-center">
@@ -33,7 +47,7 @@ export default function OrderSuccessPage() {
                         Continue Shopping
                     </Link>
                     <Link href={`/profile/orders/${orderId}`} className="px-6 py-3 font-semibold text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 transition flex-1">
-                        View Orders
+                        View Order Details
                     </Link>
                 </div>
             </div>
