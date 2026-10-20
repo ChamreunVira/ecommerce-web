@@ -1,6 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-commerce frontend
 
-## Getting Started
+The frontend for the e-commerce platform. It provides the customer storefront,
+authentication and checkout flows, account pages, and an admin dashboard for
+managing products, categories, banners, promotions, orders, users, and reports.
+
+It is built with Next.js App Router, React, TypeScript, Tailwind CSS, Axios,
+React Hook Form, Zod, and Chart.js.
+
+## Requirements
+
+- Node.js 20 or newer
+- npm
+- The Spring Boot API running locally or at a reachable URL
+
+## Setup
+
+From this directory (`ecommerce/ecommerce`):
+
+```bash
+npm install
+```
+
+Create `.env.local` with values for the API:
+
+```env
+NEXT_PUBLIC_BASE_URL=http://localhost:8081/api/v1
+NEXT_PUBLIC_BASE_URL_IMG=http://localhost:8081/api/v1/uploads
+NEXT_PUBLIC_GOOGLE_API_KEY=your-public-key
+```
+
+Do not commit `.env.local` or private credentials. The API URL must include the
+backend context path `/api/v1`.
+
+## Run locally
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Available scripts
+
+| Command         | Description                  |
+| --------------- | ---------------------------- |
+| `npm run dev`   | Start the development server |
+| `npm run build` | Create a production build    |
+| `npm run start` | Start the production build   |
+| `npm run lint`  | Run ESLint                   |
+
+## Main routes
+
+- `/` - Storefront home page
+- `/sign-in` and `/sign-up` - Authentication
+- `/products` - Product browsing and details
+- `/cart` and `/checkout` - Cart and checkout
+- `/profile` - Customer profile and orders
+- `/admin` - Admin dashboard
+- `/admin/product`, `/admin/order`, `/admin/user` - Administration screens
+
+The frontend sends authenticated requests through `lib/axios.ts`. Access and
+refresh tokens are handled by the shared token manager and API interceptor.
+
+## Project structure
+
+```text
+app/          App Router pages and layouts
+components/   Shared UI and modal components
+services/     API service modules
+lib/          Shared clients and integrations
+types/        TypeScript domain types
+utils/        Reusable utilities
+public/       Static assets
+```
+
+## Related project
+
+The backend lives in `../ecommerce-api`. See its README for PostgreSQL,
+Spring Boot, API, and Docker setup instructions.
+
+## Next.js documentation
+
+- [Next.js documentation](https://nextjs.org/docs)
+- [Next.js App Router](https://nextjs.org/docs/app)
 
 First, run the development server:
 
