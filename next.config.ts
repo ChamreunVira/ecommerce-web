@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'api.bacii.online',
+      },
+      {
+        protocol: 'https',
         hostname: 'bakong.nbc.gov.kh',
       }
     ],

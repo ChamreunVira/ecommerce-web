@@ -9,7 +9,7 @@ import { PageResponse } from "@/types/page-response";
 import { Table, TableCard } from "@/components/application/table/table";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 
-export enum AuditAction {
+enum AuditAction {
   CREATE = "CREATE",
   UPDATE = "UPDATE",
   DELETE = "DELETE",

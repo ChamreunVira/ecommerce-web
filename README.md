@@ -27,12 +27,11 @@ Create `.env.local` in the project root:
 
 ```env
 NEXT_PUBLIC_BASE_URL=http://localhost:8081/api/v1
-NEXT_PUBLIC_BASE_URL_IMG=http://localhost:8081/api/v1/uploads
 ```
 
-`NEXT_PUBLIC_BASE_URL` is used for API requests. `NEXT_PUBLIC_BASE_URL_IMG`
-should point to the backend upload directory used for product and banner
-images. Keep environment files and private credentials out of version control.
+`NEXT_PUBLIC_BASE_URL` is used for API requests and image retrieval. Product and
+banner filenames load from `/images/products/{filename}` on this API. Keep
+environment files and private credentials out of version control.
 
 Start the development server:
 
@@ -88,8 +87,8 @@ operations used by the pages and components.
 
 ## Backend
 
-The frontend expects the backend to expose the API under `/api/v1` and to serve
-uploaded images from the configured image URL. Start the backend before using
+The frontend expects the backend to expose the API under `/api/v1` and stream
+uploaded image bytes from `/images/products/{filename}`. Start the backend before using
 catalogue, authentication, cart, checkout, or administration features.
 
 ## Useful documentation
