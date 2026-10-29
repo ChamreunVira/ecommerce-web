@@ -9,6 +9,7 @@ import { Product } from "@/types/product";
 import { Review } from "@/types/review";
 import { Minus, Plus, Star } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -174,7 +175,7 @@ const ProductDetail = () => {
                 {primaryImg ? (
                   <Image
                     className="aspect-4/3 w-full object-contain p-5 mix-blend-multiply"
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${primaryImg}`}
+                    src={getImageUrl(primaryImg)}
                     alt={productData.name}
                     width={720}
                     height={540}
@@ -203,7 +204,7 @@ const ProductDetail = () => {
                     >
                       <Image
                         className="aspect-square w-full object-contain p-2 mix-blend-multiply"
-                        src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${img}`}
+                        src={getImageUrl(img)}
                         alt={`${productData.name} ${index + 1}`}
                         width={220}
                         height={220}

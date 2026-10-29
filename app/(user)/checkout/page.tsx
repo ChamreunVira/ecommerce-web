@@ -2,6 +2,7 @@
 
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import React, { useEffect, useState } from "react";
 import BAKONG_LOGO from "@/assets/bakong_logo.png";
 import { toast } from "react-toastify";
@@ -547,7 +548,7 @@ export default function CheckoutPage() {
                     >
                       <div className="flex items-center gap-3">
                         <img
-                          src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.primaryImage}`}
+                          src={getImageUrl(item.primaryImage)}
                           alt="primary-image"
                           className="w-12 h-12 object-cover rounded border border-slate-100 bg-gray-50"
                         />

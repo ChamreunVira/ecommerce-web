@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import Link from "next/link";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Order } from "@/types/order";
@@ -14,7 +15,6 @@ type OrderTableType = {
   handleDelete: (id: number) => void;
 };
 
-const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 
 const OrderTable: React.FC<OrderTableType> = ({ order }) => {
   return (
@@ -32,7 +32,7 @@ const OrderTable: React.FC<OrderTableType> = ({ order }) => {
         <Table.Body items={order}>
           {(item) => {
             const first = item.orderItems?.[0];
-            const imgSrc = first?.imageUrl ? `${BASE_IMG}/${first.imageUrl}` : null;
+            const imgSrc = first?.imageUrl ? getImageUrl(first.imageUrl) : null;
             const customerName = item.shippingAddress?.fullName ?? "—";
 
             return (

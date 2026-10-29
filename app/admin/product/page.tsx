@@ -11,10 +11,10 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge, BadgeWithDot } from "@/components/base/badges/badges";
 
-const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 const PAGE_SIZE = 10;
 
 const ProductAdminPage = () => {
@@ -153,7 +153,7 @@ const ProductAdminPage = () => {
                     <div className="flex items-center gap-3">
                       <div className="size-12 shrink-0 overflow-hidden rounded-lg border border-secondary bg-tertiary">
                         {img ? (
-                          <Image src={`${BASE_IMG}/${img}`} alt={product.name} width={48} height={48} className="h-full w-full object-cover" unoptimized />
+                          <Image src={getImageUrl(img)} alt={product.name} width={48} height={48} className="h-full w-full object-cover" unoptimized />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-[10px] font-medium text-quaternary">IMG</div>
                         )}

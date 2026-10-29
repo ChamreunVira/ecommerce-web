@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Product } from "@/types/product";
 import { Edit01, Trash01, DotsVertical } from "@untitledui/icons";
@@ -15,7 +16,6 @@ interface ProductTableProps {
   option?: React.ReactNode;
 }
 
-const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 
 const ProductTable: React.FC<ProductTableProps> = ({
   products,
@@ -71,7 +71,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     <div className="size-12 shrink-0 overflow-hidden rounded-lg border border-secondary bg-tertiary">
                       {img ? (
                         <Image
-                          src={`${BASE_IMG}/${img}`}
+                          src={getImageUrl(img)}
                           alt={product.name}
                           width={48}
                           height={48}

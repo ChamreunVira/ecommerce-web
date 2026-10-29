@@ -11,8 +11,8 @@ import { Table, TableCard } from "@/components/application/table/table";
 import { BadgeWithDot } from "@/components/base/badges/badges";
 import { Avatar } from "@/components/base/avatar/avatar";
 import { PrintInvoiceButton } from "@/components/PrintInvoiceButton";
+import { getImageUrl } from "@/lib/image-url";
 
-const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 const PAGE_SIZE = 10;
 
 const statusColorMap: Record<string, { color: "warning" | "indigo" | "success" | "error" | "gray" | "blue"; label: string }> = {
@@ -129,7 +129,7 @@ const OrderAdminPage = () => {
           <Table.Body items={isLoading ? [] : paginated}>
             {(item) => {
               const first = item.orderItems?.[0];
-              const imgSrc = first?.imageUrl ? `${BASE_IMG}/${first.imageUrl}` : null;
+              const imgSrc = first?.imageUrl ? getImageUrl(first.imageUrl) : null;
               const customerName = item.shippingAddress?.fullName ?? "—";
               const st = statusColorMap[item.status] ?? { color: "gray" as const, label: item.status };
               return (

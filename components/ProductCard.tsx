@@ -3,6 +3,7 @@ import { useAppContext } from "@/context/AppContext";
 import { Product } from "@/types/product";
 import { ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import { toast } from "react-toastify";
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -31,7 +32,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         onClick={() => router.push(`/product/${product.id}`)}
       >
         <Image
-          src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${product.images[0]}`}
+          src={getImageUrl(product.images[0])}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

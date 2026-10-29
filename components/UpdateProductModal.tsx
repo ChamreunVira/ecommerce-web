@@ -10,6 +10,7 @@ import { productService } from "@/services/product-service";
 import { Category } from "@/types/category";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 
 type CategoryFormData = Omit<
   Product,
@@ -325,7 +326,7 @@ export default function UpdateProductModal({
                     />
                   </div>
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${image}`}
+                    src={getImageUrl(image)}
                     alt={image}
                     fill
                     className="object-cover"

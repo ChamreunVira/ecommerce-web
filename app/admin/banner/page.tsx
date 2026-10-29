@@ -1,5 +1,6 @@
 "use client";
 
+import { getImageUrl } from "@/lib/image-url";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -186,7 +187,7 @@ export default function BannerAdminPage() {
                     {item.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.imageUrl}`}
+                        src={getImageUrl(item.imageUrl)}
                         alt={item.title}
                         className="h-full w-full object-cover object-center"
                         onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}

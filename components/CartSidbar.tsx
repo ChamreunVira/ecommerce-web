@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -162,7 +163,7 @@ const CartSidbar: React.FC<CartSidbarType> = ({ open, setOpen }) => {
                           >
                             <Image
                               className="h-full w-full object-cover"
-                              src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${item.productImage}`}
+                              src={getImageUrl(item.productImage)}
                               alt={item.productName}
                               width={100}
                               height={100}

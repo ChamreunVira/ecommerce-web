@@ -21,8 +21,8 @@ import {
 import { orderService } from "@/services/order-service";
 import { Order } from "@/types/order";
 import { OrderStatus } from "@/constant/constant";
+import { getImageUrl } from "@/lib/image-url";
 
-const BASE_IMG = process.env.NEXT_PUBLIC_BASE_URL_IMG;
 
 const STATUS_MAP: Record<
   string,
@@ -236,7 +236,7 @@ export default function AdminOrderDetailPage() {
             <div className="divide-y divide-slate-100">
               {order.orderItems?.map((item, i) => {
                 const imgSrc = item.imageUrl
-                  ? `${BASE_IMG}/${item.imageUrl}`
+                  ? getImageUrl(item.imageUrl)
                   : null;
                 const lineTotal =
                   item.subtotal ?? item.finalPrice * item.quantity;

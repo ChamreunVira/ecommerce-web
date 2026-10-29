@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/image-url";
 import Link from "next/link";
 import { bannerService } from "@/services/banner-service";
 import { Banner as BannerType } from "@/types/banner";
@@ -46,7 +47,7 @@ const Banner = () => {
         {/* Background image fills and covers the entire banner */}
         <div className="absolute inset-0">
           <img
-            src={`${process.env.NEXT_PUBLIC_BASE_URL_IMG}/${banner.imageUrl}`}
+            src={getImageUrl(banner.imageUrl)}
             alt={banner.title}
             className="h-full w-full object-cover object-center"
           />
