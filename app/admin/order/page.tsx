@@ -1,42 +1,58 @@
-"use client";
-import StatsCard from "@/components/StatsCard";
-import { useAppContext } from "@/context/AppContext";
-import { orderService } from "@/services/order-service";
-import { Order } from "@/types/order";
-import { ChevronRight, Clock, Home, PackageMinusIcon, RefreshCw, Search, ShoppingBag, Truck, ArrowLeft, ArrowRight } from "lucide-react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
-import { Table, TableCard } from "@/components/application/table/table";
-import { BadgeWithDot } from "@/components/base/badges/badges";
-import { Avatar } from "@/components/base/avatar/avatar";
-import { PrintInvoiceButton } from "@/components/PrintInvoiceButton";
-import { getImageUrl } from "@/lib/image-url";
+'use client';
+import StatsCard from '@/components/StatsCard';
+import { useAppContext } from '@/context/AppContext';
+import { orderService } from '@/services/order-service';
+import { Order } from '@/types/order';
+import {
+  ChevronRight,
+  Clock,
+  Home,
+  PackageMinusIcon,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  Truck,
+  ArrowLeft,
+  ArrowRight,
+} from 'lucide-react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { Table, TableCard } from '@/components/application/table/table';
+import { BadgeWithDot } from '@/components/base/badges/badges';
+import { Avatar } from '@/components/base/avatar/avatar';
+import { PrintInvoiceButton } from '@/components/PrintInvoiceButton';
+import { getImageUrl } from '@/lib/image-url';
 
 const PAGE_SIZE = 10;
 
-const statusColorMap: Record<string, { color: "warning" | "indigo" | "success" | "error" | "gray" | "blue"; label: string }> = {
-  PENDING_PAYMENT: { color: "warning", label: "Pending Payment" },
-  PENDING: { color: "warning", label: "Pending" },
-  PROCESSING: { color: "blue", label: "Processing" },
-  PRESESSING: { color: "blue", label: "Processing" },
-  SHIPPED: { color: "indigo", label: "Shipped" },
-  DELIVERED: { color: "success", label: "Delivered" },
-  CANCELLED: { color: "error", label: "Cancelled" },
-  REFUNDED: { color: "gray", label: "Refunded" },
+const statusColorMap: Record<
+  string,
+  { color: 'warning' | 'indigo' | 'success' | 'error' | 'gray' | 'blue'; label: string }
+> = {
+  PENDING_PAYMENT: { color: 'warning', label: 'Pending Payment' },
+  PENDING: { color: 'warning', label: 'Pending' },
+  CONFIRMED: { color: 'blue', label: 'Confirmed' },
+  PROCESSING: { color: 'blue', label: 'Processing' },
+  PRESESSING: { color: 'blue', label: 'Processing' },
+  SHIPPED: { color: 'indigo', label: 'Shipped' },
+  DELIVERED: { color: 'success', label: 'Delivered' },
+  COMPLETED: { color: 'success', label: 'Completed' },
+  CANCELLED: { color: 'error', label: 'Cancelled' },
+  REFUNDED: { color: 'gray', label: 'Refunded' },
 };
 
 function formatDate(value: string | null | undefined) {
-  if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 const OrderAdminPage = () => {
   const { sessionReady } = useAppContext();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const handleFetchOrder = async () => {
@@ -68,7 +84,9 @@ const OrderAdminPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <nav className="flex items-center gap-1.5 text-sm text-tertiary">
-        <Link href="/admin/dashboard" className="flex items-center gap-1 transition-colors hover:text-primary"><Home size={14} /></Link>
+        <Link href="/admin/dashboard" className="flex items-center gap-1 transition-colors hover:text-primary">
+          <Home size={14} />
+        </Link>
         <ChevronRight size={14} className="text-quaternary" />
         <span className="font-medium text-primary">Orders</span>
       </nav>
@@ -78,17 +96,44 @@ const OrderAdminPage = () => {
           <h1 className="text-2xl font-semibold text-primary">Orders</h1>
           <p className="mt-1 text-sm text-tertiary">Track and manage all customer orders.</p>
         </div>
-        <button onClick={handleFetchOrder} className="inline-flex items-center justify-center gap-2 rounded-lg border border-secondary bg-primary px-4 py-2.5 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary">
+        <button
+          onClick={handleFetchOrder}
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-secondary bg-primary px-4 py-2.5 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary"
+        >
           <RefreshCw size={16} />
           Refresh
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon={<ShoppingBag className="text-indigo-500" />} accent="bg-indigo-50" label="Total Orders" value={orders.length} trend={+1} />
-        <StatsCard icon={<Clock className="text-amber-500" />} accent="bg-amber-50" label="Pending" value={orders.filter((o) => o.status === "PENDING").length} trend={+3} />
-        <StatsCard icon={<Truck className="text-sky-500" />} accent="bg-sky-50" label="Delivered" value={orders.filter((o) => o.status === "DELIVERED").length} trend={+10} />
-        <StatsCard icon={<PackageMinusIcon className="text-rose-500" />} accent="bg-rose-50" label="Cancelled" value={orders.filter((o) => o.status === "CANCELLED").length} trend={-1} />
+        <StatsCard
+          icon={<ShoppingBag className="text-indigo-500" />}
+          accent="bg-indigo-50"
+          label="Total Orders"
+          value={orders.length}
+          trend={+1}
+        />
+        <StatsCard
+          icon={<Clock className="text-amber-500" />}
+          accent="bg-amber-50"
+          label="Pending"
+          value={orders.filter((o) => o.status === 'PENDING').length}
+          trend={+3}
+        />
+        <StatsCard
+          icon={<Truck className="text-sky-500" />}
+          accent="bg-sky-50"
+          label="Delivered"
+          value={orders.filter((o) => o.status === 'DELIVERED').length}
+          trend={+10}
+        />
+        <StatsCard
+          icon={<PackageMinusIcon className="text-rose-500" />}
+          accent="bg-rose-50"
+          label="Cancelled"
+          value={orders.filter((o) => o.status === 'CANCELLED').length}
+          trend={-1}
+        />
       </div>
 
       <TableCard.Root>
@@ -99,19 +144,27 @@ const OrderAdminPage = () => {
             <input
               type="search"
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setCurrentPage(1); }}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Search order code…"
               className="h-9 w-full rounded-lg border border-secondary bg-primary pl-8 pr-3 text-sm font-medium text-primary outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10"
             />
           </div>
           <select
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setCurrentPage(1);
+            }}
             className="h-9 rounded-lg border border-secondary bg-primary px-3 text-sm font-medium text-secondary outline-none"
           >
             <option value="">All Statuses</option>
             {Object.entries(statusColorMap).map(([key, val]) => (
-              <option key={key} value={key}>{val.label}</option>
+              <option key={key} value={key}>
+                {val.label}
+              </option>
             ))}
           </select>
         </div>
@@ -130,18 +183,35 @@ const OrderAdminPage = () => {
             {(item) => {
               const first = item.orderItems?.[0];
               const imgSrc = first?.imageUrl ? getImageUrl(first.imageUrl) : null;
-              const customerName = item.shippingAddress?.fullName ?? "—";
-              const st = statusColorMap[item.status] ?? { color: "gray" as const, label: item.status };
+              const customerName = item.shippingAddress?.fullName ?? '—';
+              const st = statusColorMap[item.status] ?? { color: 'gray' as const, label: item.status };
               return (
                 <Table.Row id={item.orderId}>
                   <Table.Cell>
                     <div className="flex items-center gap-3">
                       <div className="size-10 shrink-0 overflow-hidden rounded-lg border border-secondary bg-tertiary">
-                        {imgSrc ? <Image src={imgSrc} alt="" width={40} height={40} className="h-full w-full object-cover" unoptimized /> : <div className="flex h-full w-full items-center justify-center text-[10px] font-medium text-quaternary">IMG</div>}
+                        {imgSrc ? (
+                          <Image
+                            src={imgSrc}
+                            alt=""
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-[10px] font-medium text-quaternary">
+                            IMG
+                          </div>
+                        )}
                       </div>
                       <div className="min-w-0">
-                        <p className="max-w-40 truncate text-sm font-semibold text-primary">{first?.productName ?? "—"}</p>
-                        <p className="text-xs text-tertiary">{item.orderItems?.length ?? 0} item{(item.orderItems?.length ?? 0) !== 1 ? "s" : ""}</p>
+                        <p className="max-w-40 truncate text-sm font-semibold text-primary">
+                          {first?.productName ?? '—'}
+                        </p>
+                        <p className="text-xs text-tertiary">
+                          {item.orderItems?.length ?? 0} item{(item.orderItems?.length ?? 0) !== 1 ? 's' : ''}
+                        </p>
                       </div>
                     </div>
                   </Table.Cell>
@@ -150,7 +220,7 @@ const OrderAdminPage = () => {
                       <Avatar size="sm" alt={customerName} />
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-primary">{customerName}</p>
-                        <p className="text-xs text-tertiary">{item.shippingAddress?.phone ?? ""}</p>
+                        <p className="text-xs text-tertiary">{item.shippingAddress?.phone ?? ''}</p>
                       </div>
                     </div>
                   </Table.Cell>
@@ -159,15 +229,26 @@ const OrderAdminPage = () => {
                     <p className="mt-0.5 text-xs text-tertiary">{formatDate(item.createdAt)}</p>
                   </Table.Cell>
                   <Table.Cell>
-                    <p className="font-mono text-sm font-semibold text-primary">${Number(item.totalAmount).toFixed(2)}</p>
-                    <p className="mt-0.5 text-xs capitalize text-tertiary">{String(item.paymentMethod ?? "").replaceAll("_", " ").toLowerCase()}</p>
+                    <p className="font-mono text-sm font-semibold text-primary">
+                      ${Number(item.totalAmount).toFixed(2)}
+                    </p>
+                    <p className="mt-0.5 text-xs capitalize text-tertiary">
+                      {String(item.paymentMethod ?? '')
+                        .replaceAll('_', ' ')
+                        .toLowerCase()}
+                    </p>
                   </Table.Cell>
                   <Table.Cell>
-                    <BadgeWithDot type="pill-color" color={st.color} size="sm">{st.label}</BadgeWithDot>
+                    <BadgeWithDot type="pill-color" color={st.color} size="sm">
+                      {st.label}
+                    </BadgeWithDot>
                   </Table.Cell>
                   <Table.Cell>
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/admin/order/${item.orderId}`} className="rounded-lg border border-secondary bg-primary px-3 py-1.5 text-xs font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary">
+                      <Link
+                        href={`/admin/order/${item.orderId}`}
+                        className="rounded-lg border border-secondary bg-primary px-3 py-1.5 text-xs font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary"
+                      >
                         Details
                       </Link>
                       <PrintInvoiceButton order={item} />
@@ -181,7 +262,9 @@ const OrderAdminPage = () => {
 
         {!isLoading && paginated.length === 0 && (
           <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary"><ShoppingBag size={20} /></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-secondary bg-secondary text-tertiary">
+              <ShoppingBag size={20} />
+            </div>
             <p className="text-sm font-semibold text-primary">No orders found</p>
             <p className="text-xs text-tertiary">Try adjusting your search or filters.</p>
           </div>
@@ -189,13 +272,25 @@ const OrderAdminPage = () => {
         {isLoading && <div className="px-6 py-12 text-center text-sm text-tertiary">Loading orders…</div>}
 
         <div className="flex items-center justify-between border-t border-secondary bg-primary px-4 py-3 md:px-6">
-          <button type="button" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1}
-            className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary disabled:opacity-40">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary disabled:opacity-40"
+          >
             <ArrowLeft className="size-4" /> Previous
           </button>
-          <span className="text-xs text-tertiary">Page <span className="font-semibold text-primary">{currentPage}</span> of <span className="font-semibold text-primary">{totalPages}</span> · <span className="font-semibold text-primary">{filtered.length}</span> orders</span>
-          <button type="button" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-            className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary disabled:opacity-40">
+          <span className="text-xs text-tertiary">
+            Page <span className="font-semibold text-primary">{currentPage}</span> of{' '}
+            <span className="font-semibold text-primary">{totalPages}</span> ·{' '}
+            <span className="font-semibold text-primary">{filtered.length}</span> orders
+          </span>
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="inline-flex items-center gap-2 rounded-lg border border-secondary bg-primary px-3 py-2 text-sm font-semibold text-secondary shadow-xs transition hover:bg-secondary hover:text-primary disabled:opacity-40"
+          >
             Next <ArrowRight className="size-4" />
           </button>
         </div>

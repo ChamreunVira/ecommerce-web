@@ -1,50 +1,61 @@
-"use client";
+'use client';
 
-import { useAppContext } from "@/context/AppContext";
-import Image from "next/image";
-import { getImageUrl } from "@/lib/image-url";
-import React, { useEffect, useState } from "react";
-import BAKONG_LOGO from "@/assets/bakong_logo.png";
-import { toast } from "react-toastify";
-import { shippingAddressService } from "@/services/shipping-address-service";
-import { ShippingAddress } from "@/types/shipping-address";
-import { orderService } from "@/services/order-service";
-import { paymentService } from "@/services/payment-service";
-import { Payment } from "@/types/payment";
-import QrCodeModal from "@/components/QrCodeModal";
-import { PaymentStatus } from "@/constant/constant";
-import { Trash } from "lucide-react";
-import { promotionService } from "@/services/promotion-service";
+import { useAppContext } from '@/context/AppContext';
+import Image from 'next/image';
+import { getImageUrl } from '@/lib/image-url';
+import React, { useEffect, useState } from 'react';
+import BAKONG_LOGO from '@/assets/bakong_logo.png';
+import { toast } from 'react-toastify';
+import { shippingAddressService } from '@/services/shipping-address-service';
+import { ShippingAddress } from '@/types/shipping-address';
+import { orderService } from '@/services/order-service';
+import { paymentService } from '@/services/payment-service';
+import { Payment } from '@/types/payment';
+import QrCodeModal from '@/components/QrCodeModal';
+import { PaymentStatus } from '@/constant/constant';
+import { Trash } from 'lucide-react';
+import { promotionService } from '@/services/promotion-service';
+import { carrierService } from '@/services/carrier-service';
+import { Carrier } from '@/types/carrier';
+import dynamic from 'next/dynamic';
+import type { LocationSelection } from '@/components/LocationPickerModal';
+
+const LocationPickerModal = dynamic(() => import('@/components/LocationPickerModal'), { ssr: false });
 
 export default function CheckoutPage() {
-  const [paymentMethod, setPaymentMethod] = useState("KHQR_BAKONG");
-  const [note, setNote] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState('KHQR_BAKONG');
+  const [note, setNote] = useState('');
   const [loading, setLoading] = useState<boolean>(false);
   const [payment, setPayment] = useState<Payment | null>(null);
-  const [promoCode, setPromoCode] = useState("");
+  const [promoCode, setPromoCode] = useState('');
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoApplied, setPromoApplied] = useState(false);
   const [freeShipping, setFreeShipping] = useState(false);
   const [promoLoading, setPromoLoading] = useState(false);
+  const [carriers, setCarriers] = useState<Carrier[]>([]);
+  const [selectedCarrierId, setSelectedCarrierId] = useState<number | null>(null);
 
   const { cartItems, router, refreshCart } = useAppContext();
 
   const [savedAddresses, setSavedAddresses] = useState<ShippingAddress[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    null,
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [isCreatingAddress, setIsCreatingAddress] = useState(false);
-  const [newAddress, setNewAddress] = useState({
-    fullName: "",
-    phone: "",
-    addressLine: "",
-    province: "",
-    city: "",
-    country: "Cabodia",
-    isDefault: false,
+  const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
+  const [newAddress, setNewAddress] = useState<ShippingAddress>({
+    addressId: 0,
+    fullName: '',
+    phone: '',
+    addressLine: '',
+    province: '',
+    city: '',
+    country: 'Cambodia',
+    default: false,
+    latitude: null,
+    longitude: null,
   });
 
-  const shippingFee = freeShipping ? 0.0 : 0.0;
+  const selectedCarrier = carriers.find((carrier) => carrier.id === selectedCarrierId);
+  const shippingFee = freeShipping ? 0.0 : (selectedCarrier?.shippingFee ?? 0.0);
 
   const subtotal = cartItems.reduce((total, item) => {
     const finalPrice = item.unitPrice * (1 - item.discountRate / 100);
@@ -55,11 +66,11 @@ export default function CheckoutPage() {
 
   const handleApplyPromotion = async () => {
     if (!promoCode.trim()) {
-      toast.warning("Please enter a promotion code.");
+      toast.warning('Please enter a promotion code.');
       return;
     }
     if (subtotal <= 0) {
-      toast.warning("Your cart is empty.");
+      toast.warning('Your cart is empty.');
       return;
     }
     try {
@@ -82,7 +93,7 @@ export default function CheckoutPage() {
       setFreeShipping(false);
       const msg =
         (error as { response?: { data?: { message?: string } } })?.response?.data?.message ??
-        "Invalid or expired promotion code.";
+        'Invalid or expired promotion code.';
       toast.error(msg);
     } finally {
       setPromoLoading(false);
@@ -117,12 +128,11 @@ export default function CheckoutPage() {
   const handlePlaceOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (cartItems.length === 0) {
-      toast.warning("Your cart is empty!", {
-        position: "bottom-right",
+      toast.warning('Your cart is empty!', {
+        position: 'bottom-right',
       });
       return;
     }
-
 
     let resolvedAddressId = selectedAddressId;
     if (!resolvedAddressId) {
@@ -133,11 +143,13 @@ export default function CheckoutPage() {
       }
     }
 
-    const selectedAddress = savedAddresses.find(
-      (a) => a.addressId === resolvedAddressId,
-    );
+    const selectedAddress = savedAddresses.find((a) => a.addressId === resolvedAddressId);
     if (!selectedAddress) {
-      toast.warning("Please select or create a shipping address.");
+      toast.warning('Please select or create a shipping address.');
+      return;
+    }
+    if (!selectedCarrierId) {
+      toast.warning('Please select a shipping provider.');
       return;
     }
 
@@ -148,37 +160,36 @@ export default function CheckoutPage() {
         paymentMethod: paymentMethod,
         note: note,
         couponCode: promoApplied ? promoCode.trim() : undefined,
+        carrierId: selectedCarrierId,
       });
       if (response.success) {
         await refreshCart();
-        if (paymentMethod === "CASH_ON_DELIVERY") {
-          toast.success("Order placed successfully! Cash on delivery selected.");
+        if (paymentMethod === 'CASH_ON_DELIVERY') {
+          toast.success('Order placed successfully! Cash on delivery selected.');
           router.push(`/checkout/${response.data.orderId}/success?method=COD`);
         } else {
           handleGenerateQrCode(response.data.orderId);
         }
       } else {
-        toast.error("Failed to place order. Please try again.");
+        toast.error('Failed to place order. Please try again.');
       }
     } catch (error: unknown) {
-      console.error("Checkout error:", error);
+      console.error('Checkout error:', error);
       const apiError = error as { response?: { data?: { message?: string; error?: string } }; message?: string };
       const serverMsg =
         apiError?.response?.data?.message ||
         apiError?.response?.data?.error ||
         apiError?.message ||
-        "Something went wrong. Please try again.";
+        'Something went wrong. Please try again.';
       toast.error(serverMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleShippingAddressChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const handleShippingAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (value.toLowerCase().includes("phnom penh")) {
+    if (value.toLowerCase().includes('phnom penh')) {
       setNewAddress((prev) => ({ ...prev, city: value }));
     }
     setNewAddress((prev) => ({ ...prev, [name]: value }));
@@ -186,14 +197,23 @@ export default function CheckoutPage() {
 
   const handleValidateShippingAddress = async () => {
     if (savedAddresses.length > 5) {
-      toast.warn("Cannot create shipping address. because max address 10.");
+      toast.warn('Cannot create shipping address. because max address 10.');
     }
   };
 
   const handleCreateShippingAddress = async () => {
     try {
       setLoading(true);
-      const response = await shippingAddressService.create(newAddress);
+      const response = await shippingAddressService.create({
+        fullName: newAddress.fullName,
+        phone: newAddress.phone,
+        addressLine: newAddress.addressLine,
+        province: newAddress.province,
+        city: newAddress.city,
+        country: newAddress.country,
+        latitude: newAddress.latitude,
+        longitude: newAddress.longitude,
+      });
       if (response.success) {
         const listResponse = await shippingAddressService.getAll();
         if (listResponse.success && listResponse.data) {
@@ -204,10 +224,10 @@ export default function CheckoutPage() {
           }
         }
         setIsCreatingAddress(false);
-        toast.success("Address saved and selected.");
+        toast.success('Address saved and selected.');
       }
     } catch (e: unknown) {
-      console.log("Failed to create shipping address:", e);
+      console.log('Failed to create shipping address:', e);
     } finally {
       setLoading(false);
     }
@@ -226,7 +246,7 @@ export default function CheckoutPage() {
         }
       }
     } catch (e: unknown) {
-      console.log("Failed to load shipping address:", e);
+      console.log('Failed to load shipping address:', e);
     }
   };
 
@@ -234,11 +254,11 @@ export default function CheckoutPage() {
     try {
       const response = await shippingAddressService.delete(addressId);
       if (response.success) {
-        toast.success("Deleted shipping addresss successfully.");
+        toast.success('Deleted shipping addresss successfully.');
         handleFetchShippingAddress();
       }
     } catch {
-      toast.error("Failed to delete shipping address.");
+      toast.error('Failed to delete shipping address.');
     }
   };
 
@@ -246,14 +266,12 @@ export default function CheckoutPage() {
     if (!payment?.transactionId) return;
     const interval = setInterval(async () => {
       try {
-        const response = await paymentService.checkStatus(
-          payment.transactionId,
-        );
+        const response = await paymentService.checkStatus(payment.transactionId);
         if (response.success) {
           if (response.data.status === PaymentStatus.PAID) {
             clearInterval(interval);
 
-            toast.success("Payment successfully.");
+            toast.success('Payment successfully.');
 
             setPayment(null);
 
@@ -269,6 +287,15 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     handleFetchShippingAddress();
+    carrierService
+      .getAll()
+      .then((response) => {
+        if (response.success && response.data.length > 0) {
+          setCarriers(response.data);
+          setSelectedCarrierId(response.data[0].id);
+        }
+      })
+      .catch(() => toast.error('Failed to load shipping providers.'));
     return () => new AbortController().abort();
   }, []);
 
@@ -277,16 +304,11 @@ export default function CheckoutPage() {
       <div className="app-container">
         <section className="max-w-7xl mx-auto py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white p-6 rounded-md border border-slate-100">
-                <div className="flex justify-between items-center mb-4">
+            <div className="min-w-0 lg:col-span-2 space-y-6">
+              <div className="bg-white p-4 sm:p-6 rounded-md border border-slate-100">
+                <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-4">
                   <h2 className="text-lg font-bold flex items-center text-gray-700">
-                    <svg
-                      className="w-5 h-5 mr-2 text-indigo-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -319,17 +341,13 @@ export default function CheckoutPage() {
                 {!isCreatingAddress ? (
                   <div className="space-y-3">
                     {savedAddresses.length === 0 ? (
-                      <p className="text-sm text-gray-500">
-                        No saved addresses. Add one below.
-                      </p>
+                      <p className="text-sm text-gray-500">No saved addresses. Add one below.</p>
                     ) : (
                       <>
                         <select
                           className="w-full border border-slate-200 bg-slate-50 rounded-md px-3 py-2.5 text-sm text-gray-800 focus:outline-indigo-500"
-                          value={selectedAddressId ?? ""}
-                          onChange={(e) =>
-                            setSelectedAddressId(Number(e.target.value))
-                          }
+                          value={selectedAddressId ?? ''}
+                          onChange={(e) => setSelectedAddressId(Number(e.target.value))}
                         >
                           <option value="" disabled>
                             — Select a shipping address —
@@ -337,41 +355,30 @@ export default function CheckoutPage() {
                           {savedAddresses.map((addr) => (
                             <option key={addr.addressId} value={addr.addressId}>
                               {addr.fullName} · {addr.phone}
-                              {addr.default ? " (Default)" : ""} —{" "}
-                              {addr.addressLine}, {addr.city}
+                              {addr.default ? ' (Default)' : ''} — {addr.addressLine}, {addr.city}
                             </option>
                           ))}
                         </select>
 
                         {selectedAddressId &&
                           (() => {
-                            const addr = savedAddresses.find(
-                              (a) => a.addressId === selectedAddressId,
-                            );
+                            const addr = savedAddresses.find((a) => a.addressId === selectedAddressId);
                             if (!addr) return null;
                             return (
-                              <div className="flex items-start justify-between rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
-                                <div className="space-y-0.5">
+                              <div className="flex flex-col gap-3 rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm sm:flex-row sm:items-start sm:justify-between">
+                                <div className="min-w-0 space-y-0.5 wrap-break-word">
                                   <p className="font-semibold text-gray-800">
-                                    {addr.fullName}{" "}
-                                    <span className="font-normal text-gray-500">
-                                      · {addr.phone}
-                                    </span>
+                                    {addr.fullName} <span className="font-normal text-gray-500">· {addr.phone}</span>
                                   </p>
                                   <p className="text-gray-600">
-                                    {addr.addressLine}, {addr.city},{" "}
-                                    {addr.province}
+                                    {addr.addressLine}, {addr.city}, {addr.province}
                                   </p>
-                                  <p className="text-gray-500">
-                                    {addr.country}
-                                  </p>
+                                  <p className="text-gray-500">{addr.country}</p>
                                 </div>
                                 <button
                                   type="button"
-                                  onClick={() =>
-                                    handleDeleteAddress(addr.addressId)
-                                  }
-                                  className="ml-4 mt-0.5 shrink-0 text-rose-400 hover:text-rose-600"
+                                  onClick={() => handleDeleteAddress(addr.addressId)}
+                                  className="self-end text-rose-400 hover:text-rose-600 sm:ml-4 sm:mt-0.5 sm:self-start"
                                   aria-label="Delete address"
                                 >
                                   <Trash size={14} />
@@ -383,7 +390,22 @@ export default function CheckoutPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-3 rounded-md border border-indigo-100 bg-indigo-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:col-span-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-indigo-900">Choose delivery point</p>
+                        <p className="text-xs text-indigo-700">
+                          Use the map to fill the address and save its exact coordinates.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsLocationPickerOpen(true)}
+                        className="w-full shrink-0 rounded-md bg-indigo-500 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-600 sm:w-auto"
+                      >
+                        Choose Location on Map
+                      </button>
+                    </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-600 mb-1">
                         Full Name <span className="text-rose-500">*</span>
@@ -440,11 +462,11 @@ export default function CheckoutPage() {
                         required
                       />
                     </div>
-                    <div className="md:col-span-2 flex justify-end gap-2 mt-2">
+                    <div className="flex flex-col-reverse gap-2 mt-2 sm:flex-row sm:justify-end md:col-span-2">
                       <button
                         type="button"
                         onClick={() => setIsCreatingAddress(false)}
-                        className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition"
+                        className="w-full px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition sm:w-auto"
                       >
                         Cancel
                       </button>
@@ -452,7 +474,7 @@ export default function CheckoutPage() {
                         type="button"
                         onClick={() => handleCreateShippingAddress()}
                         disabled={loading}
-                        className="px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition"
+                        className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition sm:w-auto"
                       >
                         Save Address
                       </button>
@@ -461,9 +483,7 @@ export default function CheckoutPage() {
                 )}
 
                 <div className="mt-6 pt-4 border-t border-slate-100">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">
-                    Note (Optional)
-                  </label>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Note (Optional)</label>
                   <textarea
                     rows={2}
                     value={note}
@@ -475,13 +495,30 @@ export default function CheckoutPage() {
               </div>
 
               <div className="bg-white p-6 rounded-md border border-slate-100">
+                <h2 className="text-lg font-bold mb-4 text-gray-700">Shipping Provider</h2>
+                <select
+                  className="w-full border border-slate-200 bg-slate-50 rounded-md px-3 py-2.5 text-sm text-gray-800 focus:outline-indigo-500"
+                  value={selectedCarrierId ?? ''}
+                  onChange={(event) => setSelectedCarrierId(Number(event.target.value))}
+                  disabled={carriers.length === 0}
+                >
+                  <option value="" disabled>
+                    {carriers.length === 0 ? 'No shipping providers available' : 'Select a shipping provider'}
+                  </option>
+                  {carriers.map((carrier) => (
+                    <option key={carrier.id} value={carrier.id}>
+                      {carrier.name} - ${carrier.shippingFee.toFixed(2)}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-2 text-xs text-gray-500">
+                  Shipping fees are confirmed by the server when your order is placed.
+                </p>
+              </div>
+
+              <div className="bg-white p-6 rounded-md border border-slate-100">
                 <h2 className="text-lg font-bold mb-4 flex items-center text-gray-700">
-                  <svg
-                    className="w-5 h-5 mr-2 text-indigo-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -493,41 +530,29 @@ export default function CheckoutPage() {
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div
-                    onClick={() => setPaymentMethod("KHQR_BAKONG")}
-                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === "KHQR_BAKONG" ? "outline-2 outline-indigo-500" : "border-slate-200"}`}
+                    onClick={() => setPaymentMethod('KHQR_BAKONG')}
+                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'KHQR_BAKONG' ? 'outline-2 outline-indigo-500' : 'border-slate-200'}`}
                   >
-                    <Image
-                      className="w-20 object-cover"
-                      src={BAKONG_LOGO}
-                      alt="bakong_logo"
-                    />
+                    <Image className="w-20 object-cover" src={BAKONG_LOGO} alt="bakong_logo" />
                     <div>
-                      <span className="block font-medium text-slate-800">
-                        BAKONG KHQR
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        ទូទាត់ភ្លាមៗតាម App ធនាគារ
-                      </span>
+                      <span className="block font-medium text-slate-800">BAKONG KHQR</span>
+                      <span className="text-xs text-gray-500">ទូទាត់ភ្លាមៗតាម App ធនាគារ</span>
                     </div>
                   </div>
                   <label
-                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === "CASH_ON_DELIVERY" ? "outline-2 outline-indigo-500" : "border-slate-200"}`}
+                    className={`border-0 select-none p-4 rounded-md flex items-center cursor-pointer transition ${paymentMethod === 'CASH_ON_DELIVERY' ? 'outline-2 outline-indigo-500' : 'border-slate-200'}`}
                   >
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="CASH_ON_DELIVERY"
-                      checked={paymentMethod === "CASH_ON_DELIVERY"}
-                      onChange={() => setPaymentMethod("CASH_ON_DELIVERY")}
+                      checked={paymentMethod === 'CASH_ON_DELIVERY'}
+                      onChange={() => setPaymentMethod('CASH_ON_DELIVERY')}
                       className="w-5 h-5 cursor-pointer"
                     />
                     <div className="ml-3">
-                      <span className="block font-medium text-slate-800">
-                        ទូទាត់ពេលទំនិញមកដល់
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        Cash on Delivery (COD)
-                      </span>
+                      <span className="block font-medium text-slate-800">ទូទាត់ពេលទំនិញមកដល់</span>
+                      <span className="text-xs text-gray-500">Cash on Delivery (COD)</span>
                     </div>
                   </label>
                 </div>
@@ -535,17 +560,12 @@ export default function CheckoutPage() {
             </div>
 
             <div className="stick top-0 right-0 bg-white p-6 rounded-md border border-slate-100 h-fit">
-              <h2 className="text-lg font-bold mb-4 text-gray-700">
-                Order Summary
-              </h2>
+              <h2 className="text-lg font-bold mb-4 text-gray-700">Order Summary</h2>
 
               <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto mb-4 pr-1">
                 {orderItems.map((item, i) => {
                   return (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between py-3"
-                    >
+                    <div key={i} className="flex items-center justify-between py-3">
                       <div className="flex items-center gap-3">
                         <img
                           src={getImageUrl(item.primaryImage)}
@@ -553,17 +573,13 @@ export default function CheckoutPage() {
                           className="w-12 h-12 object-cover rounded border border-slate-100 bg-gray-50"
                         />
                         <div>
-                          <h4 className="text-sm font-medium text-slate-800 max-w-40 truncate">
-                            {item.productName}
-                          </h4>
+                          <h4 className="text-sm font-medium text-slate-800 max-w-40 truncate">{item.productName}</h4>
                           <span className="text-xs bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
                             Qty: {item.quantity}
                           </span>
                         </div>
                       </div>
-                      <span className="text-sm font-semibold text-slate-900">
-                        ${item.totalAmount.toFixed(2)}
-                      </span>
+                      <span className="text-sm font-semibold text-slate-900">${item.totalAmount.toFixed(2)}</span>
                     </div>
                   );
                 })}
@@ -571,9 +587,7 @@ export default function CheckoutPage() {
 
               {/* Promotion Code */}
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                  Promotion Code
-                </label>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">Promotion Code</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -595,13 +609,13 @@ export default function CheckoutPage() {
                     disabled={promoLoading}
                     className="px-3 py-2 text-sm font-medium text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition whitespace-nowrap disabled:opacity-60"
                   >
-                    {promoLoading ? "Checking..." : "Apply"}
+                    {promoLoading ? 'Checking...' : 'Apply'}
                   </button>
                 </div>
                 {promoApplied && (
                   <p className="text-xs text-green-600 mt-1">
                     {freeShipping
-                      ? "✓ FREE SHIPPING applied!"
+                      ? '✓ FREE SHIPPING applied!'
                       : `✓ Promotion applied — you save $${promoDiscount.toFixed(2)}`}
                   </p>
                 )}
@@ -610,9 +624,7 @@ export default function CheckoutPage() {
               <div className="space-y-2 border-t border-slate-100 pt-4 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-medium text-slate-800">
-                    ${subtotal.toFixed(2)}
-                  </span>
+                  <span className="font-medium text-slate-800">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping Fee</span>
@@ -632,9 +644,7 @@ export default function CheckoutPage() {
                 )}
                 <div className="flex justify-between text-base font-bold text-gray-900 border-t border-slate-100 pt-2">
                   <span>Total</span>
-                  <span className="text-indigo-600">
-                    ${totalAmount.toFixed(2)}
-                  </span>
+                  <span className="text-indigo-600">${totalAmount.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -644,12 +654,7 @@ export default function CheckoutPage() {
                 className="btn btn-primary w-full mt-6 py-3 font-bold flex items-center justify-center gap-2 hover:bg-indigo-600"
                 disabled={loading}
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -657,7 +662,7 @@ export default function CheckoutPage() {
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   ></path>
                 </svg>
-                {loading ? "Processing..." : "Checkout"}
+                {loading ? 'Processing...' : 'Checkout'}
               </button>
             </div>
           </div>
@@ -671,6 +676,17 @@ export default function CheckoutPage() {
             currency={payment.currency}
             expiresAt={payment.expiresAt}
             onClose={() => setPayment(null)}
+          />
+        )}
+        {isLocationPickerOpen && (
+          <LocationPickerModal
+            initialLocation={newAddress}
+            onCancel={() => setIsLocationPickerOpen(false)}
+            onConfirm={(selection: LocationSelection) => {
+              setNewAddress((current) => ({ ...current, ...selection }));
+              setIsLocationPickerOpen(false);
+              toast.success('Location selected. Review the address before saving.');
+            }}
           />
         )}
       </div>

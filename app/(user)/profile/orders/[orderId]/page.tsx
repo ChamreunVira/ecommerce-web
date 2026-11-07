@@ -1,75 +1,63 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import { toast } from "react-toastify";
-import {
-  ArrowLeft,
-  MapPin,
-  Phone,
-  User2,
-  FileText,
-  Package,
-  ShoppingBag,
-} from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import { toast } from 'react-toastify';
+import { ArrowLeft, MapPin, Phone, User2, FileText, Package, ShoppingBag } from 'lucide-react';
 
-import { orderService } from "@/services/order-service";
-import { Order } from "@/types/order";
-import { getImageUrl } from "@/lib/image-url";
+import { orderService } from '@/services/order-service';
+import { Order } from '@/types/order';
+import { getImageUrl } from '@/lib/image-url';
 
-
-const STATUS_MAP: Record<string, { dot: string; pill: string; label: string }> =
-{
+const STATUS_MAP: Record<string, { dot: string; pill: string; label: string }> = {
   PENDING_PAYMENT: {
-    dot: "bg-amber-400",
-    pill: "bg-amber-50 text-amber-700 ring-amber-200",
-    label: "Pending Payment",
+    dot: 'bg-amber-400',
+    pill: 'bg-amber-50 text-amber-700 ring-amber-200',
+    label: 'Pending Payment',
   },
   PENDING: {
-    dot: "bg-amber-400",
-    pill: "bg-amber-50 text-amber-700 ring-amber-200",
-    label: "Pending",
+    dot: 'bg-amber-400',
+    pill: 'bg-amber-50 text-amber-700 ring-amber-200',
+    label: 'Pending',
   },
   PRESESSING: {
-    dot: "bg-sky-400",
-    pill: "bg-sky-50 text-sky-700 ring-sky-200",
-    label: "Processing",
+    dot: 'bg-sky-400',
+    pill: 'bg-sky-50 text-sky-700 ring-sky-200',
+    label: 'Processing',
   },
   PROCESSING: {
-    dot: "bg-sky-400",
-    pill: "bg-sky-50 text-sky-700 ring-sky-200",
-    label: "Processing",
+    dot: 'bg-sky-400',
+    pill: 'bg-sky-50 text-sky-700 ring-sky-200',
+    label: 'Processing',
   },
   SHIPPED: {
-    dot: "bg-indigo-400",
-    pill: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-    label: "Shipped",
+    dot: 'bg-indigo-400',
+    pill: 'bg-indigo-50 text-indigo-700 ring-indigo-200',
+    label: 'Shipped',
   },
   DELIVERED: {
-    dot: "bg-emerald-400",
-    pill: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    label: "Delivered",
+    dot: 'bg-emerald-400',
+    pill: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    label: 'Delivered',
   },
   CANCELLED: {
-    dot: "bg-rose-400",
-    pill: "bg-rose-50 text-rose-700 ring-rose-200",
-    label: "Cancelled",
+    dot: 'bg-rose-400',
+    pill: 'bg-rose-50 text-rose-700 ring-rose-200',
+    label: 'Cancelled',
   },
   REFUNDED: {
-    dot: "bg-slate-400",
-    pill: "bg-slate-100 text-slate-600 ring-slate-200",
-    label: "Refunded",
+    dot: 'bg-slate-400',
+    pill: 'bg-slate-100 text-slate-600 ring-slate-200',
+    label: 'Refunded',
   },
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const s = STATUS_MAP[status] ?? STATUS_MAP["PENDING"];
+  const s = STATUS_MAP[status] ?? STATUS_MAP['PENDING'];
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ring-1 ${s.pill}`}
-    >
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ring-1 ${s.pill}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
       {s.label}
     </span>
@@ -77,11 +65,11 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function formatDate(value: string | null | undefined) {
-  if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
@@ -105,11 +93,11 @@ export default function ViewOrderPage() {
       if (response.success) {
         setOrder(response.data);
       } else {
-        toast.error("Failed to load order details.");
+        toast.error('Failed to load order details.');
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred while loading the order.");
+      toast.error('An error occurred while loading the order.');
     } finally {
       setLoading(false);
     }
@@ -131,10 +119,7 @@ export default function ViewOrderPage() {
       <div className="app-container py-12 flex flex-col justify-center items-center min-h-[50vh] gap-4">
         <Package size={48} className="text-slate-300" />
         <h2 className="text-xl font-bold text-gray-700">Order not found</h2>
-        <button
-          onClick={() => router.back()}
-          className="text-indigo-500 hover:underline text-sm"
-        >
+        <button onClick={() => router.back()} className="text-indigo-500 hover:underline text-sm">
           ← Go Back
         </button>
       </div>
@@ -149,8 +134,7 @@ export default function ViewOrderPage() {
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Order Details</h1>
             <p className="text-sm text-slate-500 mt-1">
-              Order #{order.orderCode || order.orderId} · Placed on{" "}
-              {formatDate(order.createdAt)}
+              Order #{order.orderCode || order.orderId} · Placed on {formatDate(order.createdAt)}
             </p>
           </div>
           <button
@@ -168,17 +152,12 @@ export default function ViewOrderPage() {
             {/* Items */}
             <div className="bg-white rounded-md border border-slate-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-100">
-                <h2 className="text-base font-semibold text-slate-800">
-                  Order Items
-                </h2>
+                <h2 className="text-base font-semibold text-slate-800">Order Items</h2>
               </div>
               <div className="divide-y divide-slate-100">
                 {order.orderItems.map((item, index) => {
-                  const imgSrc = item.imageUrl
-                    ? getImageUrl(item.imageUrl)
-                    : null;
-                  const lineTotal =
-                    item.subtotal ?? item.finalPrice * item.quantity;
+                  const imgSrc = item.imageUrl ? getImageUrl(item.imageUrl) : null;
+                  const lineTotal = item.subtotal ?? item.finalPrice * item.quantity;
                   return (
                     <div key={index} className="flex items-center gap-4 px-6 py-4">
                       <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-md overflow-hidden shrink-0">
@@ -198,20 +177,14 @@ export default function ViewOrderPage() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-slate-800 text-sm truncate">
-                          {item.productName}
-                        </p>
+                        <p className="font-semibold text-slate-800 text-sm truncate">{item.productName}</p>
                         <p className="text-xs text-slate-400 mt-0.5">
                           ${Number(item.finalPrice).toFixed(2)} × {item.quantity}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="font-bold text-slate-900">
-                          ${Number(lineTotal).toFixed(2)}
-                        </p>
-                        <p className="text-xs text-slate-400">
-                          Qty {item.quantity}
-                        </p>
+                        <p className="font-bold text-slate-900">${Number(lineTotal).toFixed(2)}</p>
+                        <p className="text-xs text-slate-400">Qty {item.quantity}</p>
                       </div>
                     </div>
                   );
@@ -221,16 +194,12 @@ export default function ViewOrderPage() {
 
             {/* Shipping */}
             <div className="bg-white p-6 rounded-md border border-slate-200">
-              <h2 className="text-base font-semibold text-slate-800 mb-4">
-                Shipping Info
-              </h2>
+              <h2 className="text-base font-semibold text-slate-800 mb-4">Shipping Info</h2>
               {order.shippingAddress ? (
                 <div className="space-y-3 text-sm text-slate-600">
                   <div className="flex items-start gap-3">
                     <User2 size={15} className="text-slate-400 mt-0.5 shrink-0" />
-                    <span className="font-medium text-slate-800">
-                      {order.shippingAddress.fullName}
-                    </span>
+                    <span className="font-medium text-slate-800">{order.shippingAddress.fullName}</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <Phone size={15} className="text-slate-400 mt-0.5 shrink-0" />
@@ -239,20 +208,26 @@ export default function ViewOrderPage() {
                   <div className="flex items-start gap-3">
                     <MapPin size={15} className="text-slate-400 mt-0.5 shrink-0" />
                     <span>
-                      {[
-                        order.shippingAddress.addressLine,
-                        order.shippingAddress.city,
-                        order.shippingAddress.province,
-                      ]
+                      {[order.shippingAddress.addressLine, order.shippingAddress.city, order.shippingAddress.province]
                         .filter(Boolean)
-                        .join(", ")}
+                        .join(', ')}
                     </span>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">
-                  No shipping address provided.
-                </p>
+                <p className="text-sm text-slate-400">No shipping address provided.</p>
+              )}
+              {order.carrierName && (
+                <div className="mt-4 border-t border-slate-100 pt-4 text-sm text-slate-600">
+                  <div className="flex justify-between">
+                    <span>Shipping provider</span>
+                    <span className="font-medium text-slate-800">{order.carrierName}</span>
+                  </div>
+                  <div className="mt-2 flex justify-between">
+                    <span>Shipping fee</span>
+                    <span className="font-medium text-slate-800">${Number(order.shippingFee ?? 0).toFixed(2)}</span>
+                  </div>
+                </div>
               )}
               {order.note && (
                 <div className="mt-4 pt-4 border-t border-slate-100 flex items-start gap-3 text-sm text-slate-600">
@@ -267,50 +242,63 @@ export default function ViewOrderPage() {
           <div className="space-y-4">
             {/* Status */}
             <div className="bg-white p-6 rounded-md border border-slate-200">
-              <h2 className="text-base font-semibold text-slate-800 mb-3">
-                Order Status
-              </h2>
+              <h2 className="text-base font-semibold text-slate-800 mb-3">Order Status</h2>
               <StatusBadge status={order.status} />
               {order.trackingNumber && (
                 <div className="mt-4 pt-4 border-t border-slate-100">
                   <p className="text-xs text-slate-500 mb-1">Tracking Number</p>
-                  <p className="text-sm font-semibold text-slate-800">
-                    {order.trackingNumber}
-                  </p>
+                  <p className="text-sm font-semibold text-slate-800">{order.trackingNumber}</p>
                 </div>
               )}
             </div>
 
+            <div className="bg-white p-6 rounded-md border border-slate-200">
+              <h2 className="text-base font-semibold text-slate-800 mb-4">Status Timeline</h2>
+              <div className="space-y-4">
+                {(order.statusHistory ?? []).map((entry, index) => (
+                  <div key={`${entry.createdAt}-${index}`} className="flex gap-3 text-sm">
+                    <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
+                    <div>
+                      <p className="font-semibold text-slate-800">{entry.newStatus.replaceAll('_', ' ')}</p>
+                      <p className="text-xs text-slate-500">
+                        {new Date(entry.createdAt).toLocaleString()}
+                        {entry.reason ? ` · ${entry.reason}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {order.statusHistory?.length === 0 && (
+                  <p className="text-sm text-slate-400">No status history available.</p>
+                )}
+              </div>
+            </div>
+
             {/* Summary */}
             <div className="bg-white rounded-md p-6 border border-slate-200 text-sm text-slate-600">
-              <h2 className="text-base font-semibold text-slate-800 mb-4">
-                Summary
-              </h2>
+              <h2 className="text-base font-semibold text-slate-800 mb-4">Summary</h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-medium text-slate-800">
-                    ${Number(order.subtotal ?? 0).toFixed(2)}
-                  </span>
+                  <span className="font-medium text-slate-800">${Number(order.subtotal ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span className="font-medium text-slate-800">
-                    ${Number(order.shippingFee ?? 0).toFixed(2)}
-                  </span>
+                  <span className="font-medium text-slate-800">${Number(order.shippingFee ?? 0).toFixed(2)}</span>
                 </div>
                 <div className="pt-3 mt-3 border-t border-slate-100 flex justify-between text-base font-bold text-slate-900">
                   <span>Total</span>
-                  <span className="text-indigo-600">
-                    ${Number(order.totalAmount ?? 0).toFixed(2)}
-                  </span>
+                  <span className="text-indigo-600">${Number(order.totalAmount ?? 0).toFixed(2)}</span>
                 </div>
               </div>
               <div className="mt-4 p-3 bg-slate-50 rounded-lg text-xs flex justify-between items-center">
                 <span className="text-slate-500">Payment</span>
                 <span className="font-semibold text-slate-700">
-                  {String(order.paymentMethod ?? "").replaceAll("_", " ")}
+                  {String(order.paymentMethod ?? '').replaceAll('_', ' ')}
                 </span>
+              </div>
+              <div className="mt-3 flex justify-between text-xs">
+                <span className="text-slate-500">Payment status</span>
+                <span className="font-semibold text-slate-700">{order.paymentSummary?.paymentStatus ?? 'UNPAID'}</span>
               </div>
             </div>
 

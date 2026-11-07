@@ -1,31 +1,36 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { ChevronRight, Home, Truck, Package, CheckCircle2, Clock, Plus } from "lucide-react";
-import StatsCard from "@/components/StatsCard";
-import { shipmentService } from "@/services/shipment-service";
-import { Shipment } from "@/types/shipment";
-import { Table, TableCard } from "@/components/application/table/table";
-import ShipmentModal from "@/components/ShipmentModal";
-import { BadgeWithDot } from "@/components/base/badges/badges";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { ChevronRight, Home, Truck, Package, CheckCircle2, Clock, Plus, Eye } from 'lucide-react';
+import StatsCard from '@/components/StatsCard';
+import { shipmentService } from '@/services/shipment-service';
+import { Shipment } from '@/types/shipment';
+import { Table, TableCard } from '@/components/application/table/table';
+import ShipmentModal from '@/components/ShipmentModal';
+import { BadgeWithDot } from '@/components/base/badges/badges';
+import ShipmentDetailsModal from '@/components/ShipmentDetailsModal';
 
-const statusMap: Record<Shipment["status"], { color: "blue" | "indigo" | "error" | "success" | "warning"; label: string }> = {
-  PENDING: { color: "blue", label: "Pending" },
-  IN_TRANSMIT: { color: "indigo", label: "In Transit" },
-  CANCELLED: { color: "error", label: "Cancelled" },
-  DELIVERED: { color: "success", label: "Delivered" },
-  DELAYED: { color: "warning", label: "Delayed" },
+const statusMap: Record<
+  Shipment['status'],
+  { color: 'blue' | 'indigo' | 'error' | 'success' | 'warning'; label: string }
+> = {
+  PENDING: { color: 'blue', label: 'Pending' },
+  IN_TRANSMIT: { color: 'indigo', label: 'In Transit' },
+  CANCELLED: { color: 'error', label: 'Cancelled' },
+  DELIVERED: { color: 'success', label: 'Delivered' },
+  DELAYED: { color: 'warning', label: 'Delayed' },
 };
 
 export default function ShippingPage() {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedShipment, setSelectedShipment] = useState<Shipment | null>(null);
 
-  const inTransit = shipments?.filter((s) => s.status === "IN_TRANSMIT").length ?? 0;
-  const delivered = shipments?.filter((s) => s.status === "DELIVERED").length ?? 0;
-  const dispatched = shipments?.filter((s) => s.status === "PENDING").length ?? 0;
-  const delayed = shipments?.filter((s) => s.status === "DELAYED").length ?? 0;
+  const inTransit = shipments?.filter((s) => s.status === 'IN_TRANSMIT').length ?? 0;
+  const delivered = shipments?.filter((s) => s.status === 'DELIVERED').length ?? 0;
+  const dispatched = shipments?.filter((s) => s.status === 'PENDING').length ?? 0;
+  const delayed = shipments?.filter((s) => s.status === 'DELAYED').length ?? 0;
 
   const handleFetchShipments = async () => {
     try {
@@ -33,8 +38,8 @@ export default function ShippingPage() {
       if (response.success) {
         setShipments(response.data);
       }
-    } catch (e: any) {
-      console.log("Error fetching shipments: ", e.message);
+    } catch (e: unknown) {
+      console.log('Error fetching shipments: ', e instanceof Error ? e.message : e);
     }
   };
 
@@ -63,7 +68,7 @@ export default function ShippingPage() {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-brand-primary_hover"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-brand-primary_hover"
         >
           <Plus size={16} />
           New Shipment
@@ -71,10 +76,34 @@ export default function ShippingPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatsCard icon={<Package className="text-indigo-500" />} accent="bg-indigo-50" label="Dispatched" value={dispatched} trend={+2} />
-        <StatsCard icon={<Truck className="text-indigo-500" />} accent="bg-indigo-50" label="In Transit" value={inTransit} trend={0} />
-        <StatsCard icon={<CheckCircle2 className="text-emerald-500" />} accent="bg-emerald-50" label="Delivered" value={delivered} trend={+5} />
-        <StatsCard icon={<Clock className="text-rose-500" />} accent="bg-rose-50" label="Delayed" value={delayed} trend={-1} />
+        <StatsCard
+          icon={<Package className="text-indigo-500" />}
+          accent="bg-indigo-50"
+          label="Dispatched"
+          value={dispatched}
+          trend={+2}
+        />
+        <StatsCard
+          icon={<Truck className="text-indigo-500" />}
+          accent="bg-indigo-50"
+          label="In Transit"
+          value={inTransit}
+          trend={0}
+        />
+        <StatsCard
+          icon={<CheckCircle2 className="text-emerald-500" />}
+          accent="bg-emerald-50"
+          label="Delivered"
+          value={delivered}
+          trend={+5}
+        />
+        <StatsCard
+          icon={<Clock className="text-rose-500" />}
+          accent="bg-rose-50"
+          label="Delayed"
+          value={delayed}
+          trend={-1}
+        />
       </div>
 
       <TableCard.Root>
@@ -88,6 +117,7 @@ export default function ShippingPage() {
             <Table.Head id="destination" label="Destination" />
             <Table.Head id="estDelivery" label="Est. Delivery" allowsSorting />
             <Table.Head id="status" label="Status" />
+            <Table.Head id="actions" label="" />
           </Table.Header>
 
           <Table.Body items={shipments}>
@@ -107,6 +137,17 @@ export default function ShippingPage() {
                       {st.label}
                     </BadgeWithDot>
                   </Table.Cell>
+                  <Table.Cell>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedShipment(s)}
+                      className="inline-flex bg-slate-100 items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50"
+                      aria-label={`View details for ${s.code}`}
+                    >
+                      <Eye size={14} />
+                      Details
+                    </button>
+                  </Table.Cell>
                 </Table.Row>
               );
             }}
@@ -125,12 +166,18 @@ export default function ShippingPage() {
 
         <div className="flex items-center border-t border-secondary bg-primary px-6 py-3.5">
           <span className="text-xs text-tertiary">
-            Showing <span className="font-semibold text-primary">{shipments.length}</span> {shipments.length !== 1 ? "shipments" : "shipment"}
+            Showing <span className="font-semibold text-primary">{shipments.length}</span>{' '}
+            {shipments.length !== 1 ? 'shipments' : 'shipment'}
           </span>
         </div>
       </TableCard.Root>
 
-      {isModalOpen && (<ShipmentModal handleCloseAction={() => setIsModalOpen(!isModalOpen)} onCreateSuccessAction={() => { }} />)}
+      {isModalOpen && (
+        <ShipmentModal handleCloseAction={() => setIsModalOpen(!isModalOpen)} onCreateSuccessAction={() => {}} />
+      )}
+      {selectedShipment && (
+        <ShipmentDetailsModal shipment={selectedShipment} onClose={() => setSelectedShipment(null)} />
+      )}
     </div>
   );
 }

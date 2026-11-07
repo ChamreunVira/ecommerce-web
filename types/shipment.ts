@@ -1,13 +1,15 @@
-import { ShipmentStatus } from "@/constant/constant";
+import { ShipmentStatus } from '@/constant/constant';
 
 export interface Shipment {
-    id: number;
-    code: string;
-    orderCode: string;
-    customer: string;
-    status: ShipmentStatus;
-    destination: string;
-    trackingNumber: string;
-    estimatedDelivery: string;
-    carrier: string;
+  id: number;
+  code: string;
+  orderCode: string;
+  customer: string;
+  status: ShipmentStatus;
+  destination: string;
+  trackingNumber: string;
+  estimatedDelivery: string;
+  carrier: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }

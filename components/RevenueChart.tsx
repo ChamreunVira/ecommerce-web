@@ -32,7 +32,9 @@ interface Props {
 }
 
 export default function RevenueChart({ data }: Props) {
-  const labels = data.map((d) => MONTHS[d.month]);
+  const labels = data.map((d) =>
+    d.month >= 1 && d.month <= 12 ? MONTHS[d.month - 1] : (MONTHS[d.month] ?? `M${d.month}`)
+  );
   const revenues = data.map((d) => d.revenue);
 
   const chartData = {
@@ -43,7 +45,12 @@ export default function RevenueChart({ data }: Props) {
         data: revenues,
         borderColor: "#f97316",
         backgroundColor: (ctx: any) => {
-          const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 300);
+          const chart = ctx.chart;
+          const { ctx: canvasCtx, chartArea } = chart || {};
+          if (!canvasCtx) return "rgba(249,115,22,0.15)";
+          const top = chartArea ? chartArea.top : 0;
+          const bottom = chartArea ? chartArea.bottom : 300;
+          const gradient = canvasCtx.createLinearGradient(0, top, 0, bottom);
           gradient.addColorStop(0, "rgba(249,115,22,0.25)");
           gradient.addColorStop(1, "rgba(249,115,22,0.01)");
           return gradient;
@@ -94,9 +101,9 @@ export default function RevenueChart({ data }: Props) {
         },
       },
       y: {
+        beginAtZero: true,
         grid: {
           color: "rgba(226,232,240,0.6)",
-          drawBorder: false,
         },
         border: { display: false, dash: [5, 5] },
         ticks: {

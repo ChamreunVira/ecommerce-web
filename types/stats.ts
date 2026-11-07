@@ -15,5 +15,6 @@ export interface TrendCategory {
 export interface DashboardStats {
     revenueByMonths: RevenueByMonth[];
     trendCategories: TrendCategory[];
-    recentOrders: RecentOrder[]; 
+    recentOrders: RecentOrder[];
+    orderStatusCounts?: Record<string, number>;
 }

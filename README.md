@@ -23,7 +23,7 @@ Install dependencies from the project directory:
 npm install
 ```
 
-Create `.env.local` in the project root:
+For development, copy `.env.development.example` to `.env.local` in the project root:
 
 ```env
 NEXT_PUBLIC_BASE_URL=http://localhost:8081/api/v1
@@ -41,14 +41,17 @@ npm run dev
 
 Then open [http://localhost:3000](http://localhost:3000).
 
+For production, copy `.env.production.example` to `.env.production` and replace
+the example API hostname before running `npm run build`.
+
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the development server. |
-| `npm run build` | Create a production build. |
-| `npm run start` | Run the production build. |
-| `npm run lint` | Run ESLint. |
+| Command         | Description                   |
+| --------------- | ----------------------------- |
+| `npm run dev`   | Start the development server. |
+| `npm run build` | Create a production build.    |
+| `npm run start` | Run the production build.     |
+| `npm run lint`  | Run ESLint.                   |
 
 ## Application routes
 
@@ -95,3 +98,7 @@ catalogue, authentication, cart, checkout, or administration features.
 
 - [Next.js documentation](https://nextjs.org/docs)
 - [Next.js App Router](https://nextjs.org/docs/app)
+
+
+
+

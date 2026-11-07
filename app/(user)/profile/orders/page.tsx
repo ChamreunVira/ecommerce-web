@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { orderService } from "@/services/order-service";
-import { Order } from "@/types/order";
-import { Package, Eye, ArrowLeft, Clock, CheckCircle2, XCircle, ShoppingBag } from "lucide-react";
-import Link from "next/link";
-import Loading from "@/components/Loading";
+import React, { useEffect, useState } from 'react';
+import { orderService } from '@/services/order-service';
+import { Order } from '@/types/order';
+import { Package, Eye, ArrowLeft, Clock, CheckCircle2, XCircle, ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import Loading from '@/components/Loading';
 
 const StatusBadge = ({ status }: { status: string }) => {
   switch (status) {
-    case "PENDING":
+    case 'PENDING':
       return (
         <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-600 text-sm font-medium">
           <Clock size={14} /> Pending
         </span>
       );
-    case "PROCESSING":
-    case "SHIPPED":
+    case 'PROCESSING':
+    case 'SHIPPED':
       return (
         <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-medium">
           <Package size={14} /> {status === 'SHIPPED' ? 'Shipped' : 'Processing'}
         </span>
       );
-    case "DELIVERED":
+    case 'DELIVERED':
       return (
         <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-sm font-medium">
           <CheckCircle2 size={14} /> Delivered
         </span>
       );
-    case "CANCELLED":
+    case 'CANCELLED':
       return (
         <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-sm font-medium">
           <XCircle size={14} /> Cancelled
@@ -55,15 +55,15 @@ const OrdersPage = () => {
         if (res?.success && res?.data) {
           setOrders(res.data);
         } else {
-          setError(res?.message || "Failed to load orders");
+          setError(res?.message || 'Failed to load orders');
         }
-      } catch (err: any) {
-        setError(err.message || "Something went wrong fetching orders.");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Something went wrong fetching orders.');
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchOrders();
   }, []);
 
@@ -80,12 +80,8 @@ const OrdersPage = () => {
             <ArrowLeft size={20} />
           </Link>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
-              My Orders
-            </h1>
-            <p className="text-slate-500 mt-1 text-sm">
-              View and manage your recent purchases
-            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">My Orders</h1>
+            <p className="text-slate-500 mt-1 text-sm">View and manage your recent purchases</p>
           </div>
         </div>
 
@@ -121,19 +117,20 @@ const OrdersPage = () => {
                 <div className="p-5 sm:p-6 flex flex-col sm:flex-row gap-4 sm:items-center justify-between border-b border-slate-100 bg-slate-50/50">
                   <div className="space-y-1">
                     <p className="text-sm font-medium text-slate-500 flex items-center gap-2">
-                       Order <span className="font-bold text-slate-900">{order.orderCode}</span>
+                      Order <span className="font-bold text-slate-900">{order.orderCode}</span>
                     </p>
                     <p className="text-xs text-slate-500">
-                      Placed on {new Date(order.createdAt).toLocaleDateString("en-US", {
+                      Placed on{' '}
+                      {new Date(order.createdAt).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
-                        day: 'numeric'
+                        day: 'numeric',
                       })}
                     </p>
                   </div>
                   <StatusBadge status={order.status} />
                 </div>
-                
+
                 <div className="p-5 sm:p-6 flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
                   <div className="flex gap-4 items-center">
                     <div className="h-12 w-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
@@ -143,9 +140,12 @@ const OrdersPage = () => {
                       <p className="text-sm font-medium text-slate-900">
                         {order.orderItems?.reduce((acc, item) => acc + item.quantity, 0) || 0} items
                       </p>
-                      <p className="text-sm font-bold text-indigo-600 mt-0.5">
-                         ${order.totalAmount.toFixed(2)}
-                      </p>
+                      <p className="text-sm font-bold text-indigo-600 mt-0.5">${order.totalAmount.toFixed(2)}</p>
+                      {order.carrierName && (
+                        <p className="text-xs text-slate-500 mt-1">
+                          {order.carrierName} · ${Number(order.shippingFee ?? 0).toFixed(2)} shipping
+                        </p>
+                      )}
                     </div>
                   </div>
                   <Link

@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { toast } from 'react-toastify';
 import {
   ChevronRight,
   Home,
@@ -16,57 +16,63 @@ import {
   Tag,
   ArrowLeft,
   CheckCircle2,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { orderService } from "@/services/order-service";
-import { Order } from "@/types/order";
-import { OrderStatus } from "@/constant/constant";
-import { getImageUrl } from "@/lib/image-url";
+import { orderService } from '@/services/order-service';
+import { Order } from '@/types/order';
+import { OrderStatus } from '@/constant/constant';
+import { getImageUrl } from '@/lib/image-url';
 
-
-const STATUS_MAP: Record<
-  string,
-  { dot: string; pill: string; label: string }
-> = {
+const STATUS_MAP: Record<string, { dot: string; pill: string; label: string }> = {
   PENDING_PAYMENT: {
-    dot: "bg-amber-400",
-    pill: "bg-amber-50 text-amber-700 ring-amber-200",
-    label: "Pending Payment",
+    dot: 'bg-amber-400',
+    pill: 'bg-amber-50 text-amber-700 ring-amber-200',
+    label: 'Pending Payment',
   },
   PENDING: {
-    dot: "bg-amber-400",
-    pill: "bg-amber-50 text-amber-700 ring-amber-200",
-    label: "Pending",
+    dot: 'bg-amber-400',
+    pill: 'bg-amber-50 text-amber-700 ring-amber-200',
+    label: 'Pending',
+  },
+  CONFIRMED: {
+    dot: 'bg-cyan-400',
+    pill: 'bg-cyan-50 text-cyan-700 ring-cyan-200',
+    label: 'Confirmed',
   },
   PRESESSING: {
-    dot: "bg-sky-400",
-    pill: "bg-sky-50 text-sky-700 ring-sky-200",
-    label: "Processing",
+    dot: 'bg-sky-400',
+    pill: 'bg-sky-50 text-sky-700 ring-sky-200',
+    label: 'Processing',
   },
   PROCESSING: {
-    dot: "bg-sky-400",
-    pill: "bg-sky-50 text-sky-700 ring-sky-200",
-    label: "Processing",
+    dot: 'bg-sky-400',
+    pill: 'bg-sky-50 text-sky-700 ring-sky-200',
+    label: 'Processing',
   },
   SHIPPED: {
-    dot: "bg-indigo-400",
-    pill: "bg-indigo-50 text-indigo-700 ring-indigo-200",
-    label: "Shipped",
+    dot: 'bg-indigo-400',
+    pill: 'bg-indigo-50 text-indigo-700 ring-indigo-200',
+    label: 'Shipped',
   },
   DELIVERED: {
-    dot: "bg-emerald-400",
-    pill: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    label: "Delivered",
+    dot: 'bg-emerald-400',
+    pill: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+    label: 'Delivered',
+  },
+  COMPLETED: {
+    dot: 'bg-emerald-500',
+    pill: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
+    label: 'Completed',
   },
   CANCELLED: {
-    dot: "bg-rose-400",
-    pill: "bg-rose-50 text-rose-700 ring-rose-200",
-    label: "Cancelled",
+    dot: 'bg-rose-400',
+    pill: 'bg-rose-50 text-rose-700 ring-rose-200',
+    label: 'Cancelled',
   },
   REFUNDED: {
-    dot: "bg-slate-400",
-    pill: "bg-slate-100 text-slate-600 ring-slate-200",
-    label: "Refunded",
+    dot: 'bg-slate-400',
+    pill: 'bg-slate-100 text-slate-600 ring-slate-200',
+    label: 'Refunded',
   },
 };
 
@@ -83,11 +89,11 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function formatDate(value: string | null | undefined) {
-  if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
@@ -97,7 +103,7 @@ export default function AdminOrderDetailPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusUpdating, setStatusUpdating] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   useEffect(() => {
     if (!orderId) return;
@@ -109,10 +115,10 @@ export default function AdminOrderDetailPage() {
           setOrder(res.data);
           setSelectedStatus(res.data.status);
         } else {
-          toast.error("Failed to load order.");
+          toast.error('Failed to load order.');
         }
       } catch {
-        toast.error("An error occurred while loading the order.");
+        toast.error('An error occurred while loading the order.');
       } finally {
         setLoading(false);
       }
@@ -123,19 +129,24 @@ export default function AdminOrderDetailPage() {
     if (!order || selectedStatus === order.status) return;
     try {
       setStatusUpdating(true);
-      const res = await orderService.updateStatus(
-        order.orderId,
-        selectedStatus as OrderStatus,
-      );
+      const reason =
+        selectedStatus === OrderStatus.CANCELLED
+          ? window.prompt('Cancellation reason is required:')?.trim()
+          : undefined;
+      if (selectedStatus === OrderStatus.CANCELLED && !reason) {
+        toast.error('A cancellation reason is required.');
+        return;
+      }
+      const res = await orderService.updateStatus(order.orderId, selectedStatus as OrderStatus, reason);
       if (res.success) {
         setOrder(res.data);
         setSelectedStatus(res.data.status);
-        toast.success("Order status updated successfully.");
+        toast.success('Order status updated successfully.');
       } else {
-        toast.error("Failed to update status.");
+        toast.error('Failed to update status.');
       }
     } catch {
-      toast.error("An error occurred while updating the status.");
+      toast.error('An error occurred while updating the status.');
     } finally {
       setStatusUpdating(false);
     }
@@ -158,10 +169,7 @@ export default function AdminOrderDetailPage() {
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-slate-500">
         <Package size={48} className="text-slate-300" />
         <p className="text-lg font-semibold">Order not found</p>
-        <button
-          onClick={() => router.back()}
-          className="text-sm text-indigo-500 hover:underline"
-        >
+        <button onClick={() => router.back()} className="text-sm text-indigo-500 hover:underline">
           ← Go back
         </button>
       </div>
@@ -174,37 +182,25 @@ export default function AdminOrderDetailPage() {
     <div className="flex flex-col gap-6">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-sm text-slate-500">
-        <Link
-          href="/admin/dashboard"
-          className="flex items-center gap-1 hover:text-slate-800 transition-colors"
-        >
+        <Link href="/admin/dashboard" className="flex items-center gap-1 hover:text-slate-800 transition-colors">
           <Home size={14} />
         </Link>
         <ChevronRight size={14} className="text-slate-300" />
-        <Link
-          href="/admin/order"
-          className="hover:text-slate-800 transition-colors"
-        >
+        <Link href="/admin/order" className="hover:text-slate-800 transition-colors">
           Orders
         </Link>
         <ChevronRight size={14} className="text-slate-300" />
-        <span className="font-medium text-slate-700">
-          #{order.orderCode || order.orderId}
-        </span>
+        <span className="font-medium text-slate-700">#{order.orderCode || order.orderId}</span>
       </nav>
 
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-950">
-            Order #{order.orderCode || order.orderId}
-          </h1>
+          <h1 className="text-2xl font-semibold text-slate-950">Order #{order.orderCode || order.orderId}</h1>
           <p className="mt-1 text-sm text-slate-500">
             Placed on {formatDate(order.createdAt)}
             {order.updatedAt && order.updatedAt !== order.createdAt && (
-              <span className="ml-2 text-slate-400">
-                · Updated {formatDate(order.updatedAt)}
-              </span>
+              <span className="ml-2 text-slate-400">· Updated {formatDate(order.updatedAt)}</span>
             )}
           </p>
         </div>
@@ -224,22 +220,17 @@ export default function AdminOrderDetailPage() {
           {/* Order Items */}
           <section className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-800">
-                Order Items
-              </h2>
+              <h2 className="text-base font-semibold text-slate-800">Order Items</h2>
               <p className="text-xs text-slate-400">
                 {order.orderItems?.length ?? 0} item
-                {(order.orderItems?.length ?? 0) !== 1 ? "s" : ""}
+                {(order.orderItems?.length ?? 0) !== 1 ? 's' : ''}
               </p>
             </div>
 
             <div className="divide-y divide-slate-100">
               {order.orderItems?.map((item, i) => {
-                const imgSrc = item.imageUrl
-                  ? getImageUrl(item.imageUrl)
-                  : null;
-                const lineTotal =
-                  item.subtotal ?? item.finalPrice * item.quantity;
+                const imgSrc = item.imageUrl ? getImageUrl(item.imageUrl) : null;
+                const lineTotal = item.subtotal ?? item.finalPrice * item.quantity;
                 return (
                   <div key={i} className="flex items-center gap-4 px-6 py-4">
                     <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
@@ -260,9 +251,7 @@ export default function AdminOrderDetailPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-slate-800">
-                        {item.productName}
-                      </p>
+                      <p className="truncate text-sm font-semibold text-slate-800">{item.productName}</p>
                       <p className="mt-0.5 text-xs text-slate-400">
                         ${Number(item.finalPrice).toFixed(2)} × {item.quantity}
                         {item.discountRate > 0 && (
@@ -274,12 +263,8 @@ export default function AdminOrderDetailPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-900">
-                        ${Number(lineTotal).toFixed(2)}
-                      </p>
-                      <p className="text-xs text-slate-400">
-                        Qty {item.quantity}
-                      </p>
+                      <p className="text-sm font-bold text-slate-900">${Number(lineTotal).toFixed(2)}</p>
+                      <p className="text-xs text-slate-400">Qty {item.quantity}</p>
                     </div>
                   </div>
                 );
@@ -290,21 +275,15 @@ export default function AdminOrderDetailPage() {
           {/* Shipping Info */}
           <section className="rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-800">
-                Shipping Information
-              </h2>
+              <h2 className="text-base font-semibold text-slate-800">Shipping Information</h2>
             </div>
             <div className="px-6 py-5">
               {order.shippingAddress ? (
                 <div className="space-y-3">
                   <Row icon={<User2 size={15} className="text-slate-400" />}>
-                    <span className="font-medium text-slate-800">
-                      {order.shippingAddress.fullName}
-                    </span>
+                    <span className="font-medium text-slate-800">{order.shippingAddress.fullName}</span>
                   </Row>
-                  <Row icon={<Phone size={15} className="text-slate-400" />}>
-                    {order.shippingAddress.phone}
-                  </Row>
+                  <Row icon={<Phone size={15} className="text-slate-400" />}>{order.shippingAddress.phone}</Row>
                   <Row icon={<MapPin size={15} className="text-slate-400" />}>
                     {[
                       order.shippingAddress.addressLine,
@@ -313,13 +292,11 @@ export default function AdminOrderDetailPage() {
                       order.shippingAddress.country,
                     ]
                       .filter(Boolean)
-                      .join(", ")}
+                      .join(', ')}
                   </Row>
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">
-                  No shipping address provided.
-                </p>
+                <p className="text-sm text-slate-400">No shipping address provided.</p>
               )}
             </div>
             {order.note && (
@@ -337,34 +314,28 @@ export default function AdminOrderDetailPage() {
           {/* Status Management */}
           <section className="rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
-              <h2 className="text-base font-semibold text-slate-800">
-                Order Status
-              </h2>
+              <h2 className="text-base font-semibold text-slate-800">Order Status</h2>
             </div>
             <div className="px-6 py-5 space-y-4">
               <div>
-                <p className="mb-2 text-xs font-medium text-slate-500">
-                  Current status
-                </p>
+                <p className="mb-2 text-xs font-medium text-slate-500">Current status</p>
                 <StatusBadge status={order.status} />
               </div>
 
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-slate-500">
-                  Update status
-                </label>
+                <label className="mb-1.5 block text-xs font-medium text-slate-500">Update status</label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                 >
-                  <option value={OrderStatus.PENDING_PAYMENT}>
-                    Pending Payment
-                  </option>
+                  <option value={OrderStatus.PENDING_PAYMENT}>Pending Payment</option>
                   <option value={OrderStatus.PENDING}>Pending</option>
+                  <option value={OrderStatus.CONFIRMED}>Confirmed</option>
                   <option value={OrderStatus.PROCESSING}>Processing</option>
                   <option value={OrderStatus.SHIPPED}>Shipped</option>
                   <option value={OrderStatus.DELIVERED}>Delivered</option>
+                  <option value={OrderStatus.COMPLETED}>Completed</option>
                   <option value={OrderStatus.CANCELLED}>Cancelled</option>
                   <option value={OrderStatus.REFUNDED}>Refunded</option>
                 </select>
@@ -380,17 +351,36 @@ export default function AdminOrderDetailPage() {
                 ) : (
                   <CheckCircle2 size={15} />
                 )}
-                {statusUpdating ? "Saving…" : "Save Status"}
+                {statusUpdating ? 'Saving…' : 'Save Status'}
               </button>
 
               {order.trackingNumber && (
                 <div className="rounded-lg bg-slate-50 px-4 py-3">
                   <p className="text-xs text-slate-500">Tracking Number</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-800">
-                    {order.trackingNumber}
-                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-800">{order.trackingNumber}</p>
                 </div>
               )}
+            </div>
+          </section>
+
+          <section className="rounded-md border border-slate-200 bg-white shadow-sm">
+            <div className="border-b border-slate-100 px-6 py-4">
+              <h2 className="text-base font-semibold text-slate-800">Status History</h2>
+            </div>
+            <div className="space-y-4 px-6 py-5">
+              {(order.statusHistory ?? []).map((entry, index) => (
+                <div key={`${entry.createdAt}-${index}`} className="flex gap-3 text-sm">
+                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
+                  <div>
+                    <p className="font-semibold text-slate-800">{entry.newStatus.replaceAll('_', ' ')}</p>
+                    <p className="text-xs text-slate-500">
+                      {new Date(entry.createdAt).toLocaleString()}
+                      {entry.changedBy ? ` · ${entry.changedBy}` : ''}
+                      {entry.reason ? ` · ${entry.reason}` : ''}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
 
@@ -398,32 +388,34 @@ export default function AdminOrderDetailPage() {
           <section className="rounded-md border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-slate-800">
-                  Payment Summary
-                </h2>
+                <h2 className="text-base font-semibold text-slate-800">Payment Summary</h2>
                 <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
                   <Tag size={10} />
-                  {String(order.paymentMethod ?? "").replaceAll("_", " ")}
+                  {String(order.paymentMethod ?? '').replaceAll('_', ' ')}
                 </span>
               </div>
             </div>
             <div className="space-y-3 px-6 py-5 text-sm text-slate-600">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="font-medium text-slate-800">
-                  ${Number(order.subtotal ?? 0).toFixed(2)}
-                </span>
+                <span className="font-medium text-slate-800">${Number(order.subtotal ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping Fee</span>
-                <span className="font-medium text-slate-800">
-                  ${Number(order.shippingFee ?? 0).toFixed(2)}
-                </span>
+                <span className="font-medium text-slate-800">${Number(order.shippingFee ?? 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between border-t border-slate-100 pt-3 text-base font-bold text-slate-900">
                 <span>Total</span>
-                <span className="text-indigo-600">
-                  ${Number(order.totalAmount ?? 0).toFixed(2)}
+                <span className="text-indigo-600">${Number(order.totalAmount ?? 0).toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                <span>Payment status</span>
+                <span className="font-semibold text-slate-800">{order.paymentSummary?.paymentStatus ?? 'UNPAID'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Remaining balance</span>
+                <span className="font-medium text-slate-800">
+                  ${Number(order.paymentSummary?.remainingBalance ?? order.totalAmount).toFixed(2)}
                 </span>
               </div>
             </div>
@@ -434,13 +426,7 @@ export default function AdminOrderDetailPage() {
   );
 }
 
-function Row({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function Row({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-3 text-sm text-slate-600">
       <span className="mt-0.5 shrink-0">{icon}</span>
